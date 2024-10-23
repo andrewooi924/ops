@@ -1,0 +1,216 @@
+package com.optcg.app;
+
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+public class MainActivity extends AppCompatActivity {
+
+    private FrameLayout cardContainer;
+    private FloatingActionButton fab;
+    private int[] cCards = {
+            R.drawable.op01_007, R.drawable.op01_008, R.drawable.op01_009, R.drawable.op01_010,
+            R.drawable.op01_012, R.drawable.op01_018, R.drawable.op01_019, R.drawable.op01_020,
+            R.drawable.op01_023, R.drawable.op01_027, R.drawable.op01_028,
+            R.drawable.op01_034, R.drawable.op01_036, R.drawable.op01_037, R.drawable.op01_038,
+            R.drawable.op01_043, R.drawable.op01_044, R.drawable.op01_045, R.drawable.op01_048, R.drawable.op01_050,
+            R.drawable.op01_053, R.drawable.op01_055, R.drawable.op01_059,
+            R.drawable.op01_064, R.drawable.op01_065, R.drawable.op01_066,
+            R.drawable.op01_072, R.drawable.op01_075, R.drawable.op01_076, R.drawable.op01_080,
+            R.drawable.op01_081, R.drawable.op01_082, R.drawable.op01_087, R.drawable.op01_089,
+            R.drawable.op01_092, R.drawable.op01_099, R.drawable.op01_100,
+            R.drawable.op01_103, R.drawable.op01_104, R.drawable.op01_105, R.drawable.op01_107, R.drawable.op01_110,
+            R.drawable.op01_113, R.drawable.op01_115, R.drawable.op01_117
+    };
+    private int[] ucCards = {
+            R.drawable.op01_006, R.drawable.op01_011, R.drawable.op01_014, R.drawable.op01_015,
+            R.drawable.op01_021, R.drawable.op01_022, R.drawable.op01_029, R.drawable.op01_030,
+            R.drawable.op01_032, R.drawable.op01_033, R.drawable.op01_039, R.drawable.op01_042,
+            R.drawable.op01_052, R.drawable.op01_056, R.drawable.op01_057, R.drawable.op01_063,
+            R.drawable.op01_077, R.drawable.op01_083, R.drawable.op01_084, R.drawable.op01_085,
+            R.drawable.op01_088, R.drawable.op01_090, R.drawable.op01_095, R.drawable.op01_098,
+            R.drawable.op01_101, R.drawable.op01_106, R.drawable.op01_108, R.drawable.op01_109,
+            R.drawable.op01_116, R.drawable.op01_118,
+    };
+    private int[] rCards = {
+            R.drawable.op01_004, R.drawable.op01_005, R.drawable.op01_013, R.drawable.op01_016,
+            R.drawable.op01_017, R.drawable.op01_026, R.drawable.op01_035, R.drawable.op01_040,
+            R.drawable.op01_041, R.drawable.op01_046, R.drawable.op01_049, R.drawable.op01_054,
+            R.drawable.op01_058, R.drawable.op01_068, R.drawable.op01_069, R.drawable.op01_071,
+            R.drawable.op01_073, R.drawable.op01_074, R.drawable.op01_079, R.drawable.op01_086,
+            R.drawable.op01_093, R.drawable.op01_097, R.drawable.op01_102, R.drawable.op01_111,
+            R.drawable.op01_112, R.drawable.op01_114,R.drawable.op01_119,
+    };
+    private int[] srCards = {
+            R.drawable.op01_024, R.drawable.op01_025, R.drawable.op01_047, R.drawable.op01_051,
+            R.drawable.op01_067, R.drawable.op01_070, R.drawable.op01_078, R.drawable.op01_094,
+            R.drawable.op01_096,
+    };
+    private int[] aaCards = {
+            R.drawable.op01_013_p1, R.drawable.op01_016_p1, R.drawable.op01_024_p1, R.drawable.op01_025_p1,
+            R.drawable.op01_040_p1, R.drawable.op01_047_p1, R.drawable.op01_051_p1, R.drawable.op01_067_p1,
+            R.drawable.op01_070_p1, R.drawable.op01_073_p1, R.drawable.op01_078_p1, R.drawable.op01_093_p1,
+            R.drawable.op01_094_p1, R.drawable.op01_096_p1, R.drawable.op01_097_p1, R.drawable.op01_102_p1,
+            R.drawable.op01_120_p1, R.drawable.op01_121_p1
+    };
+    private int[] aalCards = {
+            R.drawable.op01_001_p1, R.drawable.op01_002_p1, R.drawable.op01_003_p1, R.drawable.op01_031_p1,
+            R.drawable.op01_060_p1, R.drawable.op01_061_p1, R.drawable.op01_062_p1, R.drawable.op01_091_p1,
+
+    };
+    private int[] secCards = {R.drawable.op01_120, R.drawable.op01_121};
+    private int[] mrCards = {R.drawable.op01_120_p2};
+    private int[] lCards = {R.drawable.op01_001, R.drawable.op01_002, R.drawable.op01_003, R.drawable.op01_031, R.drawable.op01_060, R.drawable.op01_061, R.drawable.op01_062, R.drawable.op01_091};
+    private int[] otherCards = {R.drawable.op01_008_p1, R.drawable.op01_034_p1, R.drawable.op01_048_p1, R.drawable.op01_064_p1, R.drawable.op01_077_p1, R.drawable.op01_109_p1};
+    private int[] cardResources;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_main);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+
+        fab = findViewById(R.id.resetButton);
+        fab.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+               handleCardStack();
+           }
+        });
+        cardContainer = findViewById(R.id.cardContainer);
+        handleCardStack();
+    }
+
+    private void handleCardStack() {
+
+        // Handling last card
+        if (Math.random() < 0.5) {
+            cardResources = rCards;
+        }
+        else {
+            double prob = Math.random();
+            if (prob > (3.5 / 24)) {
+                cardResources = srCards;
+            }
+            else if (prob > ((3.5 / 24) + (6 / 144))) {
+                cardResources = lCards;
+            }
+            else if (prob > ((3.5 / 24) + (6 / 144) + (1 / 48))) {
+                cardResources = aaCards;
+            }
+            else if (prob > ((3.5 / 24) + (6 / 144) + (1 / 48) + (1 / 72))) {
+                cardResources = aalCards;
+            }
+            else if (prob > ((3.5 / 24) + (6 / 144) + (1 / 48) + (1 / 72) + (1 / 48))) {
+                cardResources = secCards;
+            }
+            else {
+                cardResources = mrCards;
+            }
+        }
+
+        ImageView card6 = new ImageView(this);
+        int randomIndex = (int) (Math.random() * cardResources.length);
+        card6.setImageResource(cardResources[randomIndex]);
+        card6.setLayoutParams(new FrameLayout.LayoutParams(890, 2700));
+        card6.setTranslationX(230);
+        cardContainer.addView(card6);
+        card6.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                animate(card6);
+            }
+        });
+
+        ImageView card5 = new ImageView(this);
+        cardResources = rCards;
+        randomIndex = (int) (Math.random() * cardResources.length);
+        card5.setImageResource(cardResources[randomIndex]);
+        card5.setLayoutParams(new FrameLayout.LayoutParams(890, 2700));
+        card5.setTranslationX(230);
+        cardContainer.addView(card5);
+        card5.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                animate(card5);
+            }
+        });
+
+        // Cards
+        for (int i = 0; i < 4; i++) {
+            ImageView card = new ImageView(this);
+            if (Math.random() < 0.33) {
+                cardResources = ucCards;
+            }
+            else {
+                cardResources = cCards;
+            }
+            randomIndex = (int) (Math.random() * cardResources.length);
+            card.setImageResource(cardResources[randomIndex]);
+            card.setLayoutParams(new FrameLayout.LayoutParams(890, 2700));
+            card.setTranslationX(230);
+            cardContainer.addView(card);
+            card.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    animate(card);
+                }
+            });
+        }
+
+        // Card pack
+        ImageView pack = new ImageView(this);
+        pack.setImageResource(R.drawable.op01_pack);
+        pack.setLayoutParams(new FrameLayout.LayoutParams(1350, 2700));
+        pack.setScaleX(1.35f);
+        pack.setScaleY(1.35f);
+        cardContainer.addView(pack);
+        pack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                animate(pack);
+            }
+        });
+    }
+
+    private void animate(ImageView card) {
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        int screenHeight = displayMetrics.heightPixels;
+        int screenWidth = displayMetrics.widthPixels;
+        ObjectAnimator translationX = ObjectAnimator.ofFloat(card, "translationX", -screenWidth*3);
+        ObjectAnimator translationY = ObjectAnimator.ofFloat(card, "translationY", screenHeight/2);
+        ObjectAnimator rotation = ObjectAnimator.ofFloat(card, "rotation", 0f, -90f);
+
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.playTogether(translationX, translationY, rotation);
+        animatorSet.setDuration(1000);
+
+        animatorSet.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                cardContainer.removeView(card);
+            }
+        });
+
+        animatorSet.start();
+    }
+}
