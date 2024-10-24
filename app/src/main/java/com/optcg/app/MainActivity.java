@@ -90,10 +90,12 @@ public class MainActivity extends AppCompatActivity {
         });
 
         fab = findViewById(R.id.resetButton);
+        fab.setVisibility(View.INVISIBLE);
         fab.setOnClickListener(new View.OnClickListener() {
            @Override
            public void onClick(View v) {
                handleCardStack();
+               fab.setVisibility(View.INVISIBLE);
            }
         });
         cardContainer = findViewById(R.id.cardContainer);
@@ -138,6 +140,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 animate(card6);
+
+                // Display reset button (fab)
+                fab.setVisibility(View.VISIBLE);
             }
         });
 
