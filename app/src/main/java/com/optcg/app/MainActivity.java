@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -13,6 +14,7 @@ import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,10 +27,13 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 public class MainActivity extends AppCompatActivity {
 
     private FrameLayout cardContainer;
-    private FloatingActionButton fab;
     private Button resetButton;
+    private TextView tvPacksOpened;
     private long lastClickTime = 0;
-    private int pityCounter;
+    private boolean pity = false;
+    private static final String PREFS_NAME = "AppPrefs";
+    private static final String KEY_PACKS_OPENED = "packs_opened";
+    private SharedPreferences sharedPreferences;
     private int[] cCards = {
             R.drawable.op01_007, R.drawable.op01_008, R.drawable.op01_009, R.drawable.op01_010,
             R.drawable.op01_012, R.drawable.op01_018, R.drawable.op01_019, R.drawable.op01_020,
@@ -105,67 +110,75 @@ public class MainActivity extends AppCompatActivity {
                 handleCardStack();
             }
         });
-//        fab = findViewById(R.id.resetButton);
-//        fab.setVisibility(View.INVISIBLE);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//           @Override
-//           public void onClick(View v) {
-//               handleCardStack();
-//               fab.setVisibility(View.INVISIBLE);
-//           }
-//        });
         cardContainer = findViewById(R.id.cardContainer);
+
+        // Handle shared preferences
+        sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        int packsOpened = sharedPreferences.getInt(KEY_PACKS_OPENED, 0);
         handleCardStack();
+
+        tvPacksOpened = findViewById(R.id.tvPacksOpened);
+        tvPacksOpened.setText(String.valueOf(packsOpened));
     }
 
     private void handleCardStack() {
 
-        // Handling last card
-//        for (int i = 0; i < 50; i++) {
-        if (Math.random() < 0.50) {
-            cardResources = rCards;
-        }
-        else {
-            double prob = Math.random();
-            if (prob < (1.0 / 1728)) {
-                cardResources = mrCards;
-            } else if (prob < ((1.0 / 1728) + (1.0 / 144))) {
-                cardResources = secCards;
-            } else if (prob < ((1.0 / 1728) + (1.0 / 144) + (1.0 / 72))) {
-                cardResources = aalCards;
-            } else if (prob < ((1.0 / 1728) + (1.0 / 144) + (1.0 / 72) + (2.0 / 48))) { // 1.0 / 48 -> 2.0 / 48
-                cardResources = aaCards;
-            } else if (prob < ((1.0 / 1728) + (1.0 / 144) + (1.0 / 72) + (1.0 / 48)) + (12.0 / 144)) { // 6.0 / 144 -> 12.0 / 144
-                cardResources = lCards;
+        // Handle pity system
+        handlePitySystem();
+
+        if (!pity) {
+            // Handling last card
+            if (Math.random() < 0.50) {
+                cardResources = rCards;
             } else {
-                cardResources = srCards;
-            }
-
-            ImageView card6 = new ImageView(this);
-            int randomIndex = (int) (Math.random() * cardResources.length);
-            card6.setImageResource(cardResources[randomIndex]);
-            card6.setLayoutParams(new FrameLayout.LayoutParams(890, 2700));
-            card6.setTranslationX(230);
-            cardContainer.addView(card6);
-            card6.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    animate(card6);
-
-                    // Set delay to prevent background touches from interfering with animation (reset button)
-                    if (System.currentTimeMillis() - lastClickTime < 1000) {
-                        return;
-                    }
-                    lastClickTime = System.currentTimeMillis();
-                    showResetButton();
+                double prob = Math.random();
+                if (prob < (1.0 / 1728)) {
+                    cardResources = mrCards;
+                } else if (prob < ((1.0 / 1728) + (1.0 / 144))) {
+                    cardResources = secCards;
+                } else if (prob < ((1.0 / 1728) + (1.0 / 144) + (1.0 / 72))) {
+                    cardResources = aalCards;
+                } else if (prob < ((1.0 / 1728) + (1.0 / 144) + (1.0 / 72) + (2.0 / 48))) { // 1.0 / 48 -> 2.0 / 48
+                    cardResources = aaCards;
+                } else if (prob < ((1.0 / 1728) + (1.0 / 144) + (1.0 / 72) + (1.0 / 48)) + (12.0 / 144)) { // 6.0 / 144 -> 12.0 / 144
+                    cardResources = lCards;
+                } else {
+                    cardResources = srCards;
                 }
-            });
+            }
         }
-//        }
+
+        ImageView card6 = new ImageView(this);
+        int randomIndex = (int) (Math.random() * cardResources.length);
+        card6.setImageResource(cardResources[randomIndex]);
+        card6.setLayoutParams(new FrameLayout.LayoutParams(890, 2700));
+        card6.setTranslationX(230);
+        cardContainer.addView(card6);
+        card6.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                animate(card6);
+
+                // Set delay to prevent background touches from interfering with animation (reset button)
+                if (System.currentTimeMillis() - lastClickTime < 1000) {
+                    return;
+                }
+                lastClickTime = System.currentTimeMillis();
+                showResetButton();
+
+                // Update packs opened
+                int packsOpened = sharedPreferences.getInt(KEY_PACKS_OPENED, 0) + 1;
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putInt(KEY_PACKS_OPENED, packsOpened);
+                editor.apply();
+
+                tvPacksOpened.setText(String.valueOf(packsOpened));
+            }
+        });
 
         ImageView card5 = new ImageView(this);
         cardResources = rCards;
-        int randomIndex = (int) (Math.random() * cardResources.length);
+        randomIndex = (int) (Math.random() * cardResources.length);
         card5.setImageResource(cardResources[randomIndex]);
         card5.setLayoutParams(new FrameLayout.LayoutParams(890, 2700));
         card5.setTranslationX(230);
@@ -212,6 +225,30 @@ public class MainActivity extends AppCompatActivity {
                 animate(pack);
             }
         });
+    }
+
+    private void handlePitySystem() {
+        int packsOpened = sharedPreferences.getInt(KEY_PACKS_OPENED, 0);
+        if (packsOpened > 0) {
+            if (packsOpened % 1727 == 0) {
+                cardResources = mrCards;
+                pity = true;
+            }
+            else if (packsOpened % 287 == 0) {
+                cardResources = aalCards;
+                pity = true;
+            }
+            else if (packsOpened % 23 == 0) {
+                if (Math.random() < 0.5) {
+                    cardResources = aaCards;
+                    pity = true;
+                }
+                else {
+                    cardResources = secCards;
+                    pity = true;
+                }
+            }
+        }
     }
 
     private void animate(ImageView card) {
