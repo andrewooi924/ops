@@ -7,6 +7,10 @@ import android.animation.ObjectAnimator;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.TranslateAnimation;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
@@ -22,6 +26,9 @@ public class MainActivity extends AppCompatActivity {
 
     private FrameLayout cardContainer;
     private FloatingActionButton fab;
+    private Button resetButton;
+    private long lastClickTime = 0;
+    private int pityCounter;
     private int[] cCards = {
             R.drawable.op01_007, R.drawable.op01_008, R.drawable.op01_009, R.drawable.op01_010,
             R.drawable.op01_012, R.drawable.op01_018, R.drawable.op01_019, R.drawable.op01_020,
@@ -89,15 +96,24 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        fab = findViewById(R.id.resetButton);
-        fab.setVisibility(View.INVISIBLE);
-        fab.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
-               handleCardStack();
-               fab.setVisibility(View.INVISIBLE);
-           }
+        resetButton = findViewById(R.id.resetButton);
+        resetButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                resetButton.clearAnimation(); // Animation needs to be cleared so that button is not permanently visible for animation
+                resetButton.setVisibility(View.GONE);
+                handleCardStack();
+            }
         });
+//        fab = findViewById(R.id.resetButton);
+//        fab.setVisibility(View.INVISIBLE);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//           @Override
+//           public void onClick(View v) {
+//               handleCardStack();
+//               fab.setVisibility(View.INVISIBLE);
+//           }
+//        });
         cardContainer = findViewById(R.id.cardContainer);
         handleCardStack();
     }
@@ -105,50 +121,51 @@ public class MainActivity extends AppCompatActivity {
     private void handleCardStack() {
 
         // Handling last card
-        if (Math.random() < 0.5) {
+//        for (int i = 0; i < 50; i++) {
+        if (Math.random() < 0.50) {
             cardResources = rCards;
         }
         else {
             double prob = Math.random();
-            if (prob > (3.5 / 24)) {
+            if (prob < (1.0 / 1728)) {
+                cardResources = mrCards;
+            } else if (prob < ((1.0 / 1728) + (1.0 / 144))) {
+                cardResources = secCards;
+            } else if (prob < ((1.0 / 1728) + (1.0 / 144) + (1.0 / 72))) {
+                cardResources = aalCards;
+            } else if (prob < ((1.0 / 1728) + (1.0 / 144) + (1.0 / 72) + (2.0 / 48))) { // 1.0 / 48 -> 2.0 / 48
+                cardResources = aaCards;
+            } else if (prob < ((1.0 / 1728) + (1.0 / 144) + (1.0 / 72) + (1.0 / 48)) + (12.0 / 144)) { // 6.0 / 144 -> 12.0 / 144
+                cardResources = lCards;
+            } else {
                 cardResources = srCards;
             }
-            else if (prob > ((3.5 / 24) + (6 / 144))) {
-                cardResources = lCards;
-            }
-            else if (prob > ((3.5 / 24) + (6 / 144) + (1 / 48))) {
-                cardResources = aaCards;
-            }
-            else if (prob > ((3.5 / 24) + (6 / 144) + (1 / 48) + (1 / 72))) {
-                cardResources = aalCards;
-            }
-            else if (prob > ((3.5 / 24) + (6 / 144) + (1 / 48) + (1 / 72) + (1 / 48))) {
-                cardResources = secCards;
-            }
-            else {
-                cardResources = mrCards;
-            }
+
+            ImageView card6 = new ImageView(this);
+            int randomIndex = (int) (Math.random() * cardResources.length);
+            card6.setImageResource(cardResources[randomIndex]);
+            card6.setLayoutParams(new FrameLayout.LayoutParams(890, 2700));
+            card6.setTranslationX(230);
+            cardContainer.addView(card6);
+            card6.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    animate(card6);
+
+                    // Set delay to prevent background touches from interfering with animation (reset button)
+                    if (System.currentTimeMillis() - lastClickTime < 1000) {
+                        return;
+                    }
+                    lastClickTime = System.currentTimeMillis();
+                    showResetButton();
+                }
+            });
         }
-
-        ImageView card6 = new ImageView(this);
-        int randomIndex = (int) (Math.random() * cardResources.length);
-        card6.setImageResource(cardResources[randomIndex]);
-        card6.setLayoutParams(new FrameLayout.LayoutParams(890, 2700));
-        card6.setTranslationX(230);
-        cardContainer.addView(card6);
-        card6.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                animate(card6);
-
-                // Display reset button (fab)
-                fab.setVisibility(View.VISIBLE);
-            }
-        });
+//        }
 
         ImageView card5 = new ImageView(this);
         cardResources = rCards;
-        randomIndex = (int) (Math.random() * cardResources.length);
+        int randomIndex = (int) (Math.random() * cardResources.length);
         card5.setImageResource(cardResources[randomIndex]);
         card5.setLayoutParams(new FrameLayout.LayoutParams(890, 2700));
         card5.setTranslationX(230);
@@ -198,6 +215,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void animate(ImageView card) {
+
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
         int screenHeight = displayMetrics.heightPixels;
         int screenWidth = displayMetrics.widthPixels;
@@ -217,5 +235,14 @@ public class MainActivity extends AppCompatActivity {
         });
 
         animatorSet.start();
+    }
+
+    private void showResetButton() {
+        resetButton.setVisibility(View.VISIBLE);
+        TranslateAnimation slideUp = new TranslateAnimation(0, 0, resetButton.getHeight() + getResources().getDisplayMetrics().heightPixels, 0);
+        slideUp.setInterpolator(new AccelerateDecelerateInterpolator());
+        slideUp.setDuration(500);
+        slideUp.setFillAfter(true);
+        resetButton.startAnimation(slideUp);
     }
 }
