@@ -5,38 +5,90 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/gradient_drawable"
-    tools:context=".MainActivity">
+    android:background="#201c1c"
+    tools:context=".OP01SimActivity">
 
-    <TextView
-        android:id="@+id/tvPacksOpened"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:fontFamily="sans-serif-light"
-        android:textSize="50dp"
-        app:layout_constraintLeft_toLeftOf="@+id/cardContainer"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <RelativeLayout
+        android:id="@+id/top_section"
+        android:layout_width="450dp"
+        android:layout_height="400dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/recyclerView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <Button
-        android:id="@+id/resetButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Next Pack"
-        android:visibility="gone"
-        android:layout_marginBottom="100dp"
+        <ImageView
+            android:id="@+id/imageCotd"
+            android:layout_width="160dp"
+            android:layout_height="220dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="32dp"
+            android:layout_marginBottom="16dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/op01_120_p2" />
+
+        <TextView
+            android:id="@+id/tvCotd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/imageCotd"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="28dp"
+            android:layout_marginBottom="0dp"
+            android:padding="8dp"
+            android:text="Card Of The Day"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="16dp"
+            android:orientation="vertical"
+            android:layout_marginEnd="24dp">
+
+            <ImageView
+                android:id="@+id/imageNika"
+                android:layout_width="150dp"
+                android:layout_height="100dp"
+                android:layout_marginStart="35dp"
+                android:layout_marginBottom="4dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/nika"/>
+
+
+            <Button
+                android:id="@+id/btnCollection"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:text="Collection"/>
+
+            <Button
+                android:id="@+id/btnPrice"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:text="Price Chart"/>
+
+            <Button
+                android:id="@+id/btnShop"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:text="Shop"/>
+        </LinearLayout>
+    </RelativeLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="433dp"
+        android:layout_height="703dp"
+        android:padding="16dp"
+        android:scrollbars="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"/>
-
-    <FrameLayout
-        android:id="@+id/cardContainer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-    </FrameLayout>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/top_section" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
