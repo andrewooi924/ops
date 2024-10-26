@@ -46,7 +46,8 @@ You can [download](https://drive.google.com/file/d/1sGAWsGgbHtF4V2CE-S4-nkiMBlTi
 This software uses the following open source packages:
 
 - [Android Studio](https://developer.android.com/studio)
-- Images are taken from [here]([https://github.com/arvida/emoji-cheat-sheet.com](https://asia-en.onepiece-cardgame.com/cardlist))
+- [GIMP](https://www.gimp.org/)
+- Images are taken from [here](https://asia-en.onepiece-cardgame.com/cardlist)
 
 ## License
 
