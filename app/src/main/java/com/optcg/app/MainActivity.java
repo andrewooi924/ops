@@ -4,16 +4,20 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -21,6 +25,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -31,10 +37,8 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private RecyclerView recyclerView;
-    private MainMenuAdapter mainMenuAdapter;
-    private List<String> menuItems;
-    private List<Integer> menuImages;
+    private LinearLayout btnHome, btnShop, btnCollection, btnPrice, btnStats;
+    private View currentSelectedTab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,25 +51,50 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        recyclerView = findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        btnHome = findViewById(R.id.btnHome);
+        btnShop = findViewById(R.id.btnShop);
+        btnCollection = findViewById(R.id.btnCollection);
+        btnPrice = findViewById(R.id.btnPrice);
+        btnStats = findViewById(R.id.btnStats);
 
-        menuItems = new ArrayList<>();
-        for (int i = 1; i < 10; i++) {
-            menuItems.add("OP0" + i);
+        // Default on opening app
+        setTabSelected(btnHome);
+        loadFragment(new HomeFragment());
+
+        btnHome.setOnClickListener(v -> {
+            setTabSelected(v);
+            loadFragment(new HomeFragment());
+        });
+        btnShop.setOnClickListener(v -> {
+            setTabSelected(v);
+            loadFragment(new ShopFragment());
+        });
+        btnCollection.setOnClickListener(v -> {
+            setTabSelected(v);
+            loadFragment(new CollectionFragment());
+        });
+        btnPrice.setOnClickListener(v -> {
+            setTabSelected(v);
+            loadFragment(new PricesFragment());
+        });
+        btnStats.setOnClickListener(v -> {
+            setTabSelected(v);
+            loadFragment(new StatsFragment());
+        });
+    }
+
+    private void setTabSelected(View selectedTab) {
+        if (currentSelectedTab != null) {
+            currentSelectedTab.setSelected(false);
         }
 
-        menuImages = new ArrayList<>();
-        menuImages.add(R.drawable.op01_box);
-        menuImages.add(R.drawable.op02_box);
-        menuImages.add(R.drawable.op03_box);
-        menuImages.add(R.drawable.op04_box);
-        menuImages.add(R.drawable.op05_box);
-        menuImages.add(R.drawable.op06_box);
-        menuImages.add(R.drawable.op07_box);
-        menuImages.add(R.drawable.op08_box);
-        menuImages.add(R.drawable.op09_box);
+        selectedTab.setSelected(true);
+        currentSelectedTab = selectedTab;
+    }
 
-        mainMenuAdapter = new MainMenuAdapter(this, menuItems, menuImages);
-        recyclerView.setAdapter(mainMenuAdapter);
-    }}
+    private void loadFragment(Fragment fragment) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragmentContainer, fragment);
+        transaction.commit();
+    }
+}

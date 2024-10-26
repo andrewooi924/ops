@@ -52,7 +52,6 @@ public class MainMenuAdapter extends RecyclerView.Adapter<MainMenuAdapter.MenuVi
     public static class MenuViewHolder extends RecyclerView.ViewHolder {
 
         public ImageView menuImage;
-        public TextView menuText;
 
         public MenuViewHolder(@NonNull View itemView) {
             super(itemView);
