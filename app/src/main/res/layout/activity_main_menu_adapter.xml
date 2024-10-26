@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:padding="16dp"
@@ -10,23 +10,13 @@
     android:clickable="true"
     android:focusable="true">
 
-    <!-- Image on the left side -->
+    <!-- Image only -->
     <ImageView
         android:id="@+id/menu_item_image"
         android:layout_width="150dp"
         android:layout_height="150dp"
-        android:layout_gravity="center"
         android:contentDescription="@string/op01"
-        android:src="@drawable/op01_box" /> <!-- Replace with your icon -->
+        android:src="@drawable/op01_box"
+        android:scaleType="centerCrop" /> <!-- Adjust scaleType as needed -->
 
-    <!-- Text on the right side -->
-    <TextView
-        android:id="@+id/menu_item_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginStart="16dp"
-        android:text="-ROMANCE DAWN- [OP-01]"
-        android:textSize="20sp"
-        android:textColor="@android:color/black" />
 </LinearLayout>

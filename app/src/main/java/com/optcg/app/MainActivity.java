@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         recyclerView = findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
         menuItems = new ArrayList<>();
         for (int i = 1; i < 10; i++) {

@@ -33,7 +33,6 @@ public class MainMenuAdapter extends RecyclerView.Adapter<MainMenuAdapter.MenuVi
 
     @Override
     public void onBindViewHolder(@NonNull MenuViewHolder holder, int position) {
-        holder.menuText.setText(menuItems.get(position));
         holder.menuImage.setImageResource(menuImages.get(position));
 
         // Set up the click listener to open the desired activity
@@ -58,7 +57,6 @@ public class MainMenuAdapter extends RecyclerView.Adapter<MainMenuAdapter.MenuVi
         public MenuViewHolder(@NonNull View itemView) {
             super(itemView);
             menuImage = itemView.findViewById(R.id.menu_item_image);
-            menuText = itemView.findViewById(R.id.menu_item_text);
         }
     }
 }
