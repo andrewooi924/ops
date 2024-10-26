@@ -71,7 +71,7 @@
                 android:id="@+id/iconShop"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:src="@drawable/icon_shop" />
+                android:src="@drawable/ic_shop_state" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -100,7 +100,7 @@
                 android:id="@+id/iconCollection"
                 android:layout_width="22dp"
                 android:layout_height="22dp"
-                android:src="@drawable/icon_collection" />
+                android:src="@drawable/ic_collection_state" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -128,7 +128,7 @@
                 android:id="@+id/iconPrice"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:src="@drawable/icon_price" />
+                android:src="@drawable/ic_prices_state" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -156,7 +156,7 @@
                 android:id="@+id/iconStats"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:src="@drawable/icon_stats" />
+                android:src="@drawable/ic_stats_state" />
 
             <TextView
                 android:layout_width="wrap_content"
