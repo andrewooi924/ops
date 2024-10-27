@@ -28,12 +28,12 @@
 
         <LinearLayout
             android:id="@+id/btnHome"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_width="90dp"
+            android:layout_height="70dp"
             android:orientation="vertical"
             android:gravity="center"
             android:background="@android:color/transparent"
-            android:layout_margin="8dp"
+            android:foreground="@drawable/rounded_ripple_background"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -56,12 +56,12 @@
 
         <LinearLayout
             android:id="@+id/btnShop"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_width="90dp"
+            android:layout_height="70dp"
             android:orientation="vertical"
             android:gravity="center"
             android:background="@android:color/transparent"
-            android:layout_margin="8dp"
+            android:foreground="@drawable/rounded_ripple_background"
             app:layout_constraintStart_toEndOf="@+id/btnHome"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -85,13 +85,12 @@
 
         <LinearLayout
             android:id="@+id/btnCollection"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_width="90dp"
+            android:layout_height="70dp"
             android:orientation="vertical"
             android:gravity="center"
             android:background="@android:color/transparent"
-            android:layout_margin="8dp"
-            app:layout_constraintStart_toEndOf="@+id/btnShop"
+            android:foreground="@drawable/rounded_ripple_background"            app:layout_constraintStart_toEndOf="@+id/btnShop"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btnPrice">
@@ -113,12 +112,12 @@
 
         <LinearLayout
             android:id="@+id/btnPrice"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_width="90dp"
+            android:layout_height="70dp"
             android:orientation="vertical"
             android:gravity="center"
             android:background="@android:color/transparent"
-            android:layout_margin="8dp"
+            android:foreground="@drawable/rounded_ripple_background"
             app:layout_constraintStart_toEndOf="@+id/btnCollection"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -141,12 +140,12 @@
 
         <LinearLayout
             android:id="@+id/btnStats"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_width="90dp"
+            android:layout_height="70dp"
             android:orientation="vertical"
             android:gravity="center"
             android:background="@android:color/transparent"
-            android:layout_margin="8dp"
+            android:foreground="@drawable/rounded_ripple_background"
             app:layout_constraintStart_toEndOf="@+id/btnPrice"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"

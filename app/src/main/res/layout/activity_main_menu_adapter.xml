@@ -17,6 +17,7 @@
         android:layout_height="250dp"
         android:contentDescription="@string/op01"
         android:src="@drawable/op01_box"
-        android:scaleType="centerCrop" /> <!-- Adjust scaleType as needed -->
+        android:scaleType="centerCrop"
+        android:foreground="?attr/selectableItemBackground"/> <!-- Adjust scaleType as needed -->
 
 </LinearLayout>
