@@ -9,31 +9,26 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
-public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.ViewHolder> {
+public class SetAdapter extends RecyclerView.Adapter<SetAdapter.ViewHolder> {
 
     private Context context;
     private List<Integer> menuImages;
-    private OnItemClickListener onItemClickListener;
 
-    public CollectionAdapter(Context context, List<Integer> menuImages, OnItemClickListener onItemClickListener) {
+    public SetAdapter(Context context, List<Integer> menuImages) {
         this.context = context;
         this.menuImages = menuImages;
-        this.onItemClickListener = onItemClickListener;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.activity_collection_adapter, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.activity_set_adapter, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.menuImage.setImageResource(menuImages.get(position));
-        holder.itemView.setOnClickListener(v ->
-            onItemClickListener.onItemClick(position)
-        );
     }
 
     @Override
@@ -48,9 +43,5 @@ public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.Vi
             super(itemView);
             menuImage = itemView.findViewById(R.id.menu_item_image);
         }
-    }
-
-    public interface OnItemClickListener {
-        void onItemClick(int position);
     }
 }

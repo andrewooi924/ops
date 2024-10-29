@@ -6,34 +6,28 @@
     android:layout_height="match_parent"
     android:background="#201c1c">
 
-    <FrameLayout
-        android:id="@+id/fragmentCollection"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-    </FrameLayout>
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
+            android:id="@+id/op01_toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#201c1c"
-            app:title="Collection"
+            app:title="OP01 - Romance Dawn"
             app:titleTextColor="@android:color/white"
             app:menu="@menu/toolbar_menu" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/collectionRecyclerView"
-        android:layout_width="match_parent"
+        android:id="@+id/op01CollectionRecyclerView"
+        android:layout_width="445dp"
         android:layout_height="match_parent"
         android:layout_marginTop="?attr/actionBarSize"
-        android:padding="8dp"
+        android:padding="2dp"
         android:scrollbars="none" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

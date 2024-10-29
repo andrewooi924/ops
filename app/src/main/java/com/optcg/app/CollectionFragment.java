@@ -12,12 +12,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.Arrays;
 import java.util.List;
 
-public class CollectionFragment extends Fragment {
+public class CollectionFragment extends Fragment implements CollectionAdapter.OnItemClickListener {
 
     private RecyclerView recyclerView;
     private CollectionAdapter collectionAdapter;
@@ -26,13 +27,7 @@ public class CollectionFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_collection, container, false);
-        Toolbar toolbar = view.findViewById(R.id.toolbar);
-
-        Menu menu = toolbar.getMenu();
-        resizeMenuIcon(menu.findItem(R.id.action_search), R.dimen.icon_size);
-        resizeMenuIcon(menu.findItem(R.id.action_filter), R.dimen.icon_size);
-        return view;
+        return inflater.inflate(R.layout.fragment_collection, container, false);
     }
 
     @Override
@@ -51,17 +46,26 @@ public class CollectionFragment extends Fragment {
                 R.drawable.op09_collection);
 
         // Set up adapter with only images
-        collectionAdapter = new CollectionAdapter(getContext(), menuImages);
+        collectionAdapter = new CollectionAdapter(getContext(), menuImages, this);
         recyclerView.setAdapter(collectionAdapter);
     }
 
-    private void resizeMenuIcon(MenuItem menuItem, int sizeResId) {
-        Drawable icon = menuItem.getIcon();
-        if (icon != null) {
-            int size = getResources().getDimensionPixelSize(sizeResId);
-            icon.setBounds(0, 0, size, size);
-            menuItem.setIcon(icon);
+    public void onItemClick(int position) {
+        Fragment fragment;
+        switch (position) {
+            case 0:
+                fragment = new OP01CollectionFragment();
+                break;
+            case 1:
+                fragment = new HomeFragment();
+                break;
+            default:
+                fragment = new OP01CollectionFragment();
         }
+        FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragmentContainer, fragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 
 //    private boolean onMenuItemClick(MenuItem item) {
