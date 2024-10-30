@@ -54,6 +54,7 @@ public class OP01CollectionFragment extends Fragment {
 
         // Initialize RecyclerView
         recyclerView = view.findViewById(R.id.op01CollectionRecyclerView);
+        recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3)); // 3 columns
 
         // Initialize list of image resources
