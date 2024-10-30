@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -50,19 +51,17 @@ public class CollectionFragment extends Fragment implements CollectionAdapter.On
         recyclerView.setAdapter(collectionAdapter);
     }
 
-    public void onItemClick(int position) {
+    public void onItemClick(int position, ImageView sharedImageView) {
         Fragment fragment;
         switch (position) {
             case 0:
-                fragment = new OP01CollectionFragment();
-                break;
-            case 1:
-                fragment = new HomeFragment();
+                fragment = OP01CollectionFragment.newInstance(sharedImageView.getTransitionName());
                 break;
             default:
                 fragment = new OP01CollectionFragment();
         }
         FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
+        transaction.addSharedElement(sharedImageView, sharedImageView.getTransitionName());
         transaction.replace(R.id.fragmentContainer, fragment);
         transaction.addToBackStack(null);
         transaction.commit();

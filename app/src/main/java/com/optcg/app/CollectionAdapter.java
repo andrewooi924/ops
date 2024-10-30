@@ -30,9 +30,11 @@ public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.Vi
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        String transitionName = "collectionImage_" + position;
+        holder.menuImage.setTransitionName(transitionName);
         holder.menuImage.setImageResource(menuImages.get(position));
         holder.itemView.setOnClickListener(v ->
-            onItemClickListener.onItemClick(position)
+            onItemClickListener.onItemClick(position, holder.menuImage)
         );
     }
 
@@ -51,6 +53,6 @@ public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.Vi
     }
 
     public interface OnItemClickListener {
-        void onItemClick(int position);
+        void onItemClick(int position, ImageView sharedImageView);
     }
 }

@@ -2,11 +2,13 @@ package com.optcg.app;
 
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.transition.TransitionInflater;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -24,13 +26,25 @@ public class OP01CollectionFragment extends Fragment {
     private SetAdapter setAdapter;
     private List<Integer> menuImages;
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setSharedElementEnterTransition(TransitionInflater.from(requireContext()).inflateTransition(R.transition.change_image_transform));
+        setSharedElementReturnTransition(TransitionInflater.from(requireContext()).inflateTransition(R.transition.change_image_transform));
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_op01_collection_fragment, container, false);
-        Toolbar toolbar = view.findViewById(R.id.op01_toolbar);
-        toolbar.setNavigationIcon(R.drawable.ic_close);
-        toolbar.setNavigationOnClickListener(v -> requireActivity().onBackPressed());
+//        Toolbar toolbar = view.findViewById(R.id.op01_toolbar);
+//        toolbar.setNavigationIcon(R.drawable.ic_close);
+//        toolbar.setNavigationOnClickListener(v -> requireActivity().onBackPressed());
+        ImageView imageView = view.findViewById(R.id.op01_set_img);
+        if (getArguments() != null) {
+            String transitionName = getArguments().getString("transitionName");
+            imageView.setTransitionName(transitionName);
+        }
         return view;
     }
 
@@ -49,6 +63,14 @@ public class OP01CollectionFragment extends Fragment {
         // Set up adapter with only images
         setAdapter = new SetAdapter(getContext(), menuImages);
         recyclerView.setAdapter(setAdapter);
+    }
+
+    public static OP01CollectionFragment newInstance(String transitionName) {
+        OP01CollectionFragment fragment = new OP01CollectionFragment();
+        Bundle args = new Bundle();
+        args.putString("transitionName", transitionName);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     public void onItemClick(int position) {

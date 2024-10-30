@@ -1,7 +1,9 @@
 package com.optcg.app;
 
 import android.os.Bundle;
+import android.transition.TransitionInflater;
 import android.view.View;
+import android.view.Window;
 import android.widget.LinearLayout;
 
 import androidx.activity.EdgeToEdge;
@@ -27,6 +29,10 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+//        getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
+        getWindow().setSharedElementEnterTransition(TransitionInflater.from(this).inflateTransition(R.transition.change_image_transform));
+        getWindow().setSharedElementExitTransition(TransitionInflater.from(this).inflateTransition(R.transition.change_image_transform));
 
         btnHome = findViewById(R.id.btnHome);
         btnShop = findViewById(R.id.btnShop);

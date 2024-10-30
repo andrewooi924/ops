@@ -4,6 +4,8 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,6 +31,9 @@ public class SetAdapter extends RecyclerView.Adapter<SetAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.menuImage.setImageResource(menuImages.get(position));
+        Animation animation = AnimationUtils.loadAnimation(holder.itemView.getContext(), R.anim.slide_in_up);
+        animation.setStartOffset(position * 50);
+        holder.itemView.startAnimation(animation);
     }
 
     @Override
