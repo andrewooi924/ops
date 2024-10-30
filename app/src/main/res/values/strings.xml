@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">OPTCG App</string>
+    <string name="app_name">PieceLab</string>
     <string name="op01">OP01</string>
     <string name="search">Search</string>
     <string name="filter">Filter</string>
