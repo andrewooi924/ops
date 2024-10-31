@@ -8,7 +8,7 @@ import android.content.Context;
 import com.optcg.app.Card;
 import com.optcg.app.CardDao;
 
-@Database(entities = {Card.class}, version = 1)
+@Database(entities = {Card.class}, version = 2)
 public abstract class AppDatabase extends RoomDatabase {
     public abstract CardDao cardDao();
 

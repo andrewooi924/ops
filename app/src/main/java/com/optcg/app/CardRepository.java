@@ -3,6 +3,9 @@ package com.optcg.app;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LiveData;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -22,20 +25,22 @@ public class CardRepository {
         this.context = context;
     }
 
-    public void loadCards(String setName) {
-        Executors.newSingleThreadExecutor().execute(() -> {
-            if (cardDao.getAllCards().isEmpty()) {
-                String jsonString = loadJsonFromAssets("cards/" + setName + "/cards.json");
-                if (jsonString != null) {
-                    List<Card> cards = parseJson(jsonString);
-                    if (cards != null && !cards.isEmpty()) {
-                        cardDao.insertAll(cards);
+    public void loadCards() {
+        cardDao.getAllCards().observe((LifecycleOwner) context, cards -> {
+            if (cards == null || cards.isEmpty()) {
+                Executors.newSingleThreadExecutor().execute(() -> {
+                    String jsonString = loadJsonFromAssets("cards.json");
+                    if (jsonString != null) {
+                        List<Card> cardList = parseJson(jsonString);
+                        if (cardList != null && !cardList.isEmpty()) {
+                            cardDao.insertAll(cardList);
+                        } else {
+                            Log.e("CardRepository", "No cards to insert from JSON for set");
+                        }
                     } else {
-                        Log.e("CardRepository", "No cards to insert from JSON for set: " + setName);
+                        Log.e("CardRepository", "Failed to load JSON for set");
                     }
-                } else {
-                    Log.e("CardRepository", "Failed to load JSON for set: " + setName);
-                }
+                });
             }
         });
     }
@@ -56,5 +61,13 @@ public class CardRepository {
         Gson gson = new Gson();
         Type listType = new TypeToken<List<Card>>() {}.getType();
         return gson.fromJson(jsonString, listType);
+    }
+
+    public CardDao getCardDao() {
+        return cardDao;
+    }
+
+    public LiveData<Card> getCardById(String cardId) {
+        return cardDao.getCardById(cardId);
     }
 }

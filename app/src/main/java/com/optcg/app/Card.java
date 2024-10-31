@@ -9,9 +9,11 @@ public class Card {
     @PrimaryKey
     @NonNull
     private String id;
+    private String number;
     private String rarity;
     private String role;
     private String name;
+    private String life;
     private String cost;
     private String attribute;
     private String power;
@@ -29,6 +31,14 @@ public class Card {
 
     public void setId(@NonNull String id) {
         this.id = id;
+    }
+
+    public String getNumber() {
+        return number;
+    }
+
+    public void setNumber(@NonNull String number) {
+        this.number = number;
     }
 
     public String getRarity() {
@@ -53,6 +63,14 @@ public class Card {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getLife() {
+        return life;
+    }
+
+    public void setLife(String life) {
+        this.life = life;
     }
 
     public String getCost() {

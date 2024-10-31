@@ -18,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
 
     private LinearLayout btnHome, btnShop, btnCollection, btnPrice, btnStats;
     private View currentSelectedTab;
+    private CardRepository cardRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +31,6 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-//        getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);
         getWindow().setSharedElementEnterTransition(TransitionInflater.from(this).inflateTransition(R.transition.change_image_transform));
         getWindow().setSharedElementExitTransition(TransitionInflater.from(this).inflateTransition(R.transition.change_image_transform));
 
@@ -39,6 +39,11 @@ public class MainActivity extends AppCompatActivity {
         btnCollection = findViewById(R.id.btnCollection);
         btnPrice = findViewById(R.id.btnPrice);
         btnStats = findViewById(R.id.btnStats);
+
+        AppDatabase db = AppDatabase.getDatabase(this);
+        CardDao cardDao = db.cardDao();
+        cardRepository = new CardRepository(cardDao, this);
+        cardRepository.loadCards();
 
         // Default on opening app
         setTabSelected(btnHome);
@@ -79,5 +84,9 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragmentContainer, fragment);
         transaction.commit();
+    }
+
+    public CardRepository getCardRepository() {
+        return cardRepository;
     }
 }
