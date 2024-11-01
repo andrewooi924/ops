@@ -4,9 +4,11 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.TranslateAnimation;
@@ -20,6 +22,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModelProvider;
+
+import java.util.Map;
 
 public class OP01SimActivity extends AppCompatActivity {
 
@@ -28,8 +34,9 @@ public class OP01SimActivity extends AppCompatActivity {
     private TextView tvPacksOpened;
     private long lastClickTime = 0;
     private boolean pity;
-    private static final String PREFS_NAME = "AppPrefs";
+    private static final String PREFS_NAME = "OP01_PREFS";
     private static final String KEY_PACKS_OPENED = "packs_opened";
+    private static final String TOTAL_COUNT = "total_count";
     private SharedPreferences sharedPreferences;
     private int[] cCards = {
             R.drawable.op01_007, R.drawable.op01_008, R.drawable.op01_009, R.drawable.op01_010,
@@ -113,6 +120,8 @@ public class OP01SimActivity extends AppCompatActivity {
         // Handle shared preferences
         sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         int packsOpened = sharedPreferences.getInt(KEY_PACKS_OPENED, 0);
+        int totalCount = sharedPreferences.getInt(TOTAL_COUNT, 0);
+
         handleCardStack();
 
         tvPacksOpened = findViewById(R.id.tvPacksOpened);
@@ -150,35 +159,44 @@ public class OP01SimActivity extends AppCompatActivity {
 
         ImageView card6 = new ImageView(this);
         int randomIndex = (int) (Math.random() * cardResources.length);
+        String cardId6 = getResources().getResourceEntryName(cardResources[randomIndex]);
         card6.setImageResource(cardResources[randomIndex]);
         card6.setLayoutParams(new FrameLayout.LayoutParams(890, 2700));
         card6.setTranslationX(230);
         cardContainer.addView(card6);
         card6.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                animate(card6);
+             @Override
+             public void onClick(View v) {
+                 animate(card6);
 
-                // Set delay to prevent background touches from interfering with animation (reset button)
-                if (System.currentTimeMillis() - lastClickTime < 1000) {
-                    return;
-                }
-                lastClickTime = System.currentTimeMillis();
-                showResetButton();
+                 // Set delay to prevent background touches from interfering with animation (reset button)
+                 if (System.currentTimeMillis() - lastClickTime < 1000) {
+                     return;
+                 }
+                 lastClickTime = System.currentTimeMillis();
+                 showResetButton();
 
-                // Update packs opened
-                int packsOpened = sharedPreferences.getInt(KEY_PACKS_OPENED, 0) + 1;
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putInt(KEY_PACKS_OPENED, packsOpened);
-                editor.apply();
+                 // Update packs opened
+                 int packsOpened = sharedPreferences.getInt(KEY_PACKS_OPENED, 0) + 1;
+                 int newCount = sharedPreferences.getInt(cardId6 + "_count", 0) + 1;
+                 SharedPreferences.Editor editor = sharedPreferences.edit();
+                 if (!sharedPreferences.getBoolean(cardId6 + "_isCollected", false)) {
+                     editor.putInt(TOTAL_COUNT, sharedPreferences.getInt(TOTAL_COUNT, 0) + 1);
+                 }
+                 editor.putInt(KEY_PACKS_OPENED, packsOpened);
+                 editor.putInt(cardId6 + "_count", newCount);
+                 editor.putBoolean(cardId6 + "_isCollected", true);
+                 editor.apply();
 
-                tvPacksOpened.setText(String.valueOf(packsOpened));
-            }
-        });
+                 tvPacksOpened.setText(String.valueOf(packsOpened));
+             }
+         });
+
 
         ImageView card5 = new ImageView(this);
         cardResources = rCards;
         randomIndex = (int) (Math.random() * cardResources.length);
+        String cardId5 = getResources().getResourceEntryName(cardResources[randomIndex]);
         card5.setImageResource(cardResources[randomIndex]);
         card5.setLayoutParams(new FrameLayout.LayoutParams(890, 2700));
         card5.setTranslationX(230);
@@ -187,6 +205,14 @@ public class OP01SimActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 animate(card5);
+                int newCount = sharedPreferences.getInt(cardId5 + "_count", 0) + 1;
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                if (!sharedPreferences.getBoolean(cardId5 + "_isCollected", false)) {
+                    editor.putInt(TOTAL_COUNT, sharedPreferences.getInt(TOTAL_COUNT, 0) + 1);
+                }
+                editor.putInt(cardId5 + "_count", newCount);
+                editor.putBoolean(cardId5 + "_isCollected", true);
+                editor.apply();
             }
         });
 
@@ -200,6 +226,7 @@ public class OP01SimActivity extends AppCompatActivity {
                 cardResources = cCards;
             }
             randomIndex = (int) (Math.random() * cardResources.length);
+            String cardId = getResources().getResourceEntryName(cardResources[randomIndex]);
             card.setImageResource(cardResources[randomIndex]);
             card.setLayoutParams(new FrameLayout.LayoutParams(890, 2700));
             card.setTranslationX(230);
@@ -208,6 +235,14 @@ public class OP01SimActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     animate(card);
+                    int newCount = sharedPreferences.getInt(cardId + "_count", 0) + 1;
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    if (!sharedPreferences.getBoolean(cardId + "_isCollected", false)) {
+                        editor.putInt(TOTAL_COUNT, sharedPreferences.getInt(TOTAL_COUNT, 0) + 1);
+                    }
+                    editor.putInt(cardId + "_count", newCount);
+                    editor.putBoolean(cardId + "_isCollected", true);
+                    editor.apply();
                 }
             });
         }

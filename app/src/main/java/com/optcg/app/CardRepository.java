@@ -1,5 +1,6 @@
 package com.optcg.app;
 
+import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 
@@ -18,15 +19,19 @@ import java.util.concurrent.Executors;
 
 public class CardRepository {
     private final CardDao cardDao;
-    private final Context context;
+    private LiveData<List<Card>> allCards;
+    private Context context;
 
-    public CardRepository(CardDao cardDao, Context context) {
-        this.cardDao = cardDao;
-        this.context = context;
+    CardRepository(Application application) {
+        CardDatabase db = CardDatabase.getDatabase(application);
+        cardDao = db.cardDao();
+        allCards = cardDao.getAllCards();
+        context = application.getApplicationContext();
+
     }
 
     public void loadCards() {
-        cardDao.getAllCards().observe((LifecycleOwner) context, cards -> {
+        cardDao.getAllCards().observeForever(cards -> {
             if (cards == null || cards.isEmpty()) {
                 Executors.newSingleThreadExecutor().execute(() -> {
                     String jsonString = loadJsonFromAssets("cards.json");
@@ -63,11 +68,19 @@ public class CardRepository {
         return gson.fromJson(jsonString, listType);
     }
 
-    public CardDao getCardDao() {
-        return cardDao;
+    public LiveData<List<Card>> getAllCards() {
+        return cardDao.getAllCards();
+    }
+
+    public List<Card> getCards() {
+        return cardDao.getCards();
     }
 
     public LiveData<Card> getCardById(String cardId) {
         return cardDao.getCardById(cardId);
+    }
+
+    public void updateCard(Card card) {
+        new Thread(() -> cardDao.updateCard(card)).start();
     }
 }

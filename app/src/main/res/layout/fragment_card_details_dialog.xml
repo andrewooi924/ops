@@ -111,6 +111,12 @@
         android:id="@+id/cardSet"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:paddingTop="4dp" />
+        android:paddingVertical="4dp" />
+
+    <TextView
+        android:id="@+id/cardCount"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:paddingTop="4dp"/>
 
 </LinearLayout>

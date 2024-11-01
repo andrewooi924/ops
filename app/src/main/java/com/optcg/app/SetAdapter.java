@@ -1,8 +1,12 @@
 package com.optcg.app;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
+import android.util.Log;
 import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +16,10 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class SetAdapter extends RecyclerView.Adapter<SetAdapter.ViewHolder> {
@@ -21,12 +28,12 @@ public class SetAdapter extends RecyclerView.Adapter<SetAdapter.ViewHolder> {
     private List<Integer> menuImages;
     private LruCache<String, Bitmap> imageCache;
     private boolean isFirstLoad = true;
-    private final CardRepository cardRepository;
+    private final CardViewModel cardViewModel;
 
-    public SetAdapter(Context context, List<Integer> menuImages, CardRepository cardRepository) {
+    public SetAdapter(Context context, List<Integer> menuImages) {
         this.context = context;
         this.menuImages = menuImages;
-        this.cardRepository = cardRepository;
+        this.cardViewModel = new ViewModelProvider((FragmentActivity) context).get(CardViewModel.class);
         final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
         final int cacheSize = maxMemory / 8;
 
@@ -52,6 +59,18 @@ public class SetAdapter extends RecyclerView.Adapter<SetAdapter.ViewHolder> {
             addBitmapToCache(String.valueOf(drawableId), bitmap);
             holder.menuImage.setImageBitmap(bitmap);
         }
+        String upCardId = context.getResources().getResourceEntryName(drawableId);
+        boolean isCollected = isCardCollected(upCardId);
+        int count = getCardCount(upCardId);
+        if (isCollected) {
+            holder.menuImage.setColorFilter(null);
+        }
+        else {
+            ColorMatrix matrix = new ColorMatrix();
+            matrix.setSaturation(0);
+            ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
+            holder.menuImage.setColorFilter(filter);
+        }
 
         if (isFirstLoad) {
             Animation animation = AnimationUtils.loadAnimation(holder.itemView.getContext(), R.anim.slide_in_up);
@@ -62,7 +81,7 @@ public class SetAdapter extends RecyclerView.Adapter<SetAdapter.ViewHolder> {
         holder.itemView.setOnClickListener(v -> {
             int imageResId = menuImages.get(position);  // assuming menuImages is a list of image resource IDs
             String cardId = context.getResources().getResourceEntryName(imageResId); // get the name of the image resource
-            cardRepository.getCardById(cardId).observe((FragmentActivity) context, card -> {
+            cardViewModel.getCardById(cardId).observe((FragmentActivity) context, card -> {
                 if (card != null) {
                     String cardName = card.getName(); // replace with actual card name from data
                     String cardNumber = "ID: " + card.getNumber(); // replace with actual card number from data
@@ -79,8 +98,12 @@ public class SetAdapter extends RecyclerView.Adapter<SetAdapter.ViewHolder> {
                     String cardType = "Type: " + card.getType(); // replace with actual card type from data
                     String cardEffect = "Effect: " + card.getEffect(); // replace with actual card effect from data
                     String cardSet = "Set: " + card.getSet(); // replace with actual card set from data
+                    String cardCount = "Number of Duplicates: " + 0; // replace with actual card count from data
+                    if (count > 1) {
+                        cardCount = "Number of Duplicates: " + (count - 1); // replace with actual card count from data"
+                    }
 
-                    CardDetailsDialogFragment dialogFragment = CardDetailsDialogFragment.newInstance(imageResId, cardName, cardNumber, cardRarity, cardRole, cardCost, cardAttribute, cardPower, cardCounter, cardColor, cardType, cardEffect, cardSet);
+                    CardDetailsDialogFragment dialogFragment = CardDetailsDialogFragment.newInstance(imageResId, cardName, cardNumber, cardRarity, cardRole, cardCost, cardAttribute, cardPower, cardCounter, cardColor, cardType, cardEffect, cardSet, cardCount);
                     dialogFragment.show(((FragmentActivity) context).getSupportFragmentManager(), "cardDetails");                }
             });
 
@@ -118,5 +141,15 @@ public class SetAdapter extends RecyclerView.Adapter<SetAdapter.ViewHolder> {
 
     private Bitmap getBitmapFromCache(String key) {
         return imageCache.get(key);
+    }
+
+    private boolean isCardCollected(String cardId) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("OP01_PREFS", Context.MODE_PRIVATE);
+        return sharedPreferences.getBoolean(cardId + "_isCollected", false);
+    }
+
+    private int getCardCount(String cardId) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences("OP01_PREFS", Context.MODE_PRIVATE);
+        return sharedPreferences.getInt(cardId + "_count", 0);
     }
 }

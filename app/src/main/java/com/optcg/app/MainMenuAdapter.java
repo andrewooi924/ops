@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -16,8 +18,10 @@ public class MainMenuAdapter extends RecyclerView.Adapter<MainMenuAdapter.MenuVi
     private List<String> menuItems;
     private List<Integer> menuImages;
     private Context context;
+    private FragmentManager fragmentManager;
 
-    public MainMenuAdapter(Context context, List<String> menuItems, List<Integer> menuImages) {
+    public MainMenuAdapter(FragmentManager fragmentManager, Context context, List<String> menuItems, List<Integer> menuImages) {
+        this.fragmentManager = fragmentManager;
         this.context = context;
         this.menuItems = menuItems;
         this.menuImages = menuImages;

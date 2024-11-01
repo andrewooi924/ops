@@ -2,6 +2,7 @@ package com.optcg.app;
 
 import android.os.Bundle;
 import android.transition.TransitionInflater;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.LinearLayout;
@@ -13,12 +14,15 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
+
+import java.io.File;
 
 public class MainActivity extends AppCompatActivity {
 
     private LinearLayout btnHome, btnShop, btnCollection, btnPrice, btnStats;
     private View currentSelectedTab;
-    private CardRepository cardRepository;
+    private CardViewModel cardViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,10 +44,7 @@ public class MainActivity extends AppCompatActivity {
         btnPrice = findViewById(R.id.btnPrice);
         btnStats = findViewById(R.id.btnStats);
 
-        AppDatabase db = AppDatabase.getDatabase(this);
-        CardDao cardDao = db.cardDao();
-        cardRepository = new CardRepository(cardDao, this);
-        cardRepository.loadCards();
+        cardViewModel = new ViewModelProvider(this).get(CardViewModel.class);
 
         // Default on opening app
         setTabSelected(btnHome);
@@ -69,6 +70,10 @@ public class MainActivity extends AppCompatActivity {
             setTabSelected(v);
             loadFragment(new StatsFragment());
         });
+
+        // Display size of shared preferences
+        File prefsFile = new File(getApplicationInfo().dataDir + "/shared_prefs/OP01_PREFS.xml");
+        Log.d("LENGTH", "" + prefsFile.length());
     }
 
     private void setTabSelected(View selectedTab) {
@@ -86,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
         transaction.commit();
     }
 
-    public CardRepository getCardRepository() {
-        return cardRepository;
-    }
+//    public CardRepository getCardRepository() {
+//        return cardRepository;
+//    }
 }

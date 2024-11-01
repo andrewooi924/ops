@@ -29,8 +29,9 @@ public class CardDetailsDialogFragment extends DialogFragment {
     private static final String ARG_CARD_TYPE = "cardType";
     private static final String ARG_CARD_EFFECT = "cardEffect";
     private static final String ARG_CARD_SET = "cardSet";
+    private static final String ARG_CARD_COUNT = "cardCount";
 
-    public static CardDetailsDialogFragment newInstance(int imageResId, String cardName, String cardId, String cardRarity, String cardRole, String cardCost, String cardAttribute, String cardPower, String cardCounter, String cardColor, String cardType, String cardEffect, String cardSet) {
+    public static CardDetailsDialogFragment newInstance(int imageResId, String cardName, String cardId, String cardRarity, String cardRole, String cardCost, String cardAttribute, String cardPower, String cardCounter, String cardColor, String cardType, String cardEffect, String cardSet, String cardCount) {
         CardDetailsDialogFragment fragment = new CardDetailsDialogFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_IMAGE_RES_ID, imageResId);
@@ -46,6 +47,7 @@ public class CardDetailsDialogFragment extends DialogFragment {
         args.putString(ARG_CARD_TYPE, cardType);
         args.putString(ARG_CARD_EFFECT, cardEffect);
         args.putString(ARG_CARD_SET, cardSet);
+        args.putString(ARG_CARD_COUNT, cardCount);
         fragment.setArguments(args);
         return fragment;
     }
@@ -67,6 +69,7 @@ public class CardDetailsDialogFragment extends DialogFragment {
         TextView cardTypeText = view.findViewById(R.id.cardType);
         TextView cardEffectText = view.findViewById(R.id.cardEffect);
         TextView cardSetText = view.findViewById(R.id.cardSet);
+        TextView cardCountText = view.findViewById(R.id.cardCount);
 
         View colorDivider = view.findViewById(R.id.colorDivider);
 
@@ -90,6 +93,7 @@ public class CardDetailsDialogFragment extends DialogFragment {
             String cardType = getArguments().getString(ARG_CARD_TYPE);
             String cardEffect = getArguments().getString(ARG_CARD_EFFECT);
             String cardSet = getArguments().getString(ARG_CARD_SET);
+            String cardCount = getArguments().getString(ARG_CARD_COUNT);
 
             cardImage.setImageResource(imageResId);
             cardNameText.setText(cardName);
@@ -104,6 +108,7 @@ public class CardDetailsDialogFragment extends DialogFragment {
             cardTypeText.setText(cardType);
             cardEffectText.setText(cardEffect);
             cardSetText.setText(cardSet);
+            cardCountText.setText(String.valueOf(cardCount));
 
             setDividerColor(colorDivider, cardColor);
         }

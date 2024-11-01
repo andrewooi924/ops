@@ -5,6 +5,7 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import java.util.List;
 
@@ -22,9 +23,15 @@ public interface CardDao {
     @Query("SELECT * FROM cards")
     LiveData<List<Card>> getAllCards();
 
+    @Query("SELECT * FROM cards")
+    List<Card> getCards();
+
     @Query("SELECT * FROM cards WHERE rarity = :rarity")
     List<Card> getCardsByRarity(String rarity);
 
     @Query("SELECT * FROM cards WHERE id = :id")
     LiveData<Card> getCardById(String id);
+
+    @Update
+    void updateCard(Card card);
 }

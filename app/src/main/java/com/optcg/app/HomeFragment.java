@@ -53,7 +53,7 @@ public class HomeFragment extends Fragment {
         menuImages.add(R.drawable.op09_box);
 
         // Initialize and set the adapter
-        mainMenuAdapter = new MainMenuAdapter(getContext(), menuItems, menuImages);
+        mainMenuAdapter = new MainMenuAdapter(requireActivity().getSupportFragmentManager(), getContext(), menuItems, menuImages);
         recyclerView.setAdapter(mainMenuAdapter);
     }
 }
