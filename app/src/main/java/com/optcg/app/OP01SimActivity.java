@@ -37,6 +37,13 @@ public class OP01SimActivity extends AppCompatActivity {
     private static final String PREFS_NAME = "OP01_PREFS";
     private static final String KEY_PACKS_OPENED = "packs_opened";
     private static final String TOTAL_COUNT = "total_count";
+    private static final String TOTAL_C = "total_c";
+    private static final String TOTAL_UC = "total_uc";
+    private static final String TOTAL_R = "total_r";
+    private static final String TOTAL_SR = "total_sr";
+    private static final String TOTAL_L = "total_l";
+    private static final String TOTAL_SEC = "total_sec";
+
     private SharedPreferences sharedPreferences;
     private int[] cCards = {
             R.drawable.op01_007, R.drawable.op01_008, R.drawable.op01_009, R.drawable.op01_010,
@@ -76,13 +83,22 @@ public class OP01SimActivity extends AppCompatActivity {
             R.drawable.op01_067, R.drawable.op01_070, R.drawable.op01_078, R.drawable.op01_094,
             R.drawable.op01_096,
     };
-    private int[] aaCards = {
-            R.drawable.op01_013_p1, R.drawable.op01_016_p1, R.drawable.op01_024_p1, R.drawable.op01_025_p1,
-            R.drawable.op01_040_p1, R.drawable.op01_047_p1, R.drawable.op01_051_p1, R.drawable.op01_067_p1,
-            R.drawable.op01_070_p1, R.drawable.op01_073_p1, R.drawable.op01_078_p1, R.drawable.op01_093_p1,
-            R.drawable.op01_094_p1, R.drawable.op01_096_p1, R.drawable.op01_097_p1, R.drawable.op01_102_p1,
-            R.drawable.op01_120_p1, R.drawable.op01_121_p1
+
+    private int[] aarCards = {
+        R.drawable.op01_013_p1, R.drawable.op01_016_p1, R.drawable.op01_073_p1, R.drawable.op01_093_p1,
+        R.drawable.op01_097_p1, R.drawable.op01_102_p1
     };
+
+    private int[] aasrCards = {
+        R.drawable.op01_040_p1, R.drawable.op01_051_p1, R.drawable.op01_024_p1, R.drawable.op01_025_p1,
+        R.drawable.op01_047_p1, R.drawable.op01_067_p1, R.drawable.op01_070_p1, R.drawable.op01_078_p1,
+        R.drawable.op01_094_p1, R.drawable.op01_096_p1
+    };
+
+    private int[] aasecCards = {
+        R.drawable.op01_120_p1, R.drawable.op01_121_p1
+    };
+
     private int[] aalCards = {
             R.drawable.op01_001_p1, R.drawable.op01_002_p1, R.drawable.op01_003_p1, R.drawable.op01_031_p1,
             R.drawable.op01_060_p1, R.drawable.op01_061_p1, R.drawable.op01_062_p1, R.drawable.op01_091_p1,
@@ -93,6 +109,8 @@ public class OP01SimActivity extends AppCompatActivity {
     private int[] lCards = {R.drawable.op01_001, R.drawable.op01_002, R.drawable.op01_003, R.drawable.op01_031, R.drawable.op01_060, R.drawable.op01_061, R.drawable.op01_062, R.drawable.op01_091};
     private int[] otherCards = {R.drawable.op01_008_p1, R.drawable.op01_034_p1, R.drawable.op01_048_p1, R.drawable.op01_064_p1, R.drawable.op01_077_p1, R.drawable.op01_109_p1};
     private int[] cardResources;
+    private CardViewModel cardViewModel;
+    private String rarity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,12 +138,13 @@ public class OP01SimActivity extends AppCompatActivity {
         // Handle shared preferences
         sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         int packsOpened = sharedPreferences.getInt(KEY_PACKS_OPENED, 0);
-        int totalCount = sharedPreferences.getInt(TOTAL_COUNT, 0);
 
         handleCardStack();
 
         tvPacksOpened = findViewById(R.id.tvPacksOpened);
         tvPacksOpened.setText(String.valueOf(packsOpened));
+
+        cardViewModel = new ViewModelProvider(this).get(CardViewModel.class);
     }
 
     private void handleCardStack() {
@@ -137,20 +156,38 @@ public class OP01SimActivity extends AppCompatActivity {
             // Handling last card
             if (Math.random() < 0.50) {
                 cardResources = rCards;
+                rarity = "R";
             } else {
                 double prob = Math.random();
                 if (prob < (1.0 / 1728)) {
                     cardResources = mrCards;
+                    rarity = "SEC";
                 } else if (prob < ((1.0 / 1728) + (1.0 / 144))) {
                     cardResources = secCards;
+                    rarity = "SEC";
                 } else if (prob < ((1.0 / 1728) + (1.0 / 144) + (1.0 / 72))) {
                     cardResources = aalCards;
+                    rarity = "L";
                 } else if (prob < ((1.0 / 1728) + (1.0 / 144) + (1.0 / 72) + (2.0 / 48))) { // 1.0 / 48 -> 2.0 / 48
-                    cardResources = aaCards;
+                    if (Math.random() < 0.33) {
+                        cardResources = aasecCards;
+                        rarity = "SEC";
+                    }
+                    else if (Math.random() < 0.66) {
+                        cardResources = aasrCards;
+                        rarity = "SR";
+                    }
+                    else {
+                        cardResources = aarCards;
+                        rarity = "R";
+                    }
+
                 } else if (prob < ((1.0 / 1728) + (1.0 / 144) + (1.0 / 72) + (1.0 / 48)) + (12.0 / 144)) { // 6.0 / 144 -> 12.0 / 144
                     cardResources = lCards;
+                    rarity = "L";
                 } else {
                     cardResources = srCards;
+                    rarity = "SR";
                 }
             }
         }
@@ -160,6 +197,7 @@ public class OP01SimActivity extends AppCompatActivity {
         ImageView card6 = new ImageView(this);
         int randomIndex = (int) (Math.random() * cardResources.length);
         String cardId6 = getResources().getResourceEntryName(cardResources[randomIndex]);
+        String rarity6 = rarity;
         card6.setImageResource(cardResources[randomIndex]);
         card6.setLayoutParams(new FrameLayout.LayoutParams(890, 2700));
         card6.setTranslationX(230);
@@ -182,6 +220,18 @@ public class OP01SimActivity extends AppCompatActivity {
                  SharedPreferences.Editor editor = sharedPreferences.edit();
                  if (!sharedPreferences.getBoolean(cardId6 + "_isCollected", false)) {
                      editor.putInt(TOTAL_COUNT, sharedPreferences.getInt(TOTAL_COUNT, 0) + 1);
+                     if (rarity6.equals("R")) {
+                         editor.putInt(TOTAL_R, sharedPreferences.getInt(TOTAL_R, 0) + 1);
+                     }
+                     else if (rarity6.equals("SR")) {
+                         editor.putInt(TOTAL_SR, sharedPreferences.getInt(TOTAL_SR, 0) + 1);
+                     }
+                     else if (rarity6.equals("L")) {
+                         editor.putInt(TOTAL_L, sharedPreferences.getInt(TOTAL_L, 0) + 1);
+                     }
+                    else if (rarity6.equals("SEC")) {
+                         editor.putInt(TOTAL_SEC, sharedPreferences.getInt(TOTAL_SEC, 0) + 1);
+                    }
                  }
                  editor.putInt(KEY_PACKS_OPENED, packsOpened);
                  editor.putInt(cardId6 + "_count", newCount);
@@ -195,6 +245,7 @@ public class OP01SimActivity extends AppCompatActivity {
 
         ImageView card5 = new ImageView(this);
         cardResources = rCards;
+        rarity = "R";
         randomIndex = (int) (Math.random() * cardResources.length);
         String cardId5 = getResources().getResourceEntryName(cardResources[randomIndex]);
         card5.setImageResource(cardResources[randomIndex]);
@@ -209,6 +260,7 @@ public class OP01SimActivity extends AppCompatActivity {
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 if (!sharedPreferences.getBoolean(cardId5 + "_isCollected", false)) {
                     editor.putInt(TOTAL_COUNT, sharedPreferences.getInt(TOTAL_COUNT, 0) + 1);
+                    editor.putInt(TOTAL_R, sharedPreferences.getInt(TOTAL_R, 0) + 1);
                 }
                 editor.putInt(cardId5 + "_count", newCount);
                 editor.putBoolean(cardId5 + "_isCollected", true);
@@ -221,9 +273,11 @@ public class OP01SimActivity extends AppCompatActivity {
             ImageView card = new ImageView(this);
             if (Math.random() < 0.33) {
                 cardResources = ucCards;
+                rarity = "UC";
             }
             else {
                 cardResources = cCards;
+                rarity = "C";
             }
             randomIndex = (int) (Math.random() * cardResources.length);
             String cardId = getResources().getResourceEntryName(cardResources[randomIndex]);
@@ -239,6 +293,12 @@ public class OP01SimActivity extends AppCompatActivity {
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     if (!sharedPreferences.getBoolean(cardId + "_isCollected", false)) {
                         editor.putInt(TOTAL_COUNT, sharedPreferences.getInt(TOTAL_COUNT, 0) + 1);
+                        if (rarity.equals("C")) {
+                            editor.putInt(TOTAL_C, sharedPreferences.getInt(TOTAL_C, 0) + 1);
+                        }
+                        else if (rarity.equals("UC")) {
+                            editor.putInt(TOTAL_UC, sharedPreferences.getInt(TOTAL_UC, 0) + 1);
+                        }
                     }
                     editor.putInt(cardId + "_count", newCount);
                     editor.putBoolean(cardId + "_isCollected", true);
@@ -275,7 +335,15 @@ public class OP01SimActivity extends AppCompatActivity {
             }
             else if ((packsOpened + 1) % 24 == 0) {
                 if (Math.random() < 0.5) {
-                    cardResources = aaCards;
+                    if (Math.random() < 0.33) {
+                        cardResources = aasecCards;
+                    }
+                    else if (Math.random() < 0.66) {
+                        cardResources = aasrCards;
+                    }
+                    else {
+                        cardResources = aarCards;
+                    }
                     pity = true;
                 }
                 else {

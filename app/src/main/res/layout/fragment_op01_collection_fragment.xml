@@ -48,13 +48,13 @@
             android:src="@drawable/op01_collection" />
 
             <LinearLayout
-                android:layout_width="230dp"
+                android:layout_width="240dp"
                 android:layout_height="230dp"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentBottom="true"
                 android:layout_marginBottom="16dp"
                 android:orientation="vertical"
-                android:layout_marginEnd="16dp">
+                android:layout_marginEnd="8dp">
 
                 <TextView
                     android:id="@+id/op01_set_name"
@@ -67,37 +67,236 @@
                     android:textColor="#FFFFFF"
                     android:textSize="20sp" />
 
-                <FrameLayout
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_marginTop="10dp"
-                    android:gravity="center">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp">
 
-                    <com.mikhaellopez.circularprogressbar.CircularProgressBar
-                        android:id="@+id/op01ProgressCircle"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        app:cpb_background_progressbar_color="#b6bbd8"
-                        app:cpb_background_progressbar_width="5dp"
-                        app:cpb_progress_direction="to_right"
-                        app:cpb_progressbar_color="#3f51b5"
-                        app:cpb_progressbar_width="10dp"
-                        app:cpb_round_border="false" />
+                    <FrameLayout
+                        android:id="@+id/op01Progress"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_marginTop="25dp"
+                        android:gravity="center"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
 
-                    <TextView
-                        android:id="@+id/op01ProgressText"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:text="0%"
-                        android:textColor="@color/white"
-                        android:textSize="12sp"/>
+                        <com.mikhaellopez.circularprogressbar.CircularProgressBar
+                            android:id="@+id/op01ProgressCircle"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            app:cpb_background_progressbar_color="#b6bbd8"
+                            app:cpb_background_progressbar_width="5dp"
+                            app:cpb_progress_direction="to_right"
+                            app:cpb_progressbar_color="#3f51b5"
+                            app:cpb_progressbar_width="10dp"
+                            app:cpb_round_border="false" />
 
-                </FrameLayout>
+                        <TextView
+                            android:id="@+id/op01ProgressText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="0%"
+                            android:textColor="@color/white"
+                            android:textSize="16sp"/>
+                    </FrameLayout>
 
+                    <GridLayout
+                        android:id="@+id/op01RarityGrid"
+                        android:layout_width="150dp"
+                        android:layout_height="90dp"
+                        android:rowCount="2"
+                        android:columnCount="3"
+                        android:layout_marginTop="30dp"
+                        app:layout_constraintStart_toEndOf="@id/op01Progress"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent">
 
+                        <!-- Example Cell 1 -->
+                        <LinearLayout
+                            android:layout_width="9dp"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="4dp"
+                            android:layout_gravity="fill"
+                            android:layout_columnWeight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/op01CCollected"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0/49"
+                                android:layout_gravity="center"
+                                android:textColor="@color/white"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:id="@+id/op01C"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:text="C"
+                                android:textSize="14sp"
+                                android:textColor="@color/white"
+                                android:textStyle="bold"/>
+                        </LinearLayout>
+
+                        <!-- Repeat for other cells (2 to 6) -->
+                        <!-- Example Cell 2 -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="4dp"
+                            android:layout_gravity="fill"
+                            android:layout_columnWeight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/op01UCCollected"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:textColor="@color/white"
+                                android:text="0/32"
+                                android:textSize="14sp"/>
+
+                            <TextView
+                                android:id="@+id/op01UC"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:text="UC"
+                                android:textSize="14sp"
+                                android:textColor="@color/white"
+                                android:textStyle="bold"/>
+                        </LinearLayout>
+
+                        <!-- Continue to add LinearLayouts for remaining cells up to 6 -->
+                        <!-- Cell 3 -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="4dp"
+                            android:layout_gravity="fill"
+                            android:layout_columnWeight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/op01RCollected"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:textColor="@color/white"
+                                android:text="0/32"
+                                android:textSize="14sp"/>
+
+                            <TextView
+                                android:id="@+id/op01R"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:textColor="@color/white"
+                                android:text="R"
+                                android:textSize="14sp"
+                                android:textStyle="bold"/>
+                        </LinearLayout>
+
+                        <!-- Continue this pattern for cells 4, 5, and 6 -->
+                        <!-- Cell 4 -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="4dp"
+                            android:layout_gravity="fill"
+                            android:layout_columnWeight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/op01SRCollected"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:textColor="@color/white"
+                                android:text="0/20"
+                                android:textSize="14sp"/>
+
+                            <TextView
+                                android:id="@+id/op01SR"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:textColor="@color/white"
+                                android:text="SR"
+                                android:textSize="14sp"
+                                android:textStyle="bold"/>
+                        </LinearLayout>
+
+                        <!-- Cell 5 -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="4dp"
+                            android:layout_gravity="fill"
+                            android:layout_columnWeight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/op01LCollected"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:textColor="@color/white"
+                                android:text="0/16"
+                                android:textSize="14sp"/>
+
+                            <TextView
+                                android:id="@+id/op01L"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:textColor="@color/white"
+                                android:text="L"
+                                android:textSize="14sp"
+                                android:textStyle="bold"/>
+                        </LinearLayout>
+
+                        <!-- Cell 6 -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="4dp"
+                            android:layout_gravity="fill"
+                            android:layout_columnWeight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/op01SECCollected"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:textColor="@color/white"
+                                android:text="0/5"
+                                android:textSize="14sp"/>
+
+                            <TextView
+                                android:id="@+id/op01SEC"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:textColor="@color/white"
+                                android:text="SEC"
+                                android:textSize="14sp"
+                                android:textStyle="bold"/>
+                        </LinearLayout>
+
+                    </GridLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
             </LinearLayout>
         </RelativeLayout>
+
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/op01CollectionRecyclerView"

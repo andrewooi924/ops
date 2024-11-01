@@ -26,6 +26,7 @@ public class CardViewModel extends AndroidViewModel {
     public LiveData<Card> getCardById(String cardId) {
         return cardRepository.getCardById(cardId);
     }
+    public LiveData<String> getRarityById(String cardId) { return cardRepository.getRarityById(cardId); }
 
     public void updateCard(Card card) {
         cardRepository.updateCard(card);

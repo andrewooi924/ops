@@ -31,6 +31,12 @@ public class OP01CollectionFragment extends Fragment {
     private List<Integer> menuImages;
     private CircularProgressBar progressCircle;
     private TextView progressText;
+    private TextView progressC;
+    private TextView progressUC;
+    private TextView progressR;
+    private TextView progressSR;
+    private TextView progressL;
+    private TextView progressSEC;
     private SharedPreferences sharedPreferences;
 
     @Override
@@ -74,11 +80,36 @@ public class OP01CollectionFragment extends Fragment {
 
         progressCircle = view.findViewById(R.id.op01ProgressCircle);
         progressText = view.findViewById(R.id.op01ProgressText);
+        progressC = view.findViewById(R.id.op01CCollected);
+        progressUC = view.findViewById(R.id.op01UCCollected);
+        progressR = view.findViewById(R.id.op01RCollected);
+        progressSR = view.findViewById(R.id.op01SRCollected);
+        progressL = view.findViewById(R.id.op01LCollected);
+        progressSEC = view.findViewById(R.id.op01SECCollected);
+
         sharedPreferences = requireActivity().getSharedPreferences("OP01_PREFS", MODE_PRIVATE);
         int totalCount = sharedPreferences.getInt("total_count", 0);
         float progress = ((float) totalCount / 154) * 100;
         progressCircle.setProgress(progress);
         progressText.setText((int) progress + "%");
+
+        int totalC = sharedPreferences.getInt("total_c", 0);
+        progressC.setText(totalC + "/49");
+
+        int totalUC = sharedPreferences.getInt("total_uc", 0);
+        progressUC.setText(totalUC + "/32");
+
+        int totalR = sharedPreferences.getInt("total_r", 0);
+        progressR.setText(totalR + "/32");
+
+        int totalSR = sharedPreferences.getInt("total_sr", 0);
+        progressSR.setText(totalSR + "/20");
+
+        int totalL = sharedPreferences.getInt("total_l", 0);
+        progressL.setText(totalL + "/16");
+
+        int totalSEC = sharedPreferences.getInt("total_sec", 0);
+        progressSEC.setText(totalSEC + "/5");
     }
 
     public static OP01CollectionFragment newInstance(String transitionName) {

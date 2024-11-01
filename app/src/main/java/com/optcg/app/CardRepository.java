@@ -83,4 +83,8 @@ public class CardRepository {
     public void updateCard(Card card) {
         new Thread(() -> cardDao.updateCard(card)).start();
     }
+
+    public LiveData<String> getRarityById(String cardId) {
+        return cardDao.getRarityById(cardId);
+    }
 }

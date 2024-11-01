@@ -32,6 +32,9 @@ public interface CardDao {
     @Query("SELECT * FROM cards WHERE id = :id")
     LiveData<Card> getCardById(String id);
 
+    @Query("SELECT rarity FROM cards WHERE id = :id")
+    LiveData<String> getRarityById(String id);
+
     @Update
     void updateCard(Card card);
 }
