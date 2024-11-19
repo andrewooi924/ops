@@ -4,6 +4,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,8 +16,19 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import me.relex.circleindicator.CircleIndicator3;
 
 public class HomeFragment extends Fragment {
 
@@ -26,7 +38,9 @@ public class HomeFragment extends Fragment {
     private List<Integer> menuImages; // Assuming you have data for menu images
     private ViewPager2 viewPager;
     private ViewPagerAdapter viewPagerAdapter;
+    private CircleIndicator3 indicator;
     private List<Integer> imageResources;
+    private List<Card> cards;
     private static final String PREFS_NAME = "USER_PREFS";
     private SharedPreferences sharedPreferences;
 
@@ -66,18 +80,17 @@ public class HomeFragment extends Fragment {
         recyclerView.setAdapter(mainMenuAdapter);
 
         viewPager = view.findViewById(R.id.viewPager);
+        indicator = view.findViewById(R.id.indicator);
 
+        cards = loadCardsFromJson();
         sharedPreferences = requireActivity().getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         int berries = sharedPreferences.getInt("berries", 0);
 
-        imageResources = new ArrayList<>();
-        imageResources.add(R.drawable.op01_120);
-        imageResources.add(R.drawable.op01_120_p1);
-        imageResources.add(R.drawable.op01_120_p2);
-        imageResources.add(R.drawable.op01_121);
-        imageResources.add(R.drawable.op01_121_p1);
+        imageResources = Arrays.asList(
+                R.drawable.op01_001, R.drawable.op01_002, R.drawable.op01_003, R.drawable.op01_004, R.drawable.op01_005
+        );
 
-        viewPagerAdapter = new ViewPagerAdapter(imageResources);
+        viewPagerAdapter = new ViewPagerAdapter(cards, imageResources);
         viewPager.setAdapter(viewPagerAdapter);
 
         viewPager.setPageTransformer(new ViewPager2.PageTransformer() {
@@ -86,5 +99,21 @@ public class HomeFragment extends Fragment {
                 page.setScaleY(0.85f + (1 - Math.abs(position)) * 0.15f);
             }
         });
+
+        indicator.setViewPager(viewPager);
+    }
+
+    private List<Card> loadCardsFromJson() {
+        List<Card> cards = new ArrayList<>();
+        try {
+            InputStream inputStream = requireActivity().getAssets().open("cards.json");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            Gson gson = new Gson();
+            Type listType = new TypeToken<List<Card>>() {}.getType();
+            cards = gson.fromJson(reader, listType);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return cards;
     }
 }

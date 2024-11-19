@@ -23,10 +23,8 @@ public class Card {
     private String effect;
     private String set;
     private String img;
-    private boolean isCollected;
-    private int count = 0;
 
-    public Card(@NonNull String id, String number, String rarity, String role, String name, String life, String cost, String attribute, String power, String counter, String color, String type, String effect, String set, String img, boolean isCollected, int count) {
+    public Card(@NonNull String id, String number, String rarity, String role, String name, String life, String cost, String attribute, String power, String counter, String color, String type, String effect, String set, String img) {
         this.id = id;
         this.number = number;
         this.rarity = rarity;
@@ -42,8 +40,6 @@ public class Card {
         this.effect = effect;
         this.set = set;
         this.img = img;
-        this.isCollected = false;
-        this.count = 0;
     }
 
     @NonNull
@@ -165,21 +161,5 @@ public class Card {
 
     public void setImg(String img) {
         this.img = img;
-    }
-
-    public boolean isCollected() {
-        return isCollected;
-    }
-
-    public void setCollected(boolean isCollected) {
-        this.isCollected = isCollected;
-    }
-
-    public int getCount() {
-        return count;
-    }
-
-    public void setCount(int count) {
-        this.count = count;
     }
 }
