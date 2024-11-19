@@ -4,33 +4,33 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 public class OP01SimActivity extends AppCompatActivity {
 
     private FrameLayout cardContainer;
+    private FrameLayout resultContainer;
     private Button resetButton;
     private Button backButton;
     private TextView tvPacksOpened;
@@ -45,8 +45,9 @@ public class OP01SimActivity extends AppCompatActivity {
     private static final String TOTAL_SR = "total_sr";
     private static final String TOTAL_L = "total_l";
     private static final String TOTAL_SEC = "total_sec";
-
     private SharedPreferences sharedPreferences;
+    private List<Integer> pulledCards = new ArrayList<>();
+    private List<Boolean> isNew = new ArrayList<>();
     private int[] cCards = {
             R.drawable.op01_007, R.drawable.op01_008, R.drawable.op01_009, R.drawable.op01_010,
             R.drawable.op01_012, R.drawable.op01_018, R.drawable.op01_019, R.drawable.op01_020,
@@ -133,6 +134,10 @@ public class OP01SimActivity extends AppCompatActivity {
                 resetButton.setVisibility(View.GONE);
                 backButton.clearAnimation();
                 backButton.setVisibility(View.GONE);
+                resultContainer.removeAllViews();
+                resultContainer.setVisibility(View.GONE);
+                pulledCards.clear();
+                isNew.clear();
                 handleCardStack();
             }
         });
@@ -146,6 +151,7 @@ public class OP01SimActivity extends AppCompatActivity {
         });
 
         cardContainer = findViewById(R.id.cardContainer);
+        resultContainer = findViewById(R.id.resultContainer);
         pity = false;
 
         // Handle shared preferences
@@ -214,6 +220,13 @@ public class OP01SimActivity extends AppCompatActivity {
         String cardId6 = getResources().getResourceEntryName(cardResources[randomIndex]);
         String rarity6 = rarity;
         card6.setImageResource(cardResources[randomIndex]);
+        pulledCards.add(cardResources[randomIndex]);
+        if (!sharedPreferences.getBoolean(cardId6 + "_isCollected", false)) {
+            isNew.add(true);
+        }
+        else {
+            isNew.add(false);
+        }
         card6.setLayoutParams(new FrameLayout.LayoutParams(890, 2700));
         card6.setTranslationX(230);
         cardContainer.addView(card6);
@@ -264,6 +277,13 @@ public class OP01SimActivity extends AppCompatActivity {
         randomIndex = (int) (Math.random() * cardResources.length);
         String cardId5 = getResources().getResourceEntryName(cardResources[randomIndex]);
         card5.setImageResource(cardResources[randomIndex]);
+        pulledCards.add(cardResources[randomIndex]);
+        if (!sharedPreferences.getBoolean(cardId5 + "_isCollected", false)) {
+            isNew.add(true);
+        }
+        else {
+            isNew.add(false);
+        }
         card5.setLayoutParams(new FrameLayout.LayoutParams(890, 2700));
         card5.setTranslationX(230);
         cardContainer.addView(card5);
@@ -283,44 +303,178 @@ public class OP01SimActivity extends AppCompatActivity {
             }
         });
 
-        // Cards
-        for (int i = 0; i < 4; i++) {
-            ImageView card = new ImageView(this);
-            if (Math.random() < 0.33) {
-                cardResources = ucCards;
-                rarity = "UC";
-            }
-            else {
-                cardResources = cCards;
-                rarity = "C";
-            }
-            randomIndex = (int) (Math.random() * cardResources.length);
-            String cardId = getResources().getResourceEntryName(cardResources[randomIndex]);
-            card.setImageResource(cardResources[randomIndex]);
-            card.setLayoutParams(new FrameLayout.LayoutParams(890, 2700));
-            card.setTranslationX(230);
-            cardContainer.addView(card);
-            card.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    animate(card);
-                    int newCount = sharedPreferences.getInt(cardId + "_count", 0) + 1;
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    if (!sharedPreferences.getBoolean(cardId + "_isCollected", false)) {
-                        editor.putInt(TOTAL_COUNT, sharedPreferences.getInt(TOTAL_COUNT, 0) + 1);
-                        if (rarity.equals("C")) {
-                            editor.putInt(TOTAL_C, sharedPreferences.getInt(TOTAL_C, 0) + 1);
-                        }
-                        else if (rarity.equals("UC")) {
-                            editor.putInt(TOTAL_UC, sharedPreferences.getInt(TOTAL_UC, 0) + 1);
-                        }
-                    }
-                    editor.putInt(cardId + "_count", newCount);
-                    editor.putBoolean(cardId + "_isCollected", true);
-                    editor.apply();
-                }
-            });
+        // Rest of the cards
+        ImageView card4 = new ImageView(this);
+        if (Math.random() < 0.33) {
+            cardResources = ucCards;
+            rarity = "UC";
         }
+        else {
+            cardResources = cCards;
+            rarity = "C";
+        }
+        randomIndex = (int) (Math.random() * cardResources.length);
+        String cardId4 = getResources().getResourceEntryName(cardResources[randomIndex]);
+        card4.setImageResource(cardResources[randomIndex]);
+        pulledCards.add(cardResources[randomIndex]);
+        if (!sharedPreferences.getBoolean(cardId4 + "_isCollected", false)) {
+            isNew.add(true);
+        }
+        else {
+            isNew.add(false);
+        }
+        card4.setLayoutParams(new FrameLayout.LayoutParams(890, 2700));
+        card4.setTranslationX(230);
+        cardContainer.addView(card4);
+        card4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                animate(card4);
+                int newCount = sharedPreferences.getInt(cardId4 + "_count", 0) + 1;
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                if (!sharedPreferences.getBoolean(cardId4 + "_isCollected", false)) {
+                    editor.putInt(TOTAL_COUNT, sharedPreferences.getInt(TOTAL_COUNT, 0) + 1);
+                    if (rarity.equals("C")) {
+                        editor.putInt(TOTAL_C, sharedPreferences.getInt(TOTAL_C, 0) + 1);
+                    }
+                    else if (rarity.equals("UC")) {
+                        editor.putInt(TOTAL_UC, sharedPreferences.getInt(TOTAL_UC, 0) + 1);
+                    }
+                }
+                editor.putInt(cardId4 + "_count", newCount);
+                editor.putBoolean(cardId4 + "_isCollected", true);
+                editor.apply();
+            }
+        });
+
+        ImageView card3 = new ImageView(this);
+        if (Math.random() < 0.33) {
+            cardResources = ucCards;
+            rarity = "UC";
+        }
+        else {
+            cardResources = cCards;
+            rarity = "C";
+        }
+        randomIndex = (int) (Math.random() * cardResources.length);
+        String cardId3 = getResources().getResourceEntryName(cardResources[randomIndex]);
+        card3.setImageResource(cardResources[randomIndex]);
+        pulledCards.add(cardResources[randomIndex]);
+        if (!sharedPreferences.getBoolean(cardId3 + "_isCollected", false)) {
+            isNew.add(true);
+        }
+        else {
+            isNew.add(false);
+        }
+        card3.setLayoutParams(new FrameLayout.LayoutParams(890, 2700));
+        card3.setTranslationX(230);
+        cardContainer.addView(card3);
+        card3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                animate(card3);
+                int newCount = sharedPreferences.getInt(cardId3 + "_count", 0) + 1;
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                if (!sharedPreferences.getBoolean(cardId3 + "_isCollected", false)) {
+                    editor.putInt(TOTAL_COUNT, sharedPreferences.getInt(TOTAL_COUNT, 0) + 1);
+                    if (rarity.equals("C")) {
+                        editor.putInt(TOTAL_C, sharedPreferences.getInt(TOTAL_C, 0) + 1);
+                    }
+                    else if (rarity.equals("UC")) {
+                        editor.putInt(TOTAL_UC, sharedPreferences.getInt(TOTAL_UC, 0) + 1);
+                    }
+                }
+                editor.putInt(cardId3 + "_count", newCount);
+                editor.putBoolean(cardId3 + "_isCollected", true);
+                editor.apply();
+            }
+        });
+
+        ImageView card2 = new ImageView(this);
+        if (Math.random() < 0.33) {
+            cardResources = ucCards;
+            rarity = "UC";
+        }
+        else {
+            cardResources = cCards;
+            rarity = "C";
+        }
+        randomIndex = (int) (Math.random() * cardResources.length);
+        String cardId2 = getResources().getResourceEntryName(cardResources[randomIndex]);
+        card2.setImageResource(cardResources[randomIndex]);
+        pulledCards.add(cardResources[randomIndex]);
+        if (!sharedPreferences.getBoolean(cardId2 + "_isCollected", false)) {
+            isNew.add(true);
+        }
+        else {
+            isNew.add(false);
+        }
+        card2.setLayoutParams(new FrameLayout.LayoutParams(890, 2700));
+        card2.setTranslationX(230);
+        cardContainer.addView(card2);
+        card2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                animate(card2);
+                int newCount = sharedPreferences.getInt(cardId2 + "_count", 0) + 1;
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                if (!sharedPreferences.getBoolean(cardId2 + "_isCollected", false)) {
+                    editor.putInt(TOTAL_COUNT, sharedPreferences.getInt(TOTAL_COUNT, 0) + 1);
+                    if (rarity.equals("C")) {
+                        editor.putInt(TOTAL_C, sharedPreferences.getInt(TOTAL_C, 0) + 1);
+                    }
+                    else if (rarity.equals("UC")) {
+                        editor.putInt(TOTAL_UC, sharedPreferences.getInt(TOTAL_UC, 0) + 1);
+                    }
+                }
+                editor.putInt(cardId2 + "_count", newCount);
+                editor.putBoolean(cardId2 + "_isCollected", true);
+                editor.apply();
+            }
+        });
+
+        ImageView card1 = new ImageView(this);
+        if (Math.random() < 0.33) {
+            cardResources = ucCards;
+            rarity = "UC";
+        }
+        else {
+            cardResources = cCards;
+            rarity = "C";
+        }
+        randomIndex = (int) (Math.random() * cardResources.length);
+        String cardId1 = getResources().getResourceEntryName(cardResources[randomIndex]);
+        card1.setImageResource(cardResources[randomIndex]);
+        pulledCards.add(cardResources[randomIndex]);
+        if (!sharedPreferences.getBoolean(cardId1 + "_isCollected", false)) {
+            isNew.add(true);
+        }
+        else {
+            isNew.add(false);
+        }
+        card1.setLayoutParams(new FrameLayout.LayoutParams(890, 2700));
+        card1.setTranslationX(230);
+        cardContainer.addView(card1);
+        card1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                animate(card1);
+                int newCount = sharedPreferences.getInt(cardId1 + "_count", 0) + 1;
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                if (!sharedPreferences.getBoolean(cardId1 + "_isCollected", false)) {
+                    editor.putInt(TOTAL_COUNT, sharedPreferences.getInt(TOTAL_COUNT, 0) + 1);
+                    if (rarity.equals("C")) {
+                        editor.putInt(TOTAL_C, sharedPreferences.getInt(TOTAL_C, 0) + 1);
+                    }
+                    else if (rarity.equals("UC")) {
+                        editor.putInt(TOTAL_UC, sharedPreferences.getInt(TOTAL_UC, 0) + 1);
+                    }
+                }
+                editor.putInt(cardId1 + "_count", newCount);
+                editor.putBoolean(cardId1 + "_isCollected", true);
+                editor.apply();
+            }
+        });
 
         // Card pack
         ImageView pack = new ImageView(this);
@@ -412,9 +566,82 @@ public class OP01SimActivity extends AppCompatActivity {
         slideBackUp.setDuration(500);
         slideBackUp.setFillAfter(true);
         backButton.startAnimation(slideBackUp);
+
+        showResults();
     }
 
     @Override
     public void onBackPressed() {
+    }
+
+    private void showResults() {
+        GridLayout gridLayout = new GridLayout(this);
+        FrameLayout.LayoutParams gridParams = new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, // Full width
+                ViewGroup.LayoutParams.WRAP_CONTENT  // Adjust height dynamically
+        );
+
+// Add padding to the grid layout (for left and right spacing)
+        gridParams.setMargins(32, 650, 32, 16); // Left, Top, Right, Bottom margins
+        gridLayout.setLayoutParams(gridParams);
+        gridLayout.setColumnCount(3); // 3 columns for a 2x3 layout
+        gridLayout.setRowCount(2);    // 2 rows
+        gridLayout.setPadding(16, 16, 16, 16); // Internal padding
+
+// Add the cards in reverse order
+        for (int i = pulledCards.size() - 1; i >= 0; i--) {
+            int cardResourceId = pulledCards.get(i);
+            boolean isNewCard = isNew.get(i);
+
+            // Create a FrameLayout to hold both the card and the symbol
+            FrameLayout cardFrame = new FrameLayout(this);
+
+            // Create ImageView for the card
+            ImageView cardView = new ImageView(this);
+            cardView.setImageResource(cardResourceId);
+
+            // Set proper size for the card (adjust size as necessary)
+            GridLayout.LayoutParams cardParams = new GridLayout.LayoutParams();
+            cardParams.width = 400; // Use 0 width and weight to fill the cell equally
+            cardParams.height = 600; // Fixed height as before
+            cardParams.setMargins(8, 0, 8, 0); // Margins around the card
+            cardParams.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f); // Fill column equally
+            cardParams.rowSpec = GridLayout.spec(GridLayout.UNDEFINED); // Fill row equally
+            cardView.setLayoutParams(cardParams);
+            cardView.setScaleType(ImageView.ScaleType.FIT_CENTER); // Scale the image to fit inside the bounds
+            cardView.setPadding(2, 0, 2, 0); // Padding for the card
+
+            // Create ImageView for the symbol (circle or any other symbol)
+            ImageView symbolView = new ImageView(this);
+            symbolView.setImageResource(R.drawable.ic_new); // Replace with your symbol resource
+            FrameLayout.LayoutParams symbolParams = new FrameLayout.LayoutParams(
+                    80, 80 // Size of the symbol (adjust as needed)
+            );
+            symbolParams.leftMargin = -3; // Distance from the right edge
+            symbolParams.topMargin = 0;   // Distance from the top edge
+            symbolView.setLayoutParams(symbolParams);
+
+            // Add both the card and the symbol to the FrameLayout
+            cardFrame.addView(cardView);
+
+            if (isNewCard) {
+                cardFrame.addView(symbolView);
+            }
+
+            // Add the cardFrame (which contains both card and symbol) to the GridLayout
+            gridLayout.addView(cardFrame);
+        }
+
+        // Add the grid layout to the container
+        resultContainer.removeAllViews(); // Clear previous grids if any
+        resultContainer.addView(gridLayout);
+        resultContainer.setVisibility(View.VISIBLE);
+
+        // Optional: Add an animation for the grid appearance
+        TranslateAnimation slideUp = new TranslateAnimation(0, 0, resultContainer.getHeight(), 0);
+        slideUp.setInterpolator(new AccelerateDecelerateInterpolator());
+        slideUp.setDuration(500);
+        slideUp.setFillAfter(true);
+        resultContainer.startAnimation(slideUp);
     }
 }
