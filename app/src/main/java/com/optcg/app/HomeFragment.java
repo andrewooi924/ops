@@ -1,5 +1,8 @@
 package com.optcg.app;
 
+import static android.content.Context.MODE_PRIVATE;
+
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +27,8 @@ public class HomeFragment extends Fragment {
     private ViewPager2 viewPager;
     private ViewPagerAdapter viewPagerAdapter;
     private List<Integer> imageResources;
+    private static final String PREFS_NAME = "USER_PREFS";
+    private SharedPreferences sharedPreferences;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -61,6 +66,9 @@ public class HomeFragment extends Fragment {
         recyclerView.setAdapter(mainMenuAdapter);
 
         viewPager = view.findViewById(R.id.viewPager);
+
+        sharedPreferences = requireActivity().getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        int berries = sharedPreferences.getInt("berries", 0);
 
         imageResources = new ArrayList<>();
         imageResources.add(R.drawable.op01_120);

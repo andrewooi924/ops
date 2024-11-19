@@ -1,5 +1,6 @@
 package com.optcg.app;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.transition.TransitionInflater;
 import android.util.Log;
