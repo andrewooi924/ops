@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,9 @@ public class HomeFragment extends Fragment {
     private MainMenuAdapter mainMenuAdapter;
     private List<String> menuItems;   // Assuming you have data for menu items
     private List<Integer> menuImages; // Assuming you have data for menu images
+    private ViewPager2 viewPager;
+    private ViewPagerAdapter viewPagerAdapter;
+    private List<Integer> imageResources;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -55,5 +59,24 @@ public class HomeFragment extends Fragment {
         // Initialize and set the adapter
         mainMenuAdapter = new MainMenuAdapter(requireActivity().getSupportFragmentManager(), getContext(), menuItems, menuImages);
         recyclerView.setAdapter(mainMenuAdapter);
+
+        viewPager = view.findViewById(R.id.viewPager);
+
+        imageResources = new ArrayList<>();
+        imageResources.add(R.drawable.op01_120);
+        imageResources.add(R.drawable.op01_120_p1);
+        imageResources.add(R.drawable.op01_120_p2);
+        imageResources.add(R.drawable.op01_121);
+        imageResources.add(R.drawable.op01_121_p1);
+
+        viewPagerAdapter = new ViewPagerAdapter(imageResources);
+        viewPager.setAdapter(viewPagerAdapter);
+
+        viewPager.setPageTransformer(new ViewPager2.PageTransformer() {
+            @Override
+            public void transformPage(@NonNull View page, float position) {
+                page.setScaleY(0.85f + (1 - Math.abs(position)) * 0.15f);
+            }
+        });
     }
 }

@@ -24,8 +24,8 @@
         android:text="Next Pack"
         android:visibility="gone"
         android:layout_marginBottom="100dp"
+        android:layout_marginEnd="200dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"/>
 
     <FrameLayout
@@ -37,15 +37,16 @@
 
     </FrameLayout>
 
-    <ImageButton
-        android:id="@+id/btnClose"
+    <Button
+        android:id="@+id/backButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:background="@android:color/transparent"
-        android:src="@drawable/ic_close"
-        android:contentDescription="Close"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:text="Exit"
+        android:visibility="gone"
+        android:layout_marginBottom="100dp"
+        android:layout_marginStart="200dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

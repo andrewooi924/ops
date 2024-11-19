@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -31,6 +32,7 @@ public class OP01SimActivity extends AppCompatActivity {
 
     private FrameLayout cardContainer;
     private Button resetButton;
+    private Button backButton;
     private TextView tvPacksOpened;
     private long lastClickTime = 0;
     private boolean pity;
@@ -129,15 +131,26 @@ public class OP01SimActivity extends AppCompatActivity {
             public void onClick(View v) {
                 resetButton.clearAnimation(); // Animation needs to be cleared so that button is not permanently visible for animation
                 resetButton.setVisibility(View.GONE);
+                backButton.clearAnimation();
+                backButton.setVisibility(View.GONE);
                 handleCardStack();
             }
         });
+
+        backButton = findViewById(R.id.backButton);
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
         cardContainer = findViewById(R.id.cardContainer);
         pity = false;
 
         // Handle shared preferences
         sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        int packsOpened = sharedPreferences.getInt(KEY_PACKS_OPENED, 0);
+        int packsOpened = sharedPreferences.getInt(KEY_PACKS_OPENED, 1);
 
         handleCardStack();
 
@@ -181,13 +194,15 @@ public class OP01SimActivity extends AppCompatActivity {
                         cardResources = aarCards;
                         rarity = "R";
                     }
-
-                } else if (prob < ((1.0 / 1728) + (1.0 / 144) + (1.0 / 72) + (1.0 / 48)) + (12.0 / 144)) { // 6.0 / 144 -> 12.0 / 144
-                    cardResources = lCards;
-                    rarity = "L";
                 } else {
-                    cardResources = srCards;
-                    rarity = "SR";
+                    if (Math.random() < 0.75) {
+                        cardResources = srCards;
+                        rarity = "SR";
+                    }
+                    else {
+                        cardResources = lCards;
+                        rarity = "L";
+                    }
                 }
             }
         }
@@ -212,10 +227,10 @@ public class OP01SimActivity extends AppCompatActivity {
                      return;
                  }
                  lastClickTime = System.currentTimeMillis();
-                 showResetButton();
+                 showButtons();
 
                  // Update packs opened
-                 int packsOpened = sharedPreferences.getInt(KEY_PACKS_OPENED, 0) + 1;
+                 int packsOpened = sharedPreferences.getInt(KEY_PACKS_OPENED, 1) + 1;
                  int newCount = sharedPreferences.getInt(cardId6 + "_count", 0) + 1;
                  SharedPreferences.Editor editor = sharedPreferences.edit();
                  if (!sharedPreferences.getBoolean(cardId6 + "_isCollected", false)) {
@@ -323,31 +338,37 @@ public class OP01SimActivity extends AppCompatActivity {
     }
 
     private void handlePitySystem() {
-        int packsOpened = sharedPreferences.getInt(KEY_PACKS_OPENED, 0);
+        int packsOpened = sharedPreferences.getInt(KEY_PACKS_OPENED, 1);
         if (packsOpened > 0) {
             if ((packsOpened + 1) % 1728 == 0) {
                 cardResources = mrCards;
+                rarity = "SEC";
                 pity = true;
             }
             else if ((packsOpened + 1) % 288 == 0) {
                 cardResources = aalCards;
+                rarity = "L";
                 pity = true;
             }
             else if ((packsOpened + 1) % 24 == 0) {
-                if (Math.random() < 0.5) {
+                if (Math.random() < 0.99) {
                     if (Math.random() < 0.33) {
-                        cardResources = aasecCards;
+                        cardResources = secCards;
+                        rarity = "SEC";
                     }
                     else if (Math.random() < 0.66) {
                         cardResources = aasrCards;
+                        rarity = "SR";
                     }
                     else {
                         cardResources = aarCards;
+                        rarity = "R";
                     }
                     pity = true;
                 }
                 else {
-                    cardResources = secCards;
+                    cardResources = aasecCards;
+                    rarity = "SEC";
                     pity = true;
                 }
             }
@@ -377,12 +398,23 @@ public class OP01SimActivity extends AppCompatActivity {
         animatorSet.start();
     }
 
-    private void showResetButton() {
+    private void showButtons() {
         resetButton.setVisibility(View.VISIBLE);
-        TranslateAnimation slideUp = new TranslateAnimation(0, 0, resetButton.getHeight() + getResources().getDisplayMetrics().heightPixels, 0);
-        slideUp.setInterpolator(new AccelerateDecelerateInterpolator());
-        slideUp.setDuration(500);
-        slideUp.setFillAfter(true);
-        resetButton.startAnimation(slideUp);
+        TranslateAnimation slideResetUp = new TranslateAnimation(0, 0, resetButton.getHeight() + getResources().getDisplayMetrics().heightPixels, 0);
+        slideResetUp.setInterpolator(new AccelerateDecelerateInterpolator());
+        slideResetUp.setDuration(500);
+        slideResetUp.setFillAfter(true);
+        resetButton.startAnimation(slideResetUp);
+
+        backButton.setVisibility(View.VISIBLE);
+        TranslateAnimation slideBackUp = new TranslateAnimation(0, 0, backButton.getHeight() + getResources().getDisplayMetrics().heightPixels, 0);
+        slideBackUp.setInterpolator(new AccelerateDecelerateInterpolator());
+        slideBackUp.setDuration(500);
+        slideBackUp.setFillAfter(true);
+        backButton.startAnimation(slideBackUp);
+    }
+
+    @Override
+    public void onBackPressed() {
     }
 }
