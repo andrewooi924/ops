@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -43,6 +44,7 @@ public class HomeFragment extends Fragment {
     private List<Card> cards;
     private static final String PREFS_NAME = "USER_PREFS";
     private SharedPreferences sharedPreferences;
+    private TextView berriesText;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -81,10 +83,12 @@ public class HomeFragment extends Fragment {
 
         viewPager = view.findViewById(R.id.viewPager);
         indicator = view.findViewById(R.id.indicator);
+        berriesText = view.findViewById(R.id.berriesText);
 
         cards = loadCardsFromJson();
         sharedPreferences = requireActivity().getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         int berries = sharedPreferences.getInt("berries", 0);
+        berriesText.setText(String.valueOf(berries));
 
         imageResources = Arrays.asList(
                 R.drawable.op01_001, R.drawable.op01_002, R.drawable.op01_003, R.drawable.op01_004, R.drawable.op01_005
@@ -115,5 +119,12 @@ public class HomeFragment extends Fragment {
             e.printStackTrace();
         }
         return cards;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        int berries = sharedPreferences.getInt("berries", 0);
+        berriesText.setText(String.valueOf(berries));
     }
 }

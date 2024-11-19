@@ -46,6 +46,7 @@ public class OP01SimActivity extends AppCompatActivity {
     private static final String TOTAL_L = "total_l";
     private static final String TOTAL_SEC = "total_sec";
     private SharedPreferences sharedPreferences;
+    private SharedPreferences userPreferences;
     private List<Integer> pulledCards = new ArrayList<>();
     private List<Boolean> isNew = new ArrayList<>();
     private int[] cCards = {
@@ -114,6 +115,8 @@ public class OP01SimActivity extends AppCompatActivity {
     private int[] cardResources;
     private CardViewModel cardViewModel;
     private String rarity;
+    private boolean isAA = false;
+    private boolean isManga = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,6 +158,7 @@ public class OP01SimActivity extends AppCompatActivity {
         pity = false;
 
         // Handle shared preferences
+        userPreferences = getSharedPreferences("USER_PREFS", MODE_PRIVATE);
         sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         int packsOpened = sharedPreferences.getInt(KEY_PACKS_OPENED, 1);
 
@@ -167,6 +171,10 @@ public class OP01SimActivity extends AppCompatActivity {
     }
 
     private void handleCardStack() {
+
+        // Reset flags
+        isManga = false;
+        isAA = false;
 
         // Handle pity system
         handlePitySystem();
@@ -181,12 +189,14 @@ public class OP01SimActivity extends AppCompatActivity {
                 if (prob < (1.0 / 1728)) {
                     cardResources = mrCards;
                     rarity = "SEC";
+                    isManga = true;
                 } else if (prob < ((1.0 / 1728) + (1.0 / 144))) {
                     cardResources = secCards;
                     rarity = "SEC";
                 } else if (prob < ((1.0 / 1728) + (1.0 / 144) + (1.0 / 72))) {
                     cardResources = aalCards;
                     rarity = "L";
+                    isAA = true;
                 } else if (prob < ((1.0 / 1728) + (1.0 / 144) + (1.0 / 72) + (2.0 / 48))) { // 1.0 / 48 -> 2.0 / 48
                     if (Math.random() < 0.33) {
                         cardResources = aasecCards;
@@ -200,6 +210,7 @@ public class OP01SimActivity extends AppCompatActivity {
                         cardResources = aarCards;
                         rarity = "R";
                     }
+                    isAA = true;
                 } else {
                     if (Math.random() < 0.75) {
                         cardResources = srCards;
@@ -226,6 +237,45 @@ public class OP01SimActivity extends AppCompatActivity {
         }
         else {
             isNew.add(false);
+            SharedPreferences.Editor editor = userPreferences.edit();
+            switch (rarity6) {
+                case "R":
+                    if (isAA) {
+                        editor.putInt("berries", userPreferences.getInt("berries", 0) + 1000);
+                    }
+                    else {
+                        editor.putInt("berries", userPreferences.getInt("berries", 0) + 300);
+                    }
+                    break;
+                case "SR":
+                    if (isAA) {
+                        editor.putInt("berries", userPreferences.getInt("berries", 0) + 3000);
+                    }
+                    else {
+                        editor.putInt("berries", userPreferences.getInt("berries", 0) + 500);
+                    }
+                    break;
+                case "L":
+                    if (isAA) {
+                        editor.putInt("berries", userPreferences.getInt("berries", 0) + 10000);
+                    }
+                    else {
+                        editor.putInt("berries", userPreferences.getInt("berries", 0) + 300);
+                    }
+                    break;
+                case "SEC":
+                    if (isManga) {
+                        editor.putInt("berries", userPreferences.getInt("berries", 0) + 50000);
+                    }
+                    else if (isAA) {
+                        editor.putInt("berries", userPreferences.getInt("berries", 0) + 10000);
+                    }
+                    else {
+                        editor.putInt("berries", userPreferences.getInt("berries", 0) + 5000);
+                    }
+                    break;
+            }
+            editor.apply();
         }
         card6.setLayoutParams(new FrameLayout.LayoutParams(890, 2700));
         card6.setTranslationX(230);
@@ -283,6 +333,9 @@ public class OP01SimActivity extends AppCompatActivity {
         }
         else {
             isNew.add(false);
+            SharedPreferences.Editor editor = userPreferences.edit();
+            editor.putInt("berries", userPreferences.getInt("berries", 0) + 300);
+            editor.apply();
         }
         card5.setLayoutParams(new FrameLayout.LayoutParams(890, 2700));
         card5.setTranslationX(230);
@@ -322,6 +375,16 @@ public class OP01SimActivity extends AppCompatActivity {
         }
         else {
             isNew.add(false);
+            SharedPreferences.Editor editor = userPreferences.edit();
+            switch (rarity) {
+                case "C":
+                    editor.putInt("berries", userPreferences.getInt("berries", 0) + 100);
+                    break;
+                case "UC":
+                    editor.putInt("berries", userPreferences.getInt("berries", 0) + 200);
+                    break;
+            }
+            editor.apply();
         }
         card4.setLayoutParams(new FrameLayout.LayoutParams(890, 2700));
         card4.setTranslationX(230);
@@ -365,6 +428,16 @@ public class OP01SimActivity extends AppCompatActivity {
         }
         else {
             isNew.add(false);
+            SharedPreferences.Editor editor = userPreferences.edit();
+            switch (rarity) {
+                case "C":
+                    editor.putInt("berries", userPreferences.getInt("berries", 0) + 100);
+                    break;
+                case "UC":
+                    editor.putInt("berries", userPreferences.getInt("berries", 0) + 200);
+                    break;
+            }
+            editor.apply();
         }
         card3.setLayoutParams(new FrameLayout.LayoutParams(890, 2700));
         card3.setTranslationX(230);
@@ -408,6 +481,16 @@ public class OP01SimActivity extends AppCompatActivity {
         }
         else {
             isNew.add(false);
+            SharedPreferences.Editor editor = userPreferences.edit();
+            switch (rarity) {
+                case "C":
+                    editor.putInt("berries", userPreferences.getInt("berries", 0) + 100);
+                    break;
+                case "UC":
+                    editor.putInt("berries", userPreferences.getInt("berries", 0) + 200);
+                    break;
+            }
+            editor.apply();
         }
         card2.setLayoutParams(new FrameLayout.LayoutParams(890, 2700));
         card2.setTranslationX(230);
@@ -451,6 +534,16 @@ public class OP01SimActivity extends AppCompatActivity {
         }
         else {
             isNew.add(false);
+            SharedPreferences.Editor editor = userPreferences.edit();
+            switch (rarity) {
+                case "C":
+                    editor.putInt("berries", userPreferences.getInt("berries", 0) + 100);
+                    break;
+                case "UC":
+                    editor.putInt("berries", userPreferences.getInt("berries", 0) + 200);
+                    break;
+            }
+            editor.apply();
         }
         card1.setLayoutParams(new FrameLayout.LayoutParams(890, 2700));
         card1.setTranslationX(230);
@@ -497,11 +590,13 @@ public class OP01SimActivity extends AppCompatActivity {
             if ((packsOpened + 1) % 1728 == 0) {
                 cardResources = mrCards;
                 rarity = "SEC";
+                isManga = true;
                 pity = true;
             }
             else if ((packsOpened + 1) % 288 == 0) {
                 cardResources = aalCards;
                 rarity = "L";
+                isAA = true;
                 pity = true;
             }
             else if ((packsOpened + 1) % 24 == 0) {
@@ -512,16 +607,19 @@ public class OP01SimActivity extends AppCompatActivity {
                     }
                     else if (Math.random() < 0.66) {
                         cardResources = aasrCards;
+                        isAA = true;
                         rarity = "SR";
                     }
                     else {
                         cardResources = aarCards;
+                        isAA = true;
                         rarity = "R";
                     }
                     pity = true;
                 }
                 else {
                     cardResources = aasecCards;
+                    isAA = true;
                     rarity = "SEC";
                     pity = true;
                 }
