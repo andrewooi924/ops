@@ -144,12 +144,12 @@ public class SetAdapter extends RecyclerView.Adapter<SetAdapter.ViewHolder> {
     }
 
     private boolean isCardCollected(String cardId) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences("OP01_PREFS", Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = context.getSharedPreferences("COLLECTION_PREFS", Context.MODE_PRIVATE);
         return sharedPreferences.getBoolean(cardId + "_isCollected", false);
     }
 
     private int getCardCount(String cardId) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences("OP01_PREFS", Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = context.getSharedPreferences("COLLECTION_PREFS", Context.MODE_PRIVATE);
         return sharedPreferences.getInt(cardId + "_count", 0);
     }
 }

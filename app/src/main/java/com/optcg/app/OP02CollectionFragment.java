@@ -84,28 +84,28 @@ public class OP02CollectionFragment extends Fragment {
         progressL = view.findViewById(R.id.op02LCollected);
         progressSEC = view.findViewById(R.id.op02SECCollected);
 
-        sharedPreferences = requireActivity().getSharedPreferences("OP02_PREFS", MODE_PRIVATE);
-        int totalCount = sharedPreferences.getInt("total_count", 0);
+        sharedPreferences = requireActivity().getSharedPreferences("COLLECTION_PREFS", MODE_PRIVATE);
+        int totalCount = sharedPreferences.getInt("op02_total_count", 0);
         float progress = ((float) totalCount / 154) * 100;
         progressCircle.setProgress(progress);
         progressText.setText((int) progress + "%");
 
-        int totalC = sharedPreferences.getInt("total_c", 0);
+        int totalC = sharedPreferences.getInt("op02_total_c", 0);
         progressC.setText(totalC + "/47");
 
-        int totalUC = sharedPreferences.getInt("total_uc", 0);
+        int totalUC = sharedPreferences.getInt("op02_total_uc", 0);
         progressUC.setText(totalUC + "/34");
 
-        int totalR = sharedPreferences.getInt("total_r", 0);
+        int totalR = sharedPreferences.getInt("op02_total_r", 0);
         progressR.setText(totalR + "/32");
 
-        int totalSR = sharedPreferences.getInt("total_sr", 0);
+        int totalSR = sharedPreferences.getInt("op02_total_sr", 0);
         progressSR.setText(totalSR + "/20");
 
-        int totalL = sharedPreferences.getInt("total_l", 0);
+        int totalL = sharedPreferences.getInt("op02_total_l", 0);
         progressL.setText(totalL + "/16");
 
-        int totalSEC = sharedPreferences.getInt("total_sec", 0);
+        int totalSEC = sharedPreferences.getInt("op02_total_sec", 0);
         progressSEC.setText(totalSEC + "/5");
     }
 
