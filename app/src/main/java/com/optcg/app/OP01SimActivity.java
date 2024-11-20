@@ -75,7 +75,7 @@ public class OP01SimActivity extends AppCompatActivity {
     };
     private int[] rCards = {
             R.drawable.op01_004, R.drawable.op01_005, R.drawable.op01_013, R.drawable.op01_016,
-            R.drawable.op01_017, R.drawable.op01_026, R.drawable.op01_035, R.drawable.op01_040,
+            R.drawable.op01_017, R.drawable.op01_026, R.drawable.op01_035,
             R.drawable.op01_041, R.drawable.op01_046, R.drawable.op01_049, R.drawable.op01_054,
             R.drawable.op01_058, R.drawable.op01_068, R.drawable.op01_069, R.drawable.op01_071,
             R.drawable.op01_073, R.drawable.op01_074, R.drawable.op01_079, R.drawable.op01_086,
@@ -85,7 +85,7 @@ public class OP01SimActivity extends AppCompatActivity {
     private int[] srCards = {
             R.drawable.op01_024, R.drawable.op01_025, R.drawable.op01_047, R.drawable.op01_051,
             R.drawable.op01_067, R.drawable.op01_070, R.drawable.op01_078, R.drawable.op01_094,
-            R.drawable.op01_096,
+            R.drawable.op01_096, R.drawable.op01_040
     };
 
     private int[] aarCards = {
@@ -160,17 +160,21 @@ public class OP01SimActivity extends AppCompatActivity {
         // Handle shared preferences
         userPreferences = getSharedPreferences("USER_PREFS", MODE_PRIVATE);
         sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        int packsOpened = sharedPreferences.getInt(KEY_PACKS_OPENED, 1);
-
-        handleCardStack();
 
         tvPacksOpened = findViewById(R.id.tvPacksOpened);
-        tvPacksOpened.setText(String.valueOf(packsOpened));
+        handleCardStack();
 
         cardViewModel = new ViewModelProvider(this).get(CardViewModel.class);
     }
 
     private void handleCardStack() {
+
+        // Increment pack count
+        SharedPreferences.Editor pack_editor = sharedPreferences.edit();
+        int packsOpened = sharedPreferences.getInt(KEY_PACKS_OPENED, 0) + 1;
+        pack_editor.putInt(KEY_PACKS_OPENED, packsOpened);
+        tvPacksOpened.setText(String.valueOf(packsOpened));
+        pack_editor.apply();
 
         // Reset flags
         isManga = false;
@@ -293,7 +297,6 @@ public class OP01SimActivity extends AppCompatActivity {
                  showButtons();
 
                  // Update packs opened
-                 int packsOpened = sharedPreferences.getInt(KEY_PACKS_OPENED, 1) + 1;
                  int newCount = sharedPreferences.getInt(cardId6 + "_count", 0) + 1;
                  SharedPreferences.Editor editor = sharedPreferences.edit();
                  if (!sharedPreferences.getBoolean(cardId6 + "_isCollected", false)) {
@@ -311,12 +314,9 @@ public class OP01SimActivity extends AppCompatActivity {
                          editor.putInt(TOTAL_SEC, sharedPreferences.getInt(TOTAL_SEC, 0) + 1);
                     }
                  }
-                 editor.putInt(KEY_PACKS_OPENED, packsOpened);
                  editor.putInt(cardId6 + "_count", newCount);
                  editor.putBoolean(cardId6 + "_isCollected", true);
                  editor.apply();
-
-                 tvPacksOpened.setText(String.valueOf(packsOpened));
              }
          });
 
@@ -585,7 +585,7 @@ public class OP01SimActivity extends AppCompatActivity {
     }
 
     private void handlePitySystem() {
-        int packsOpened = sharedPreferences.getInt(KEY_PACKS_OPENED, 1);
+        int packsOpened = sharedPreferences.getInt(KEY_PACKS_OPENED, 0);
         if (packsOpened > 0) {
             if ((packsOpened + 1) % 1728 == 0) {
                 cardResources = mrCards;

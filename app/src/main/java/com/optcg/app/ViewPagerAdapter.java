@@ -31,7 +31,7 @@ public class ViewPagerAdapter extends RecyclerView.Adapter<ViewPagerAdapter.View
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        randomInt = (int)(Math.random()*154);
+        randomInt = (int)(Math.random()*1373);
         Card card = cards.get(randomInt);
         int imageResourceId = holder.itemView.getContext().getResources()
                 .getIdentifier(card.getId(), "drawable", holder.itemView.getContext().getPackageName());

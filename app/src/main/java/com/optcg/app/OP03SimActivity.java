@@ -45,6 +45,7 @@ public class OP03SimActivity extends AppCompatActivity {
     private static final String TOTAL_SR = "op03_total_sr";
     private static final String TOTAL_L = "op03_total_l";
     private static final String TOTAL_SEC = "op03_total_sec";
+    private static final String TOTAL_SP = "op03_total_sp";
     private SharedPreferences userPreferences;
     private SharedPreferences sharedPreferences;
     private List<Integer> pulledCards = new ArrayList<>();
@@ -174,17 +175,21 @@ public class OP03SimActivity extends AppCompatActivity {
         // Handle shared preferences
         userPreferences = getSharedPreferences("USER_PREFS", MODE_PRIVATE);
         sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        int packsOpened = sharedPreferences.getInt(KEY_PACKS_OPENED, 1);
-
-        handleCardStack();
 
         tvPacksOpened = findViewById(R.id.tvPacksOpened);
-        tvPacksOpened.setText(String.valueOf(packsOpened));
+        handleCardStack();
 
         cardViewModel = new ViewModelProvider(this).get(CardViewModel.class);
     }
 
     private void handleCardStack() {
+
+        // Increment pack count
+        SharedPreferences.Editor pack_editor = sharedPreferences.edit();
+        int packsOpened = sharedPreferences.getInt(KEY_PACKS_OPENED, 0) + 1;
+        pack_editor.putInt(KEY_PACKS_OPENED, packsOpened);
+        tvPacksOpened.setText(String.valueOf(packsOpened));
+        pack_editor.apply();
 
         // Reset flags
         isManga = false;
@@ -294,6 +299,8 @@ public class OP03SimActivity extends AppCompatActivity {
                         editor.putInt("berries", userPreferences.getInt("berries", 0) + 5000);
                     }
                     break;
+                case "SP":
+                    editor.putInt("berries", userPreferences.getInt("berries", 0) + 100000);
             }
             editor.apply();
         }
@@ -313,7 +320,6 @@ public class OP03SimActivity extends AppCompatActivity {
                 showButtons();
 
                 // Update packs opened
-                int packsOpened = sharedPreferences.getInt(KEY_PACKS_OPENED, 1) + 1;
                 int newCount = sharedPreferences.getInt(cardId6 + "_count", 0) + 1;
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 if (!sharedPreferences.getBoolean(cardId6 + "_isCollected", false)) {
@@ -330,13 +336,13 @@ public class OP03SimActivity extends AppCompatActivity {
                     else if (rarity6.equals("SEC")) {
                         editor.putInt(TOTAL_SEC, sharedPreferences.getInt(TOTAL_SEC, 0) + 1);
                     }
+                    else if (rarity6.equals("SP")) {
+                        editor.putInt(TOTAL_SP, sharedPreferences.getInt(TOTAL_SP, 0) + 1);
+                    }
                 }
-                editor.putInt(KEY_PACKS_OPENED, packsOpened);
                 editor.putInt(cardId6 + "_count", newCount);
                 editor.putBoolean(cardId6 + "_isCollected", true);
                 editor.apply();
-
-                tvPacksOpened.setText(String.valueOf(packsOpened));
             }
         });
 

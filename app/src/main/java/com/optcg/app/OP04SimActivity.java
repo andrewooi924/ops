@@ -27,7 +27,7 @@ import androidx.lifecycle.ViewModelProvider;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OP02SimActivity extends AppCompatActivity {
+public class OP04SimActivity extends AppCompatActivity {
 
     private FrameLayout cardContainer;
     private FrameLayout resultContainer;
@@ -37,91 +37,88 @@ public class OP02SimActivity extends AppCompatActivity {
     private long lastClickTime = 0;
     private boolean pity;
     private static final String PREFS_NAME = "COLLECTION_PREFS";
-    private static final String KEY_PACKS_OPENED = "op02_packs_opened";
-    private static final String TOTAL_COUNT = "op02_total_count";
-    private static final String TOTAL_C = "op02_total_c";
-    private static final String TOTAL_UC = "op02_total_uc";
-    private static final String TOTAL_R = "op02_total_r";
-    private static final String TOTAL_SR = "op02_total_sr";
-    private static final String TOTAL_L = "op02_total_l";
-    private static final String TOTAL_SEC = "op02_total_sec";
+    private static final String KEY_PACKS_OPENED = "op04_packs_opened";
+    private static final String TOTAL_COUNT = "op04_total_count";
+    private static final String TOTAL_C = "op04_total_c";
+    private static final String TOTAL_UC = "op04_total_uc";
+    private static final String TOTAL_R = "op04_total_r";
+    private static final String TOTAL_SR = "op04_total_sr";
+    private static final String TOTAL_L = "op04_total_l";
+    private static final String TOTAL_SEC = "op04_total_sec";
+    private static final String TOTAL_SP = "op04_total_sp";
     private SharedPreferences userPreferences;
     private SharedPreferences sharedPreferences;
     private List<Integer> pulledCards = new ArrayList<>();
     private List<Boolean> isNew = new ArrayList<>();
 
     private int[] cCards = {
-        R.drawable.op02_003, R.drawable.op02_006, R.drawable.op02_007, R.drawable.op02_010,
-        R.drawable.op02_012, R.drawable.op02_016, R.drawable.op02_020, R.drawable.op02_023,
-        R.drawable.op02_024, R.drawable.op02_028, R.drawable.op02_033, R.drawable.op02_035,
-        R.drawable.op02_038, R.drawable.op02_039, R.drawable.op02_043, R.drawable.op02_044,
-        R.drawable.op02_045, R.drawable.op02_048, R.drawable.op02_052, R.drawable.op02_053,
-        R.drawable.op02_054, R.drawable.op02_055, R.drawable.op02_060, R.drawable.op02_066,
-        R.drawable.op02_069, R.drawable.op02_070, R.drawable.op02_074, R.drawable.op02_077,
-        R.drawable.op02_080, R.drawable.op02_081, R.drawable.op02_084, R.drawable.op02_088,
-        R.drawable.op02_091, R.drawable.op02_092, R.drawable.op02_097, R.drawable.op02_100,
-        R.drawable.op02_101, R.drawable.op02_104, R.drawable.op02_105, R.drawable.op02_107,
-        R.drawable.op02_108, R.drawable.op02_109, R.drawable.op02_111, R.drawable.op02_116,
-        R.drawable.op02_118,
+        R.drawable.op04_004, R.drawable.op04_005, R.drawable.op04_007, R.drawable.op04_010,
+        R.drawable.op04_011, R.drawable.op04_012, R.drawable.op04_017, R.drawable.op04_021,
+        R.drawable.op04_023, R.drawable.op04_025, R.drawable.op04_027, R.drawable.op04_029,
+        R.drawable.op04_036, R.drawable.op04_038, R.drawable.op04_041, R.drawable.op04_042,
+        R.drawable.op04_047, R.drawable.op04_050, R.drawable.op04_052, R.drawable.op04_054,
+        R.drawable.op04_055, R.drawable.op04_061, R.drawable.op04_062, R.drawable.op04_065,
+        R.drawable.op04_067, R.drawable.op04_068, R.drawable.op04_073, R.drawable.op04_076,
+        R.drawable.op04_077, R.drawable.op04_078, R.drawable.op04_079, R.drawable.op04_084,
+        R.drawable.op04_086, R.drawable.op04_087, R.drawable.op04_095, R.drawable.op04_096,
+        R.drawable.op04_097, R.drawable.op04_101, R.drawable.op04_106, R.drawable.op04_107,
+        R.drawable.op04_109, R.drawable.op04_110, R.drawable.op04_113, R.drawable.op04_114,
+        R.drawable.op04_115,
     };
     private int[] ucCards = {
-        R.drawable.op02_005, R.drawable.op02_009, R.drawable.op02_014, R.drawable.op02_015,
-        R.drawable.op02_019, R.drawable.op02_022, R.drawable.op02_027, R.drawable.op02_031,
-        R.drawable.op02_032, R.drawable.op02_034, R.drawable.op02_037, R.drawable.op02_046,
-        R.drawable.op02_056, R.drawable.op02_057, R.drawable.op02_059, R.drawable.op02_061,
-        R.drawable.op02_063, R.drawable.op02_067, R.drawable.op02_078, R.drawable.op02_079,
-        R.drawable.op02_082, R.drawable.op02_086, R.drawable.op02_087, R.drawable.op02_090,
-        R.drawable.op02_094, R.drawable.op02_095, R.drawable.op02_106, R.drawable.op02_112,
-        R.drawable.op02_113, R.drawable.op02_117,
+        R.drawable.op04_003, R.drawable.op04_006, R.drawable.op04_009, R.drawable.op04_014,
+        R.drawable.op04_018, R.drawable.op04_022, R.drawable.op04_032, R.drawable.op04_033,
+        R.drawable.op04_034, R.drawable.op04_037, R.drawable.op04_046, R.drawable.op04_048,
+        R.drawable.op04_049, R.drawable.op04_053, R.drawable.op04_057, R.drawable.op04_059,
+        R.drawable.op04_069, R.drawable.op04_070, R.drawable.op04_071, R.drawable.op04_075,
+        R.drawable.op04_080, R.drawable.op04_085, R.drawable.op04_088, R.drawable.op04_091,
+        R.drawable.op04_093, R.drawable.op04_098, R.drawable.op04_103, R.drawable.op04_108,
+        R.drawable.op04_111, R.drawable.op04_116,
     };
     private int[] rCards = {
-        R.drawable.op02_008, R.drawable.op02_011, R.drawable.op02_017, R.drawable.op02_018,
-        R.drawable.op02_021, R.drawable.op02_029, R.drawable.op02_040, R.drawable.op02_041,
-        R.drawable.op02_042, R.drawable.op02_047, R.drawable.op02_050, R.drawable.op02_058,
-        R.drawable.op02_064, R.drawable.op02_065, R.drawable.op02_068, R.drawable.op02_073,
-        R.drawable.op02_075, R.drawable.op02_076, R.drawable.op02_083, R.drawable.op02_089,
-        R.drawable.op02_098, R.drawable.op02_102, R.drawable.op02_103, R.drawable.op02_110,
-        R.drawable.op02_115, R.drawable.op02_119,
+        R.drawable.op04_002, R.drawable.op04_008, R.drawable.op04_015, R.drawable.op04_016,
+        R.drawable.op04_026, R.drawable.op04_028, R.drawable.op04_030, R.drawable.op04_035,
+        R.drawable.op04_043, R.drawable.op04_045, R.drawable.op04_051, R.drawable.op04_056,
+        R.drawable.op04_063, R.drawable.op04_066, R.drawable.op04_072, R.drawable.op04_074,
+        R.drawable.op04_081, R.drawable.op04_082, R.drawable.op04_089, R.drawable.op04_092,
+        R.drawable.op04_094, R.drawable.op04_099, R.drawable.op04_100, R.drawable.op04_102,
+        R.drawable.op04_105, R.drawable.op04_117,
+    };
+    private int[] aarCards = {
+        R.drawable.op04_028_p1, R.drawable.op04_030_p1, R.drawable.op04_051_p1, R.drawable.op04_072_p1,
+        R.drawable.op04_082_p1, R.drawable.op04_100_p1,
     };
     private int[] srCards = {
-        R.drawable.op02_004, R.drawable.op02_013, R.drawable.op02_030, R.drawable.op02_036,
-        R.drawable.op02_051, R.drawable.op02_062, R.drawable.op02_085, R.drawable.op02_096,
-        R.drawable.op02_099, R.drawable.op02_114,
+        R.drawable.op04_013, R.drawable.op04_024, R.drawable.op04_031, R.drawable.op04_044,
+        R.drawable.op04_060, R.drawable.op04_064, R.drawable.op04_083, R.drawable.op04_090,
+        R.drawable.op04_104, R.drawable.op04_112,
     };
-
-    private int[] aarCards = {
-        R.drawable.op02_017_p1, R.drawable.op02_018_p1, R.drawable.op02_041_p1, R.drawable.op02_058_p1,
-        R.drawable.op02_073_p1, R.drawable.op02_115_p1,
-    };
-
     private int[] aasrCards = {
-        R.drawable.op02_004_p1, R.drawable.op02_013_p1, R.drawable.op02_030_p1, R.drawable.op02_036_p1,
-        R.drawable.op02_051_p1, R.drawable.op02_062_p1, R.drawable.op02_085_p1, R.drawable.op02_096_p1,
-        R.drawable.op02_099_p1, R.drawable.op02_114_p1,
-    };
-
-    private int[] aasecCards = {
-        R.drawable.op02_120_p1, R.drawable.op02_121_p1
-    };
-
-    private int[] aalCards = {
-        R.drawable.op02_001_p1, R.drawable.op02_002_p1, R.drawable.op02_025_p1, R.drawable.op02_026_p1,
-        R.drawable.op02_049_p1, R.drawable.op02_071_p1, R.drawable.op02_072_p1, R.drawable.op02_093_p1,
-
+        R.drawable.op04_013_p1, R.drawable.op04_024_p1, R.drawable.op04_031_p1, R.drawable.op04_044_p1,
+        R.drawable.op04_060_p1, R.drawable.op04_064_p1, R.drawable.op04_083_p1, R.drawable.op04_090_p1,
+        R.drawable.op04_104_p1, R.drawable.op04_112_p1,
     };
     private int[] secCards = {
-        R.drawable.op02_120, R.drawable.op02_121
+        R.drawable.op04_118, R.drawable.op04_119
     };
-    private int[] mrCards = {
-        R.drawable.op02_013_p2,
+    private int[] aasecCards = {
+        R.drawable.op04_118_p1, R.drawable.op04_119_p1
     };
     private int[] lCards = {
-        R.drawable.op02_001, R.drawable.op02_002, R.drawable.op02_025, R.drawable.op02_026,
-        R.drawable.op02_049, R.drawable.op02_071, R.drawable.op02_072, R.drawable.op02_093,
-
+        R.drawable.op04_001, R.drawable.op04_019, R.drawable.op04_020, R.drawable.op04_039,
+        R.drawable.op04_040, R.drawable.op04_058,
+    };
+    private int[] aalCards = {
+        R.drawable.op04_001_p1, R.drawable.op04_019_p1, R.drawable.op04_020_p1, R.drawable.op04_039_p1,
+        R.drawable.op04_040_p1, R.drawable.op04_058_p1,
+    };
+    private int[] mrCards = {
+        R.drawable.op04_083_p2,
+    };
+    private int[] spCards = {
+        R.drawable.op01_047_p2, R.drawable.op01_078_p2, R.drawable.op02_004_p2, R.drawable.op02_085_p2, R.drawable.op02_099_p2
     };
     private int[] otherCards = {
-        R.drawable.op02_009_p1, R.drawable.op02_031_p1, R.drawable.op02_059_p1, R.drawable.op02_086_p1, R.drawable.op02_105_p1, R.drawable.op02_108_p1
     };
     private int[] cardResources;
     private CardViewModel cardViewModel;
@@ -134,7 +131,7 @@ public class OP02SimActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_op02_sim);
+        setContentView(R.layout.activity_op04_sim);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -210,9 +207,15 @@ public class OP02SimActivity extends AppCompatActivity {
                     cardResources = secCards;
                     rarity = "SEC";
                 } else if (prob < ((1.0 / 1728) + (1.0 / 144) + (1.0 / 72))) {
-                    cardResources = aalCards;
-                    rarity = "L";
-                    isAA = true;
+                    if (Math.random() < 0.5) {
+                        cardResources = aalCards;
+                        rarity = "L";
+                        isAA = true;
+                    }
+                    else {
+                        cardResources = spCards;
+                        rarity = "SP";
+                    }
                 } else if (prob < ((1.0 / 1728) + (1.0 / 144) + (1.0 / 72) + (2.0 / 48))) { // 1.0 / 48 -> 2.0 / 48
                     if (Math.random() < 0.33) {
                         cardResources = aasecCards;
@@ -290,6 +293,8 @@ public class OP02SimActivity extends AppCompatActivity {
                         editor.putInt("berries", userPreferences.getInt("berries", 0) + 5000);
                     }
                     break;
+                case "SP":
+                    editor.putInt("berries", userPreferences.getInt("berries", 0) + 100000);
             }
             editor.apply();
         }
@@ -324,6 +329,9 @@ public class OP02SimActivity extends AppCompatActivity {
                     }
                     else if (rarity6.equals("SEC")) {
                         editor.putInt(TOTAL_SEC, sharedPreferences.getInt(TOTAL_SEC, 0) + 1);
+                    }
+                    else if (rarity6.equals("SP")) {
+                        editor.putInt(TOTAL_SP, sharedPreferences.getInt(TOTAL_SP, 0) + 1);
                     }
                 }
                 editor.putInt(cardId6 + "_count", newCount);
@@ -583,7 +591,7 @@ public class OP02SimActivity extends AppCompatActivity {
 
         // Card pack
         ImageView pack = new ImageView(this);
-        pack.setImageResource(R.drawable.op02_pack);
+        pack.setImageResource(R.drawable.op04_pack);
         pack.setLayoutParams(new FrameLayout.LayoutParams(1350, 2700));
         pack.setScaleX(1.35f);
         pack.setScaleY(1.35f);
@@ -606,9 +614,15 @@ public class OP02SimActivity extends AppCompatActivity {
                 pity = true;
             }
             else if ((packsOpened + 1) % 288 == 0) {
-                cardResources = aalCards;
-                rarity = "L";
-                isAA = true;
+                if (Math.random() < 0.5) {
+                    cardResources = aalCards;
+                    rarity = "L";
+                    isAA = true;
+                }
+                else {
+                    cardResources = spCards;
+                    rarity = "SP";
+                }
                 pity = true;
             }
             else if ((packsOpened + 1) % 24 == 0) {
