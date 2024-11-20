@@ -60,6 +60,9 @@ public class CollectionFragment extends Fragment implements CollectionAdapter.On
             case 1:
                 fragment = OP02CollectionFragment.newInstance(sharedImageView.getTransitionName());
                 break;
+            case 2:
+                fragment = OP03CollectionFragment.newInstance(sharedImageView.getTransitionName());
+                break;
             default:
                 fragment = new OP01CollectionFragment();
         }
