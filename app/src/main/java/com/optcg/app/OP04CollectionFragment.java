@@ -20,6 +20,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.mikhaellopez.circularprogressbar.CircularProgressBar;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -37,6 +39,7 @@ public class OP04CollectionFragment extends Fragment {
     private TextView progressSR;
     private TextView progressL;
     private TextView progressSEC;
+    private TextView progressMR;
     private TextView progressSP;
     private SharedPreferences sharedPreferences;
 
@@ -84,6 +87,7 @@ public class OP04CollectionFragment extends Fragment {
         progressSR = view.findViewById(R.id.op04SRCollected);
         progressL = view.findViewById(R.id.op04LCollected);
         progressSEC = view.findViewById(R.id.op04SECCollected);
+        progressMR = view.findViewById(R.id.op04MRCollected);
         progressSP = view.findViewById(R.id.op04SPCollected);
 
         sharedPreferences = requireActivity().getSharedPreferences("COLLECTION_PREFS", MODE_PRIVATE);
@@ -108,7 +112,10 @@ public class OP04CollectionFragment extends Fragment {
         progressL.setText(totalL + "/12");
 
         int totalSEC = sharedPreferences.getInt("op04_total_sec", 0);
-        progressSEC.setText(totalSEC + "/5");
+        progressSEC.setText(totalSEC + "/4");
+
+        int totalMR = sharedPreferences.getInt("op04_total_mr", 0);
+        progressMR.setText(totalMR + "/1");
 
         int totalSP = sharedPreferences.getInt("op04_total_sp", 0);
         progressSP.setText(totalSP + "/5");

@@ -87,10 +87,10 @@
 
                     <GridLayout
                         android:id="@+id/op02RarityGrid"
-                        android:layout_width="150dp"
+                        android:layout_width="155dp"
                         android:layout_height="90dp"
                         android:rowCount="2"
-                        android:columnCount="3"
+                        android:columnCount="4"
                         android:layout_marginTop="30dp"
                         app:layout_constraintStart_toEndOf="@id/op02Progress"
                         app:layout_constraintTop_toTopOf="parent"
@@ -129,7 +129,7 @@
                         <!-- Repeat for other cells (2 to 6) -->
                         <!-- Example Cell 2 -->
                         <LinearLayout
-                            android:layout_width="0dp"
+                            android:layout_width="9dp"
                             android:layout_height="wrap_content"
                             android:layout_margin="4dp"
                             android:layout_gravity="fill"
@@ -159,7 +159,7 @@
                         <!-- Continue to add LinearLayouts for remaining cells up to 6 -->
                         <!-- Cell 3 -->
                         <LinearLayout
-                            android:layout_width="0dp"
+                            android:layout_width="9dp"
                             android:layout_height="wrap_content"
                             android:layout_margin="4dp"
                             android:layout_gravity="fill"
@@ -189,7 +189,7 @@
                         <!-- Continue this pattern for cells 4, 5, and 6 -->
                         <!-- Cell 4 -->
                         <LinearLayout
-                            android:layout_width="0dp"
+                            android:layout_width="9dp"
                             android:layout_height="wrap_content"
                             android:layout_margin="4dp"
                             android:layout_gravity="fill"
@@ -218,7 +218,7 @@
 
                         <!-- Cell 5 -->
                         <LinearLayout
-                            android:layout_width="0dp"
+                            android:layout_width="9dp"
                             android:layout_height="wrap_content"
                             android:layout_margin="4dp"
                             android:layout_gravity="fill"
@@ -247,7 +247,7 @@
 
                         <!-- Cell 6 -->
                         <LinearLayout
-                            android:layout_width="0dp"
+                            android:layout_width="9dp"
                             android:layout_height="wrap_content"
                             android:layout_margin="4dp"
                             android:layout_gravity="fill"
@@ -270,6 +270,34 @@
                                 android:layout_gravity="center"
                                 android:textColor="@color/white"
                                 android:text="SEC"
+                                android:textSize="14sp"
+                                android:textStyle="bold"/>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="9dp"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="4dp"
+                            android:layout_gravity="fill"
+                            android:layout_columnWeight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/op02MRCollected"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:textColor="@color/white"
+                                android:text="0/1"
+                                android:textSize="14sp"/>
+
+                            <TextView
+                                android:id="@+id/op02MR"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:textColor="@color/white"
+                                android:text="MR"
                                 android:textSize="14sp"
                                 android:textStyle="bold"/>
                         </LinearLayout>

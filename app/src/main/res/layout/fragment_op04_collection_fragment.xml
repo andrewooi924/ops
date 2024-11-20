@@ -46,7 +46,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
-                    android:layout_marginTop="32dp"
+                    android:layout_marginTop="28dp"
                     android:text="OP04 - Kingdoms Of Intrigue"
                     android:textColor="#FFFFFF"
                     android:textSize="20sp" />
@@ -298,6 +298,34 @@
                                 android:layout_gravity="center"
                                 android:textColor="@color/white"
                                 android:text="SP"
+                                android:textSize="14sp"
+                                android:textStyle="bold"/>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="9dp"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="4dp"
+                            android:layout_gravity="fill"
+                            android:layout_columnWeight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/op04MRCollected"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:textColor="@color/white"
+                                android:text="0/1"
+                                android:textSize="14sp"/>
+
+                            <TextView
+                                android:id="@+id/op04MR"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:textColor="@color/white"
+                                android:text="MR"
                                 android:textSize="14sp"
                                 android:textStyle="bold"/>
                         </LinearLayout>

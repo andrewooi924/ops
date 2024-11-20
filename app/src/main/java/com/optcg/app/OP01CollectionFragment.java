@@ -37,6 +37,7 @@ public class OP01CollectionFragment extends Fragment {
     private TextView progressSR;
     private TextView progressL;
     private TextView progressSEC;
+    private TextView progressMR;
     private SharedPreferences sharedPreferences;
 
     @Override
@@ -86,6 +87,7 @@ public class OP01CollectionFragment extends Fragment {
         progressSR = view.findViewById(R.id.op01SRCollected);
         progressL = view.findViewById(R.id.op01LCollected);
         progressSEC = view.findViewById(R.id.op01SECCollected);
+        progressMR = view.findViewById(R.id.op01MRCollected);
 
         sharedPreferences = requireActivity().getSharedPreferences("COLLECTION_PREFS", MODE_PRIVATE);
         int totalCount = sharedPreferences.getInt("op01_total_count", 0);
@@ -109,7 +111,10 @@ public class OP01CollectionFragment extends Fragment {
         progressL.setText(totalL + "/16");
 
         int totalSEC = sharedPreferences.getInt("op01_total_sec", 0);
-        progressSEC.setText(totalSEC + "/5");
+        progressSEC.setText(totalSEC + "/4");
+
+        int totalMR = sharedPreferences.getInt("op01_total_mr", 0);
+        progressMR.setText(totalMR + "/1");
     }
 
     public static OP01CollectionFragment newInstance(String transitionName) {

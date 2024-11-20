@@ -302,6 +302,34 @@
                                 android:textStyle="bold"/>
                         </LinearLayout>
 
+                        <LinearLayout
+                            android:layout_width="9dp"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="4dp"
+                            android:layout_gravity="fill"
+                            android:layout_columnWeight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/op03MRCollected"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:textColor="@color/white"
+                                android:text="0/1"
+                                android:textSize="14sp"/>
+
+                            <TextView
+                                android:id="@+id/op03MR"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:textColor="@color/white"
+                                android:text="MR"
+                                android:textSize="14sp"
+                                android:textStyle="bold"/>
+                        </LinearLayout>
+
                     </GridLayout>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
