@@ -19376,7 +19376,7 @@
         "img": "cards/op08/st04_005_p1.png"
     },
     {
-        "id": "st06_006_p1",
+        "id": "st06_006_p2",
         "number": "ST06-006",
         "rarity": "SP CARD",
         "role": "CHARACTER",
@@ -19389,7 +19389,7 @@
         "type": "Navy",
         "effect": "[Activate: Main] You may rest this Character: Give up to 1 of your opponent's Characters \u22122 cost during this turn.",
         "set": "-Two Legends- [OP-08]",
-        "img": "cards/op08/st06_006_p1.png"
+        "img": "cards/op08/st06_006_p2.png"
     },
     {
         "id": "op08_112_p1",

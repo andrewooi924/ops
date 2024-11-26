@@ -60,6 +60,10 @@ public class MainMenuAdapter extends RecyclerView.Adapter<MainMenuAdapter.MenuVi
                 Intent intent = new Intent(context, OP05SimActivity.class);
                 context.startActivity(intent);
             }
+            else if (position == 5) {
+                Intent intent = new Intent(context, OP06SimActivity.class);
+                context.startActivity(intent);
+            }
         });
     }
 
