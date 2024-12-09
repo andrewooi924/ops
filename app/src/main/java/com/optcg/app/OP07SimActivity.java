@@ -594,8 +594,8 @@ public class OP07SimActivity extends AppCompatActivity {
         ImageView pack = new ImageView(this);
         pack.setImageResource(R.drawable.op07_pack);
         pack.setLayoutParams(new FrameLayout.LayoutParams(1350, 2700));
-        pack.setScaleX(1.35f);
-        pack.setScaleY(1.35f);
+        pack.setScaleX(1.7f);
+        pack.setScaleY(1.7f);
         cardContainer.addView(pack);
         pack.setOnClickListener(new View.OnClickListener() {
             @Override
