@@ -13,6 +13,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.jsoup.Jsoup;
@@ -45,6 +47,16 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder
 
         // Set the card image
         holder.cardImage.setImageResource(card.getImageResId());
+
+        holder.itemView.setOnClickListener(v -> {
+            FragmentManager fragmentManager = ((AppCompatActivity) v.getContext()).getSupportFragmentManager();
+            CardPriceDialogFragment dialogFragment = CardPriceDialogFragment.newInstance(
+                    card.getImageResId(),
+                    card.getUrl()
+            );
+
+            dialogFragment.show(fragmentManager, "cardPriceDialog");
+        });
 
         CardData cardData = cardDataCache.get(card.getUrl());
 

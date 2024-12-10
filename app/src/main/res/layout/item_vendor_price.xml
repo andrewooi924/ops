@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="8dp"
+    android:gravity="center_vertical">
+
+    <!-- Vendor Name (left) -->
+    <TextView
+        android:id="@+id/vendor_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textSize="16sp"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:paddingEnd="8dp"
+        android:text="Vendor Name" />
+
+    <!-- Vendor Price (right) -->
+    <TextView
+        android:id="@+id/vendor_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:textColor="#FF5722"
+        android:text="Price"
+        android:textAlignment="viewEnd" />
+
+    <!-- Optional Last Update or Link -->
+<!--    <TextView-->
+<!--        android:id="@+id/vendor_update_date"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:textSize="12sp"-->
+<!--        android:textColor="#757575"-->
+<!--        android:text="Last Updated: YYYY-MM-DD" />-->
+
+</LinearLayout>

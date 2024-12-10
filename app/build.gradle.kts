@@ -46,4 +46,5 @@ dependencies {
     implementation("com.mikhaellopez:circularprogressbar:3.1.0")
     implementation("me.relex:circleindicator:2.1.6")
     implementation("org.jsoup:jsoup:1.18.3")
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 }
