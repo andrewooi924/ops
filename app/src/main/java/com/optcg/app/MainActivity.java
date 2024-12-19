@@ -21,7 +21,7 @@ import java.io.File;
 
 public class MainActivity extends AppCompatActivity {
 
-    private LinearLayout btnHome, btnShop, btnCollection, btnPrice, btnStats;
+    private LinearLayout btnHome, btnShop, btnCollection, btnPrice, btnDeck;
     private View currentSelectedTab;
     private CardViewModel cardViewModel;
 
@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         btnShop = findViewById(R.id.btnShop);
         btnCollection = findViewById(R.id.btnCollection);
         btnPrice = findViewById(R.id.btnPrice);
-        btnStats = findViewById(R.id.btnStats);
+        btnDeck = findViewById(R.id.btnDeck);
 
         cardViewModel = new ViewModelProvider(this).get(CardViewModel.class);
 
@@ -67,9 +67,9 @@ public class MainActivity extends AppCompatActivity {
             setTabSelected(v);
             loadFragment(new PricesFragment());
         });
-        btnStats.setOnClickListener(v -> {
+        btnDeck.setOnClickListener(v -> {
             setTabSelected(v);
-            loadFragment(new StatsFragment());
+            loadFragment(new DeckFragment());
         });
 
         // Display size of shared preferences

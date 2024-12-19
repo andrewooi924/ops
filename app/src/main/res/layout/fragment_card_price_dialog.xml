@@ -13,15 +13,49 @@
         android:layout_height="400dp"
         android:contentDescription="Card Image" />
 
-    <com.github.mikephil.charting.charts.LineChart
-        android:id="@+id/priceTrendChart"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_marginTop="16dp" />
+<!--    <com.github.mikephil.charting.charts.LineChart-->
+<!--        android:id="@+id/priceTrendChart"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="200dp"-->
+<!--        android:layout_marginTop="16dp" />-->
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/vendorPricesRecycler"
+<!--    <androidx.recyclerview.widget.RecyclerView-->
+<!--        android:id="@+id/vendorPricesRecycler"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="16dp" />-->
+
+    <LinearLayout
+        android:id="@+id/titlesContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp" />
+        android:orientation="horizontal"
+        android:padding="0dp"
+        android:layout_marginTop="16dp"
+        android:gravity="start">
+
+        <TextView
+            android:id="@+id/titlePriceTrend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Price Trend"
+            android:textSize="18sp"
+            android:textColor="@color/white"
+            android:paddingEnd="16dp"
+            android:visibility="visible" />
+
+        <TextView
+            android:id="@+id/titleVendorPrices"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Vendor Prices"
+            android:textSize="18sp"
+            android:textColor="@color/white"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/priceViewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </LinearLayout>

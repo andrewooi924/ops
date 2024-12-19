@@ -130,7 +130,7 @@
             app:layout_constraintStart_toEndOf="@+id/btnCollection"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/btnStats">
+            app:layout_constraintEnd_toStartOf="@+id/btnDeck">
 
             <ImageView
                 android:id="@+id/iconPrice"
@@ -148,8 +148,8 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/btnStats"
-            android:layout_width="90dp"
+            android:id="@+id/btnDeck"
+            android:layout_width="85dp"
             android:layout_height="70dp"
             android:orientation="vertical"
             android:gravity="center"
@@ -161,16 +161,17 @@
             app:layout_constraintEnd_toEndOf="parent">
 
             <ImageView
-                android:id="@+id/iconStats"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_stats_state" />
+                android:id="@+id/iconDeck"
+                android:layout_width="25dp"
+                android:layout_height="18dp"
+                android:layout_marginBottom="6dp"
+                android:src="@drawable/ic_deck_state" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:text="Stats"
+                android:layout_marginTop="0dp"
+                android:text="Decks"
                 android:textColor="@color/nav_text_selector"
                 android:textSize="12sp" />
         </LinearLayout>

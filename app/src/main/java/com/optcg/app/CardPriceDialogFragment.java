@@ -15,8 +15,11 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
@@ -64,13 +67,9 @@ public class CardPriceDialogFragment extends DialogFragment {
             getDialog().getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         }
 
-        return view;
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
+        TextView titlePriceTrend = view.findViewById(R.id.titlePriceTrend);
+        TextView titleVendorPrices = view.findViewById(R.id.titleVendorPrices);
+        ViewPager2 viewPager = view.findViewById(R.id.priceViewPager);
         new Thread(() -> {
             // Fetch HTML content
             String htmlContent = fetchHtml(cardUrl);
@@ -78,18 +77,60 @@ public class CardPriceDialogFragment extends DialogFragment {
             // Parse data
             List<Entry> priceTrend = parsePriceTrend(htmlContent);
             List<VendorPrice> vendorPrices = parseVendorPrices(htmlContent);
-            System.out.println(vendorPrices);
 
             // Update UI on the main thread
             requireActivity().runOnUiThread(() -> {
-                displayPriceTrend(priceTrend);
+                List<Fragment> fragments = new ArrayList<>();
+                fragments.add(new PriceTrendFragment(priceTrend));
+                fragments.add(new VendorPricesFragment(vendorPrices));
 
-                RecyclerView recyclerView = view.findViewById(R.id.vendorPricesRecycler);
-                recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-                recyclerView.setAdapter(new VendorPriceAdapter(vendorPrices));
+                // Set up ViewPager2 adapter
+                FragmentStateAdapter adapter = new PriceViewPagerAdapter(getActivity(), fragments);
+                viewPager.setAdapter(adapter);
+
+                viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+                    @Override
+                    public void onPageSelected(int position) {
+                        super.onPageSelected(position);
+                        if (position == 0) {
+                            titlePriceTrend.setVisibility(View.VISIBLE);
+                            titleVendorPrices.setVisibility(View.GONE);
+                        }
+                        else if (position == 1) {
+                            titlePriceTrend.setVisibility(View.GONE);
+                            titleVendorPrices.setVisibility(View.VISIBLE);
+                        }
+                    }
+                });
             });
         }).start();
+
+        return view;
     }
+
+//    @Override
+//    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+//        super.onViewCreated(view, savedInstanceState);
+//
+//        new Thread(() -> {
+//            // Fetch HTML content
+//            String htmlContent = fetchHtml(cardUrl);
+//
+//            // Parse data
+//            List<Entry> priceTrend = parsePriceTrend(htmlContent);
+//            List<VendorPrice> vendorPrices = parseVendorPrices(htmlContent);
+//            System.out.println(vendorPrices);
+//
+//            // Update UI on the main thread
+//            requireActivity().runOnUiThread(() -> {
+//                displayPriceTrend(priceTrend);
+//
+//                RecyclerView recyclerView = view.findViewById(R.id.vendorPricesRecycler);
+//                recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+//                recyclerView.setAdapter(new VendorPriceAdapter(vendorPrices));
+//            });
+//        }).start();
+//    }
 
     private List<Entry> parsePriceTrend(String html) {
         List<Entry> priceEntries = new ArrayList<>();
