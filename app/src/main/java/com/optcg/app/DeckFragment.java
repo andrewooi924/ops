@@ -1,6 +1,8 @@
 package com.optcg.app;
 
 import android.os.Bundle;
+import android.transition.TransitionInflater;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,6 +54,7 @@ public class DeckFragment extends Fragment implements HorizontalDeckAdapter.OnIm
 
     @Override
     public void onImageClick(int position, String color, ImageView sharedImageView) {
+        String transitionName = sharedImageView.getTransitionName();
         Fragment fragment;
         if ("赤".equals(color)) {
             switch (position) {
@@ -72,7 +75,7 @@ public class DeckFragment extends Fragment implements HorizontalDeckAdapter.OnIm
             }
         }
         FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
-        transaction.addSharedElement(sharedImageView, sharedImageView.getTransitionName());
+        transaction.addSharedElement(sharedImageView, transitionName);
         transaction.replace(R.id.fragmentContainer, fragment);
         transaction.addToBackStack(null);
         transaction.commit();

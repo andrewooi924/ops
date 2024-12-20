@@ -5,10 +5,17 @@
     android:layout_height="match_parent"
     tools:context=".OP01_002_DeckFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+    <ImageView
+        android:id="@+id/op01_002_img"
+        android:layout_width="180dp"
+        android:layout_height="250dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/op01_002_p1"
+        android:background="@drawable/rounded_background" />
 
 </FrameLayout>

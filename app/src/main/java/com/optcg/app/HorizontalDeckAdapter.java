@@ -1,6 +1,7 @@
 package com.optcg.app;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,12 +35,11 @@ public class HorizontalDeckAdapter extends RecyclerView.Adapter<HorizontalDeckAd
 
     @Override
     public void onBindViewHolder(@NonNull HorizontalDeckViewHolder holder, int position) {
-//        int drawableId = drawableIds.get(position);
-//        holder.imageView.setImageResource(drawableId); // Set the drawable resource
+        int drawableId = drawableIds.get(position);
+        holder.imageView.setImageResource(drawableId);
 
-        String transitionName = "image_" + position;
+        String transitionName = "image_" + color + position;
         holder.imageView.setTransitionName(transitionName);
-        holder.imageView.setImageResource(drawableIds.get(position));
         holder.itemView.setOnClickListener(v ->
             onImageClickListener.onImageClick(position, color, holder.imageView)
         );

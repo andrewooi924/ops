@@ -9,6 +9,7 @@ import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -56,7 +57,12 @@ public class VerticalDeckAdapter extends RecyclerView.Adapter<VerticalDeckAdapte
         holder.rowTitle.setText(getColoredTitle(horizontalData.getTitle()));
 
         // Set up the horizontal RecyclerView
-        HorizontalDeckAdapter horizontalAdapter = new HorizontalDeckAdapter(context, horizontalData.getDrawables(), horizontalData.getTitle(), onImageClickListener);
+        HorizontalDeckAdapter horizontalAdapter = new HorizontalDeckAdapter(context, horizontalData.getDrawables(), horizontalData.getTitle(), new HorizontalDeckAdapter.OnImageClickListener() {
+            @Override
+            public void onImageClick(int position, String color, ImageView sharedImageView) {
+                onImageClickListener.onImageClick(position, horizontalData.getTitle(), sharedImageView);
+            }
+        });
         holder.horizontalRecyclerView.setLayoutManager(
                 new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         );

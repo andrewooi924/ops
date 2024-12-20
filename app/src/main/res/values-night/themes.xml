@@ -6,5 +6,6 @@
         <!-- For TextViews -->
         <item name="fontFamily">@font/ydgothic</item>
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <item name="android:windowContentTransitions">true</item>
     </style>
 </resources>

@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.transition.TransitionInflater;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,22 +24,22 @@ public class OP01_002_DeckFragment extends Fragment {
         return fragment;
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setSharedElementEnterTransition(TransitionInflater.from(requireContext()).inflateTransition(R.transition.change_image_transform));
+        setSharedElementReturnTransition(TransitionInflater.from(requireContext()).inflateTransition(R.transition.change_image_transform));
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_op01_002_deck, container, false);
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-//        ImageView imageView = view.findViewById(R.id.fullImageView);
-//        if (getArguments() != null) {
-//            String transitionName = getArguments().getString(ARG_TRANSITION_NAME);
-//            imageView.setTransitionName(transitionName);
-
-        // Set the image resource here based on the transition name or position
-//        }
+        View view = inflater.inflate(R.layout.fragment_op01_002_deck, container, false);
+        ImageView imageView = view.findViewById(R.id.op01_002_img);
+        if (getArguments() != null) {
+            String transitionName = getArguments().getString("transitionName");
+            imageView.setTransitionName(transitionName);
+        }
+        return view;
     }
 }

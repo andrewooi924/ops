@@ -6,6 +6,7 @@
         <!-- For TextViews -->
         <item name="fontFamily">@font/ydgothic</item>
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="android:windowContentTransitions">true</item>
     </style>
 
     <style name="Theme.OPTCGApp" parent="Base.Theme.OPTCGApp" />

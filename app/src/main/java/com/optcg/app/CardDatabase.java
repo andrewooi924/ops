@@ -8,7 +8,7 @@ import android.content.Context;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {Card.class}, version = 1)
+@Database(entities = {Card.class}, version = 2)
 public abstract class CardDatabase extends RoomDatabase {
     public static final String CARD_DATABASE_NAME = "card_database";
     public abstract CardDao cardDao();
