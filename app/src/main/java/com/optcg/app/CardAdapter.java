@@ -1,5 +1,6 @@
 package com.optcg.app;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Handler;
 import android.os.Looper;
@@ -24,13 +25,16 @@ import org.jsoup.nodes.Element;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder> {
 
+    private Context context;
     private List<CardPrice> cardList;
     private Map<String, CardData> cardDataCache = new HashMap<>();
 
-    public CardAdapter(List<CardPrice> cardList) {
+    public CardAdapter(Context context, List<CardPrice> cardList) {
+        this.context = context;
         this.cardList = cardList;
     }
 
@@ -44,19 +48,26 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder
     @Override
     public void onBindViewHolder(@NonNull CardViewHolder holder, int position) {
         CardPrice card = cardList.get(position);
+        int cardId = card.getImageResId();
+        String cardPrefix = context.getResources().getResourceEntryName(cardId);
 
         // Set the card image
-        holder.cardImage.setImageResource(card.getImageResId());
+        holder.cardImage.setImageResource(cardId);
 
-        holder.itemView.setOnClickListener(v -> {
-            FragmentManager fragmentManager = ((AppCompatActivity) v.getContext()).getSupportFragmentManager();
-            CardPriceDialogFragment dialogFragment = CardPriceDialogFragment.newInstance(
-                    card.getImageResId(),
-                    card.getUrl()
-            );
+        if (!cardPrefix.startsWith("st") && !cardPrefix.startsWith("p")) {
+            holder.itemView.setOnClickListener(v -> {
+                FragmentManager fragmentManager = ((AppCompatActivity) v.getContext()).getSupportFragmentManager();
+                CardPriceDialogFragment dialogFragment = CardPriceDialogFragment.newInstance(
+                        card.getImageResId(),
+                        card.getUrl()
+                );
 
-            dialogFragment.show(fragmentManager, "cardPriceDialog");
-        });
+                dialogFragment.show(fragmentManager, "cardPriceDialog");
+            });
+        }
+        else {
+            holder.itemView.setOnClickListener(null);
+        }
 
         CardData cardData = cardDataCache.get(card.getUrl());
 
@@ -68,8 +79,13 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder
             holder.cardAvgPrice.setText("Fetching...");
             holder.cardMovement.setText("");
 
-            // Fetch the prices for this card asynchronously
-            fetchCardPrices(card.getUrl(), holder);
+            if (cardPrefix.startsWith("st") || cardPrefix.startsWith("p")) {
+                fetchCardPricesB(card.getUrl(), holder);
+            }
+            else {
+                // Fetch the prices for this card asynchronously
+                fetchCardPricesA(card.getUrl(), holder);
+            }
         }
     }
 
@@ -90,7 +106,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder
         }
     }
 
-    private void fetchCardPrices(String url, CardViewHolder holder) {
+    private void fetchCardPricesA(String url, CardViewHolder holder) {
         new Thread(() -> {
             try {
                 // Fetch and parse the HTML document
@@ -151,6 +167,54 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder
                     holder.cardMovement.setText(spannableMovement);
                 });
             } catch (Exception e) {
+                new Handler(Looper.getMainLooper()).post(() -> holder.cardAvgPrice.setText("Error fetching prices."));
+            }
+        }).start();
+    }
+
+    private void fetchCardPricesB(String url, CardViewHolder holder) {
+        new Thread(() -> {
+            try {
+                // Fetch and parse the HTML document
+                Document doc = Jsoup.connect(url).get();
+
+                // Extract the price from the item-price span
+                Element priceElement = doc.selectFirst(".item-price-wrap .item-price span[data-id^='makeshop-item-price']");
+                String avgPrice = priceElement != null ? priceElement.text().replaceAll("[^\\d]", "") : "0"; // Extract numeric value (removing non-numeric characters)
+
+                // Process and convert average price into RM format
+                String avgPriceInRM = formatAsRM(parsePriceToInt(avgPrice) * 0.025);
+
+                // Create CardData object for caching (so we can use it later if needed)
+                CardData cardData = new CardData(avgPrice, "0円", "0円");
+                cardDataCache.put(url, cardData);
+
+                // Set a placeholder for no movement (since soaring and crashing are not being used)
+                String movementText = "RM0.00 (0円)";
+                String symbol = "●";  // No movement symbol
+                int symbolColor = Color.parseColor("#FFD700");  // Gold color for no movement
+
+                // Final formatted average price and movement text
+                String finalAvgPrice = "Avg: " + avgPriceInRM + " (" + avgPrice + "円)";
+                String finalMovementText = movementText;
+
+                // Update the UI on the main thread
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    // Update the average price
+                    holder.cardAvgPrice.setText(finalAvgPrice);
+
+                    // Use SpannableString for the symbol and text
+                    SpannableString spannableMovement = new SpannableString(symbol + " " + finalMovementText);
+
+                    // Apply color only to the symbol
+                    spannableMovement.setSpan(new ForegroundColorSpan(symbolColor), 0, symbol.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                    // Set the styled text for movement
+                    holder.cardMovement.setText(spannableMovement);
+                });
+
+            } catch (Exception e) {
+                // If there is an error fetching or parsing, display an error message
                 new Handler(Looper.getMainLooper()).post(() -> holder.cardAvgPrice.setText("Error fetching prices."));
             }
         }).start();
