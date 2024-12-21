@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -14,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,6 +28,8 @@ public class OP01_001_DeckFragment extends Fragment {
     private List<Integer> deckImages;
     private List<Integer> cardCounts;
     private List<CardPrice> cardList;
+    private CardViewModel cardViewModel;
+    private TextView total;
     private static final String ARG_TRANSITION_NAME = "transitionName";
 
     public static OP01_001_DeckFragment newInstance(String transitionName) {
@@ -102,5 +106,12 @@ public class OP01_001_DeckFragment extends Fragment {
 
         deckAdapter = new DeckAdapter(getContext(), deckImages, cardCounts, cardList);
         recyclerView.setAdapter(deckAdapter);
+
+        total = view.findViewById(R.id.op01_001_total);
+        cardViewModel = new ViewModelProvider(requireActivity()).get(CardViewModel.class);
+        cardViewModel.getTotalPrice().observe(getViewLifecycleOwner(), tl -> {
+            // Update the TextView with the new total price
+            total.setText("Total Avg Price: " + String.format("%.2f", tl));  // Format as RM
+        });
     }
 }

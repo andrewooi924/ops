@@ -5,12 +5,14 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import java.util.List;
 
 public class CardViewModel extends AndroidViewModel {
     private CardRepository cardRepository;
     private LiveData<List<Card>> allCards;
+    private final MutableLiveData<Double> totalPrice = new MutableLiveData<>(0.0);
 
     public CardViewModel(@NonNull Application application) {
         super(application);
@@ -31,5 +33,13 @@ public class CardViewModel extends AndroidViewModel {
     public void updateCard(Card card) {
         cardRepository.updateCard(card);
         allCards = cardRepository.getAllCards();
+    }
+
+    public void setTotalPrice(double price) {
+        totalPrice.setValue(price);
+    }
+
+    public LiveData<Double> getTotalPrice() {
+        return totalPrice;
     }
 }
