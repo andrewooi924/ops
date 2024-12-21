@@ -1,5 +1,6 @@
 package com.optcg.app;
 
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -10,16 +11,29 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
+import android.os.Looper;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.transition.TransitionInflater;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.FutureTask;
 
 public class OP01_001_DeckFragment extends Fragment {
 
@@ -85,7 +99,7 @@ public class OP01_001_DeckFragment extends Fragment {
         );
 
         cardCounts = Arrays.asList(
-               4,4,4,4,2,4,4,3,4,4,4,4,4,1
+                4, 4, 4, 4, 2, 4, 4, 3, 4, 4, 4, 4, 4, 1
         );
 
         cardList = new ArrayList<>();
@@ -108,10 +122,57 @@ public class OP01_001_DeckFragment extends Fragment {
         recyclerView.setAdapter(deckAdapter);
 
         total = view.findViewById(R.id.op01_001_total);
+        double leader_price = fetchCardPrice("https://onepiece-card-atari.jp/expansion/romance-dawn/card/op01-001/l-p");
         cardViewModel = new ViewModelProvider(requireActivity()).get(CardViewModel.class);
         cardViewModel.getTotalPrice().observe(getViewLifecycleOwner(), tl -> {
             // Update the TextView with the new total price
-            total.setText("Total Avg Price: " + String.format("%.2f", tl));  // Format as RM
+            total.setText("Total Avg Price: " + String.format("%.2f", tl+leader_price));  // Format as RM
         });
+    }
+
+    public double fetchCardPrice(String url) {
+        // Create a Callable to fetch the price
+        Callable<Double> callable = new Callable<Double>() {
+            @Override
+            public Double call() throws Exception {
+                try {
+                    // Fetch and parse the HTML document
+                    Document doc = Jsoup.connect(url).get();
+
+                    // Extract average price
+                    String avgPrice = doc.select("table.table_info tbody tr td").first().text();
+                    return Double.parseDouble(avgPrice.replaceAll("[^\\d]", ""));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return 0.0;  // Return 0 if there's an error
+                }
+            }
+        };
+
+        // Create a FutureTask to run the Callable asynchronously
+        FutureTask<Double> futureTask = new FutureTask<>(callable);
+
+        // Start the task on a separate thread
+        new Thread(futureTask).start();
+
+        try {
+            // Block and wait for the result
+            return futureTask.get();  // This will block until the result is available
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0.0;  // Return 0 if there's an error or exception during fetching
+        }
+    }
+
+    private int parsePriceToInt(String priceText) {
+        try {
+            return Integer.parseInt(priceText.replace(",", "").replace("円", "").trim());
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
+
+    private String formatAsRM(double value) {
+        return String.format("RM%.2f", value);
     }
 }

@@ -1,15 +1,16 @@
 package com.optcg.app;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,9 +27,16 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class DeckAdapter extends RecyclerView.Adapter<DeckAdapter.ViewHolder> {
     private Context context;
@@ -39,6 +47,9 @@ public class DeckAdapter extends RecyclerView.Adapter<DeckAdapter.ViewHolder> {
     private List<CardPrice> cardList;
     private Map<String, CardData> cardDataCache = new HashMap<>();
     private final CardViewModel cardViewModel;
+    private final List<Double> priceList = Collections.synchronizedList(new ArrayList<>());
+    private double totalPrice = 0;
+    private final ExecutorService executorService = Executors.newFixedThreadPool(5);
 
     public DeckAdapter(Context context, List<Integer> deckImages, List<Integer> cardCounts, List<CardPrice> cardList) {
         this.context = context;
@@ -79,7 +90,7 @@ public class DeckAdapter extends RecyclerView.Adapter<DeckAdapter.ViewHolder> {
             holder.cardMovement.setText("");
 
             // Fetch the prices for this card asynchronously
-            fetchCardPrices(cp.getUrl(), holder, context.getResources().getResourceEntryName(deckImage));
+            fetchCardPrices(cp.getUrl(), holder, context.getResources().getResourceEntryName(deckImage), count);
         }
 
         if (bitmap != null) {
@@ -158,16 +169,28 @@ public class DeckAdapter extends RecyclerView.Adapter<DeckAdapter.ViewHolder> {
         }
     }
 
-    private void fetchCardPrices(String url, DeckAdapter.ViewHolder holder, String prefix) {
+    private void fetchCardPrices(String url, DeckAdapter.ViewHolder holder, String prefix, int count) {
+
+        CountDownLatch latch = new CountDownLatch(1);
+
         if (prefix.startsWith("st")) {
-            fetchCardPricesB(url, holder);
+            executorService.submit(() -> fetchCardPricesB(url, holder, latch, count));
         }
         else {
-            fetchCardPricesA(url, holder);
+            executorService.submit(() -> fetchCardPricesA(url, holder, latch, count));
+        }
+
+        try {
+            latch.await();
+            new Handler(Looper.getMainLooper()).post(() -> {
+                cardViewModel.setTotalPrice(totalPrice);
+            });
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
-    private void fetchCardPricesA(String url, DeckAdapter.ViewHolder holder) {
+    private void fetchCardPricesA(String url, DeckAdapter.ViewHolder holder, CountDownLatch latch, int count) {
         new Thread(() -> {
             try {
                 // Fetch and parse the HTML document
@@ -175,6 +198,9 @@ public class DeckAdapter extends RecyclerView.Adapter<DeckAdapter.ViewHolder> {
 
                 // Extract average price
                 String avgPrice = doc.select("table.table_info tbody tr td").first().text();
+                double avgPriceA = Double.parseDouble(avgPrice.replaceAll("[^\\d]", "")) * count;
+                priceList.add(avgPriceA);
+                addToTotalPrice(avgPriceA);
 
                 // Extract soaring and crash prices
                 Element soaringElement = doc.selectFirst(".movement_price_box .soaring");
@@ -229,11 +255,13 @@ public class DeckAdapter extends RecyclerView.Adapter<DeckAdapter.ViewHolder> {
                 });
             } catch (Exception e) {
                 new Handler(Looper.getMainLooper()).post(() -> holder.cardAvgPrice.setText("Error fetching prices."));
+            } finally {
+                latch.countDown();
             }
         }).start();
     }
 
-    private void fetchCardPricesB(String url, DeckAdapter.ViewHolder holder) {
+    private void fetchCardPricesB(String url, DeckAdapter.ViewHolder holder, CountDownLatch latch, int count) {
         new Thread(() -> {
             try {
                 // Fetch and parse the HTML document
@@ -242,8 +270,9 @@ public class DeckAdapter extends RecyclerView.Adapter<DeckAdapter.ViewHolder> {
                 // Extract the price from the item-price span
                 Element priceElement = doc.selectFirst(".item-price-wrap .item-price span[data-id^='makeshop-item-price']");
                 String avgPrice = priceElement != null ? priceElement.text().replaceAll("[^\\d]", "") : "0"; // Extract numeric value (removing non-numeric characters)
-
-                // Remove soaring and crash price code (since it's not needed)
+                double avgPriceB = Double.parseDouble(avgPrice) * count;
+                priceList.add(avgPriceB);
+                addToTotalPrice(avgPriceB);
 
                 // Process and convert average price into RM format
                 String avgPriceInRM = formatAsRM(parsePriceToInt(avgPrice) * 0.025);
@@ -279,6 +308,8 @@ public class DeckAdapter extends RecyclerView.Adapter<DeckAdapter.ViewHolder> {
             } catch (Exception e) {
                 // If there is an error fetching or parsing, display an error message
                 new Handler(Looper.getMainLooper()).post(() -> holder.cardAvgPrice.setText("Error fetching prices."));
+            } finally {
+                latch.countDown();
             }
         }).start();
     }
@@ -334,6 +365,17 @@ public class DeckAdapter extends RecyclerView.Adapter<DeckAdapter.ViewHolder> {
 
             // Set the styled text
             holder.cardMovement.setText(spannableMovement);
+        });
+    }
+
+    // Add price to the total
+    private void addToTotalPrice(double price) {
+        totalPrice += price;
+
+        // Ensure the UI update is done on the main thread
+        new Handler(Looper.getMainLooper()).post(() -> {
+            // Update the ViewModel with the new total
+            cardViewModel.setTotalPrice(totalPrice);
         });
     }
 }
