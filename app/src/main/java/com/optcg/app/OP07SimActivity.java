@@ -243,11 +243,15 @@ public class OP07SimActivity extends AppCompatActivity {
         pity = false;
 
         ImageView card6 = new ImageView(this);
-        int randomIndex = (int) (Math.random() * cardResources.length);
-        String cardId6 = getResources().getResourceEntryName(cardResources[randomIndex]);
+        int randomIndex, randomCard;
+        do {
+            randomIndex = (int) (Math.random() * cardResources.length);
+            randomCard = cardResources[randomIndex];
+        } while (pulledCards.contains(randomCard));
+        String cardId6 = getResources().getResourceEntryName(randomCard);
         String rarity6 = rarity;
-        card6.setImageResource(cardResources[randomIndex]);
-        pulledCards.add(cardResources[randomIndex]);
+        card6.setImageResource(randomCard);
+        pulledCards.add(randomCard);
         if (!sharedPreferences.getBoolean(cardId6 + "_isCollected", false)) {
             isNew.add(true);
         }
@@ -345,10 +349,13 @@ public class OP07SimActivity extends AppCompatActivity {
         ImageView card5 = new ImageView(this);
         cardResources = rCards;
         rarity = "R";
-        randomIndex = (int) (Math.random() * cardResources.length);
-        String cardId5 = getResources().getResourceEntryName(cardResources[randomIndex]);
-        card5.setImageResource(cardResources[randomIndex]);
-        pulledCards.add(cardResources[randomIndex]);
+        do {
+            randomIndex = (int) (Math.random() * cardResources.length);
+            randomCard = cardResources[randomIndex];
+        } while (pulledCards.contains(randomCard));
+        String cardId5 = getResources().getResourceEntryName(randomCard);
+        card5.setImageResource(randomCard);
+        pulledCards.add(randomCard);
         if (!sharedPreferences.getBoolean(cardId5 + "_isCollected", false)) {
             isNew.add(true);
         }
@@ -387,10 +394,13 @@ public class OP07SimActivity extends AppCompatActivity {
             cardResources = cCards;
             rarity = "C";
         }
-        randomIndex = (int) (Math.random() * cardResources.length);
-        String cardId4 = getResources().getResourceEntryName(cardResources[randomIndex]);
-        card4.setImageResource(cardResources[randomIndex]);
-        pulledCards.add(cardResources[randomIndex]);
+        do {
+            randomIndex = (int) (Math.random() * cardResources.length);
+            randomCard = cardResources[randomIndex];
+        } while (pulledCards.contains(randomCard));
+        String cardId4 = getResources().getResourceEntryName(randomCard);
+        card4.setImageResource(randomCard);
+        pulledCards.add(randomCard);
         if (!sharedPreferences.getBoolean(cardId4 + "_isCollected", false)) {
             isNew.add(true);
         }
@@ -440,10 +450,13 @@ public class OP07SimActivity extends AppCompatActivity {
             cardResources = cCards;
             rarity = "C";
         }
-        randomIndex = (int) (Math.random() * cardResources.length);
-        String cardId3 = getResources().getResourceEntryName(cardResources[randomIndex]);
-        card3.setImageResource(cardResources[randomIndex]);
-        pulledCards.add(cardResources[randomIndex]);
+        do {
+            randomIndex = (int) (Math.random() * cardResources.length);
+            randomCard = cardResources[randomIndex];
+        } while (pulledCards.contains(randomCard));
+        String cardId3 = getResources().getResourceEntryName(randomCard);
+        card3.setImageResource(randomCard);
+        pulledCards.add(randomCard);
         if (!sharedPreferences.getBoolean(cardId3 + "_isCollected", false)) {
             isNew.add(true);
         }
@@ -493,10 +506,13 @@ public class OP07SimActivity extends AppCompatActivity {
             cardResources = cCards;
             rarity = "C";
         }
-        randomIndex = (int) (Math.random() * cardResources.length);
-        String cardId2 = getResources().getResourceEntryName(cardResources[randomIndex]);
-        card2.setImageResource(cardResources[randomIndex]);
-        pulledCards.add(cardResources[randomIndex]);
+        do {
+            randomIndex = (int) (Math.random() * cardResources.length);
+            randomCard = cardResources[randomIndex];
+        } while (pulledCards.contains(randomCard));
+        String cardId2 = getResources().getResourceEntryName(randomCard);
+        card2.setImageResource(randomCard);
+        pulledCards.add(randomCard);
         if (!sharedPreferences.getBoolean(cardId2 + "_isCollected", false)) {
             isNew.add(true);
         }
@@ -546,10 +562,13 @@ public class OP07SimActivity extends AppCompatActivity {
             cardResources = cCards;
             rarity = "C";
         }
-        randomIndex = (int) (Math.random() * cardResources.length);
-        String cardId1 = getResources().getResourceEntryName(cardResources[randomIndex]);
-        card1.setImageResource(cardResources[randomIndex]);
-        pulledCards.add(cardResources[randomIndex]);
+        do {
+            randomIndex = (int) (Math.random() * cardResources.length);
+            randomCard = cardResources[randomIndex];
+        } while (pulledCards.contains(randomCard));
+        String cardId1 = getResources().getResourceEntryName(randomCard);
+        card1.setImageResource(randomCard);
+        pulledCards.add(randomCard);
         if (!sharedPreferences.getBoolean(cardId1 + "_isCollected", false)) {
             isNew.add(true);
         }
