@@ -1,7 +1,7 @@
 
 <h1 align="center">
   <br>
-  <a href="https://asia-en.onepiece-cardgame.com/"><img src="https://rawcdn.githack.com/andrewooi924/fullstackopen-react/acccbd60bb82611a4bf310cab2af99c06230d3b8/app_icon.png" alt="OPTCG APP" width="200"></a>
+  <a href="https://asia-en.onepiece-cardgame.com/"><img src="https://github.com/user-attachments/assets/0e70f7cd-dca1-4f3b-a54f-2ee1ffe2f9f9" alt="OPTCG APP" width="200"></a>
   <br>
   OPTCG APP
   <br>
@@ -28,9 +28,11 @@
 
 ## Key Features
 
-* Booster Pack Simulator for all 9 base booster sets.
-* Card Collection **WIP**
-* Real-time Price Fetching **WIP**
+* Booster Pack Simulator for all 10 base booster sets.
+* Card Collection Tracker for all 10 base booster sets.
+* Deck Showcases for popular or tournament-winning decks.
+* Real-time Price Fetching for popular cards and decks.
+* Shop for non booster cards **WIP**
 * Dark/Light mode **WIP**
   
 ## How To Use
@@ -47,7 +49,10 @@ This software uses the following open source packages:
 
 - [Android Studio](https://developer.android.com/studio)
 - [GIMP](https://www.gimp.org/)
-- Images are taken from [here](https://asia-en.onepiece-cardgame.com/cardlist)
+- Popular and tournament-winning decks were taken from [here](https://onepiece.saikyo-cardgame.online/)
+- Icons were taken from [here](https://www.flaticon.com)
+- Card images were taken from [here](https://asia-en.onepiece-cardgame.com/cardlist)
+- Card prices were taken from [here](https://onepiece-card-atari.jp/) and [here](https://tier-one-onepiece.jp/)
 
 ## License
 
@@ -56,5 +61,5 @@ MIT
 ---
 
 > GitHub [@andrewooi924](https://github.com/andrewooi924) &nbsp;&middot;&nbsp;
-> Twitter [Ooi Yu Zhang](https://www.linkedin.com/in/ooi-yu-zhang-232684287/)
+> LinkedIn [Ooi Yu Zhang](https://www.linkedin.com/in/ooi-yu-zhang-232684287/)
 
