@@ -61,5 +61,5 @@ MIT
 ---
 
 > GitHub [@andrewooi924](https://github.com/andrewooi924) &nbsp;&middot;&nbsp;
-> Twitter [Ooi Yu Zhang](https://www.linkedin.com/in/ooi-yu-zhang-232684287/)
+> LinkedIn [Ooi Yu Zhang](https://www.linkedin.com/in/ooi-yu-zhang-232684287/)
 
