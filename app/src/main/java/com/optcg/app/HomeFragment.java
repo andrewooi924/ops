@@ -66,6 +66,10 @@ public class HomeFragment extends Fragment {
             menuItems.add("OP0" + i);
         }
 
+        for (int i = 0; i < 1; i++) {
+            menuItems.add("OP1" + i);
+        }
+
         menuImages = new ArrayList<>();
         menuImages.add(R.drawable.op01_box);
         menuImages.add(R.drawable.op02_box);
@@ -76,6 +80,7 @@ public class HomeFragment extends Fragment {
         menuImages.add(R.drawable.op07_box);
         menuImages.add(R.drawable.op08_box);
         menuImages.add(R.drawable.op09_box);
+        menuImages.add(R.drawable.op10_box);
 
         // Initialize and set the adapter
         mainMenuAdapter = new MainMenuAdapter(requireActivity().getSupportFragmentManager(), getContext(), menuItems, menuImages);

@@ -44,7 +44,7 @@ public class CollectionFragment extends Fragment implements CollectionAdapter.On
                 R.drawable.op03_collection, R.drawable.op04_collection,
                 R.drawable.op05_collection, R.drawable.op06_collection,
                 R.drawable.op07_collection, R.drawable.op08_collection,
-                R.drawable.op09_collection);
+                R.drawable.op09_collection, R.drawable.op10_collection);
 
         // Set up adapter with only images
         collectionAdapter = new CollectionAdapter(getContext(), menuImages, this);
