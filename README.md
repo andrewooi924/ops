@@ -1,8 +1,7 @@
 
 <h1 align="center">
   <br>
-  <a href="https://asia-en.onepiece-cardgame.com/"><img src="https://github.com/user-attachments/assets/0e70f7cd-dca1-4f3b-a54f-2ee1ffe2f9f9
-" alt="OPTCG APP" width="200"></a>
+  <a href="https://asia-en.onepiece-cardgame.com/"><img src="https://github.com/user-attachments/assets/0e70f7cd-dca1-4f3b-a54f-2ee1ffe2f9f9" alt="OPTCG APP" width="200"></a>
   <br>
   OPTCG APP
   <br>
