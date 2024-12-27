@@ -28,9 +28,11 @@
 
 ## Key Features
 
-* Booster Pack Simulator for all 9 base booster sets.
-* Card Collection **WIP**
-* Real-time Price Fetching **WIP**
+* Booster Pack Simulator for all 10 base booster sets.
+* Card Collection Tracker for all 10 base booster sets.
+* Deck Showcases for popular or tournament-winning decks.
+* Real-time Price Fetching for popular cards and decks.
+* Shop for non booster cards **WIP**
 * Dark/Light mode **WIP**
   
 ## How To Use
@@ -47,7 +49,10 @@ This software uses the following open source packages:
 
 - [Android Studio](https://developer.android.com/studio)
 - [GIMP](https://www.gimp.org/)
-- Images are taken from [here](https://asia-en.onepiece-cardgame.com/cardlist)
+- Popular and tournament-winning decks were taken from [here](https://onepiece.saikyo-cardgame.online/)
+- Icons were taken from [here](https://www.flaticon.com)
+- Card images were taken from [here](https://asia-en.onepiece-cardgame.com/cardlist)
+- Card prices were taken from [here](https://onepiece-card-atari.jp/) and [here](https://tier-one-onepiece.jp/)
 
 ## License
 
