@@ -346,6 +346,9 @@ public class PricesFragment extends Fragment {
             index[0]++;
         }
 
+        // Immediately update the graph with the stored data
+        updateGraph();
+
         // Check if today's price is already calculated
         String today = dateFormat.format(new Date());
         // Fetch today's total value asynchronously
@@ -483,6 +486,7 @@ public class PricesFragment extends Fragment {
 
         String symbol;
         int symbolColor;
+        String percentageChangeFormatted = decimalFormat.format(percentageChange);
 
         if (percentageChange > 0) {
             symbol = "▲";
@@ -496,9 +500,10 @@ public class PricesFragment extends Fragment {
         else {
             symbol = "●";
             symbolColor = Color.parseColor("#FFD700");
+            percentageChangeFormatted = "0.00";
+            priceDifferenceFormatted = "0.00";
         }
 
-        String percentageChangeFormatted = decimalFormat.format(percentageChange);
 
         portfolioTotalValue.setText("MYR " + totalPrice);
         portfolioSubtitle.setText(symbol + " " + percentageChangeFormatted + "% (MYR " + priceDifferenceFormatted + ")");
