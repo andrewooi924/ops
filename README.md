@@ -32,6 +32,7 @@
 * Card Collection Tracker for all 10 base booster sets.
 * Deck Showcases for popular or tournament-winning decks.
 * Real-time Price Fetching for popular cards and decks.
+* Portfolio Tracking for your personal collection.
 * Shop for non booster cards **WIP**
 * Dark/Light mode **WIP**
   
