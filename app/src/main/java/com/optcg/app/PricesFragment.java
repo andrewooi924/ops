@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,8 +32,12 @@ import com.github.mikephil.charting.data.LineDataSet;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.w3c.dom.Text;
 
 import java.text.SimpleDateFormat;
+import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -52,6 +57,8 @@ public class PricesFragment extends Fragment {
     private List<Entry> priceEntries;
     private SharedPreferences sharedPreferences;
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+    private TextView portfolioTotalValue;
+    private TextView portfolioSubtitle;
 
     @Nullable
     @Override
@@ -223,11 +230,42 @@ public class PricesFragment extends Fragment {
 
         personalCardList = new ArrayList<>();
         personalCardList.add(new PersonalCard(R.drawable.op01_031_p1, "https://onepiece-card-atari.jp/expansion/romance-dawn/card/op01-031/l-p", 30.0f));
+        personalCardList.add(new PersonalCard(R.drawable.op01_091_p1, "https://onepiece-card-atari.jp/expansion/romance-dawn/card/op01-091/l-p", 30.0f));
+        personalCardList.add(new PersonalCard(R.drawable.op02_001_p1, "https://onepiece-card-atari.jp/expansion/paramount-war/card/op02-001/l-p", 0.0f));
+        personalCardList.add(new PersonalCard(R.drawable.op02_025_p1, "https://onepiece-card-atari.jp/expansion/paramount-war/card/p02-025/l-p", 30.0f));
+        personalCardList.add(new PersonalCard(R.drawable.op02_026_p1, "https://onepiece-card-atari.jp/expansion/paramount-war/card/op02-026/l-p", 59.4f));
+        personalCardList.add(new PersonalCard(R.drawable.op02_071_p1, "https://onepiece-card-atari.jp/expansion/paramount-war/card/op02-071/l-p", 30.0f));
+        personalCardList.add(new PersonalCard(R.drawable.op05_001_p1, "https://onepiece-card-atari.jp/expansion/awakening-of-the-new-era/card/op05-001/l-p", 32.4f));
+        personalCardList.add(new PersonalCard(R.drawable.op05_002_p1, "https://onepiece-card-atari.jp/expansion/awakening-of-the-new-era/card/op05-002/l-p", 28.5f));
+        personalCardList.add(new PersonalCard(R.drawable.op05_022_p1, "https://onepiece-card-atari.jp/expansion/awakening-of-the-new-era/card/op05-022/l-p", 20.4f));
+        personalCardList.add(new PersonalCard(R.drawable.op05_041_p1, "https://onepiece-card-atari.jp/expansion/awakening-of-the-new-era/card/op05-041/l-p", 18.0f));
+        personalCardList.add(new PersonalCard(R.drawable.op05_060_p1, "https://onepiece-card-atari.jp/expansion/awakening-of-the-new-era/card/op05-060/l-p", 84.0f));
+        personalCardList.add(new PersonalCard(R.drawable.op05_098_p1, "https://onepiece-card-atari.jp/expansion/awakening-of-the-new-era/card/op05-098/l-p", 48.0f));
+        personalCardList.add(new PersonalCard(R.drawable.op06_020_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-020/l-p", 16.8f));
+        personalCardList.add(new PersonalCard(R.drawable.op06_021_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-021/l-p", 77.1f));
+        personalCardList.add(new PersonalCard(R.drawable.op06_042_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-042/l-p", 105.0f));
+        personalCardList.add(new PersonalCard(R.drawable.op06_080_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-080/l-p", 30.0f));
+        personalCardList.add(new PersonalCard(R.drawable.op08_001_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-001/l-p", 26.4f));
+        personalCardList.add(new PersonalCard(R.drawable.op08_002_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-002/l-p", 32.4f));
+        personalCardList.add(new PersonalCard(R.drawable.op08_021_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-021/l-p", 20.4f));
+        personalCardList.add(new PersonalCard(R.drawable.op08_057_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-057/l-p", 26.4f));
+        personalCardList.add(new PersonalCard(R.drawable.op08_058_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-058/l-p", 72.0f));
+        personalCardList.add(new PersonalCard(R.drawable.prb01_001_p1, "https://onepiece-card-atari.jp/expansion/one-piece-card-the-best/card/prb01-001/l-p", 60.0f));
+        personalCardList.add(new PersonalCard(R.drawable.op09_022_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-022/l-p", 27.0f));
+        personalCardList.add(new PersonalCard(R.drawable.op09_042_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-042/l-p", 32.4f));
+        personalCardList.add(new PersonalCard(R.drawable.op09_062_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-062/l-p", 28.5f));
+        personalCardList.add(new PersonalCard(R.drawable.op01_013_p3, "https://tier-one-onepiece.jp/view/item/000000001871", 16.5f));
+        personalCardList.add(new PersonalCard(R.drawable.st01_005_p3, "https://tier-one-onepiece.jp/view/item/000000001872", 4.5f));
+        personalCardList.add(new PersonalCard(R.drawable.op02_059_p2, "https://tier-one-onepiece.jp/view/item/000000001869", 58.5f));
+        personalCardList.add(new PersonalCard(R.drawable.st03_008_p4, "https://tier-one-onepiece.jp/view/item/000000001870", 16.5f));
 
         preloadInitialData();
         lineChart = view.findViewById(R.id.portfolioChart);
+        portfolioTotalValue = view.findViewById(R.id.portfolioTotalValue);
+        portfolioSubtitle = view.findViewById(R.id.portfolioSubtitle);
         setupLineChart();
         loadAndUpdateData();
+        calculatePriceDifference();
 
         return view;
     }
@@ -264,9 +302,13 @@ public class PricesFragment extends Fragment {
 
     private void preloadInitialData() {
         String initialDate = "2024-12-28";
+        float total = 0;
+        for (PersonalCard card : personalCardList) {
+            total += card.getInitialPrice();
+        }
         if (!sharedPreferences.contains(initialDate)) {
             // Store initial price for 28th December 2024
-            sharedPreferences.edit().putFloat(initialDate, 30.0f).apply();
+            sharedPreferences.edit().putFloat(initialDate, total).apply();
         }
     }
 
@@ -296,22 +338,32 @@ public class PricesFragment extends Fragment {
 
         // Check if today's price is already calculated
         String today = dateFormat.format(new Date());
-        if (!sharedPreferences.contains(today)) {
-            // Fetch today's total value asynchronously
-            new Thread(() -> {
-                float totalValue = calculateTotalValue();
-                sharedPreferences.edit().putFloat(today, totalValue).apply();
+        // Fetch today's total value asynchronously
+        new Thread(() -> {
+            float totalValue = calculateTotalValue();
+            sharedPreferences.edit().putFloat(today, totalValue).apply();
 
-                // Add today's data to the graph on UI thread
-                new Handler(Looper.getMainLooper()).post(() -> {
+            // Add today's data to the graph on UI thread
+            new Handler(Looper.getMainLooper()).post(() -> {
+                boolean updated = false;
+
+                // Check if today's entry exists and update it
+                for (Entry entry : priceEntries) {
+                    if (entry.getX() == (index[0] - 1)) {
+                        entry.setY(totalValue);
+                        updated = true;
+                        break;
+                    }
+                }
+
+                if (!updated) {
                     priceEntries.add(new Entry(index[0], totalValue)); // Use the updated index
                     index[0]++;
-                    updateGraph();
-                });
-            }).start();
-        } else {
-            updateGraph();
-        }
+                }
+
+                updateGraph();
+            });
+        }).start();
     }
 
 
@@ -357,14 +409,20 @@ public class PricesFragment extends Fragment {
     private float calculateTotalValue() {
         float total = 0;
         for (PersonalCard card : personalCardList) {
-            float realTimePrice = fetchCardPrice(card.getUrl());
-            total += realTimePrice;
+            if (card.getUrl().contains("card-atari")) {
+                float realTimePrice = fetchCardPriceA(card.getUrl());
+                total += realTimePrice;
+            }
+            else if (card.getUrl().contains("tier-one")) {
+                float realTimePrice = fetchCardPriceB(card.getUrl());
+                total += realTimePrice;
+            }
             Log.d("AVGPRICE", "" + total);
         }
         return total;
     }
 
-    private float fetchCardPrice(String url) {
+    private float fetchCardPriceA(String url) {
         try {
             // Fetch and parse the HTML document (this should ideally be done asynchronously)
             Document doc = Jsoup.connect(url).get();
@@ -374,5 +432,65 @@ public class PricesFragment extends Fragment {
             e.printStackTrace(); // Log the error
             return -1f; // Return -1 if there's an error
         }
+    }
+
+    private float fetchCardPriceB(String url) {
+        try {
+            // Fetch and parse the HTML document (this should ideally be done asynchronously)
+            Document doc = Jsoup.connect(url).get();
+            Element priceElement = doc.selectFirst(".item-price-wrap .item-price span[data-id^='makeshop-item-price']");
+            return Float.parseFloat(priceElement.text().replaceAll("[^\\d.]", "")) * 0.03f;
+        } catch (Exception e) {
+            e.printStackTrace(); // Log the error
+            return -1f; // Return -1 if there's an error
+        }    }
+
+    private void calculatePriceDifference() {
+        // Get current date and yesterday's date
+        String currentDate = dateFormat.format(new Date());
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+        String yesterdayDate = yesterday.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+        DecimalFormat decimalFormat = new DecimalFormat("#.00");
+
+        // Retrieve the prices for the current day and yesterday
+        float currentPrice = sharedPreferences.getFloat(currentDate, -1f);  // -1f means no value found
+        float yesterdayPrice = sharedPreferences.getFloat(yesterdayDate, -1f);
+
+        // 1. Total price for current day
+        String totalPrice = decimalFormat.format(currentPrice);
+
+        // 2. Difference between current day and yesterday
+        float priceDifference = currentPrice - yesterdayPrice;
+        String priceDifferenceFormatted = decimalFormat.format(priceDifference);
+
+        // 3. Percentage increase or decrease from yesterday
+        float percentageChange = 0f;
+        if (priceDifference != 0f) {
+            percentageChange = (priceDifference / yesterdayPrice) * 100;
+        }
+
+        String symbol;
+        int symbolColor;
+
+        if (percentageChange > 0) {
+            symbol = "▲";
+            symbolColor = Color.GREEN;
+        }
+        else if (percentageChange < 0) {
+            percentageChange = -percentageChange;
+            symbol = "▼";
+            symbolColor = Color.RED;
+        }
+        else {
+            symbol = "●";
+            symbolColor = Color.parseColor("#FFD700");
+        }
+
+        String percentageChangeFormatted = decimalFormat.format(percentageChange);
+
+        portfolioTotalValue.setText("MYR " + totalPrice);
+        portfolioSubtitle.setText(symbol + " " + percentageChangeFormatted + "% (MYR " + priceDifferenceFormatted + ")");
+        portfolioSubtitle.setTextColor(symbolColor);
     }
 }
