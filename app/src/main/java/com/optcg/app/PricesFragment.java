@@ -1,6 +1,15 @@
 package com.optcg.app;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,14 +20,38 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.concurrent.CountDownLatch;
 
 public class PricesFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private CardAdapter cardAdapter;
     private List<CardPrice> cardList;
+    private List<PersonalCard> personalCardList;
+    private LineChart lineChart;
+    private List<Entry> priceEntries;
+    private SharedPreferences sharedPreferences;
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
     @Nullable
     @Override
@@ -75,8 +108,8 @@ public class PricesFragment extends Fragment {
         // OP06
         cardList.add(new CardPrice(R.drawable.op06_001_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-001/l-p"));
 //        cardList.add(new CardPrice(R.drawable.op06_020_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-020/l-p"));
-        cardList.add(new CardPrice(R.drawable.op06_021_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-021/l-p"));
-//        cardList.add(new CardPrice(R.drawable.op06_022_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-022/l-p"));
+//        cardList.add(new CardPrice(R.drawable.op06_021_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-021/l-p"));
+        cardList.add(new CardPrice(R.drawable.op06_022_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-022/l-p"));
 //        cardList.add(new CardPrice(R.drawable.op06_042_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-042/l-p"));
 //        cardList.add(new CardPrice(R.drawable.op06_080_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-080/l-p"));
 
@@ -94,11 +127,11 @@ public class PricesFragment extends Fragment {
         cardList.add(new CardPrice(R.drawable.op07_097_p1, "https://onepiece-card-atari.jp/expansion/500-yeas-in-the-future/card/op07-097/l-p"));
 
         // OP08
-        cardList.add(new CardPrice(R.drawable.op08_001_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-001/l-p"));
-        cardList.add(new CardPrice(R.drawable.op08_002_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-002/l-p"));
-        cardList.add(new CardPrice(R.drawable.op08_021_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-021/l-p"));
+//        cardList.add(new CardPrice(R.drawable.op08_001_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-001/l-p"));
+//        cardList.add(new CardPrice(R.drawable.op08_002_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-002/l-p"));
+//        cardList.add(new CardPrice(R.drawable.op08_021_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-021/l-p"));
 //        cardList.add(new CardPrice(R.drawable.op08_057_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-057/l-p"));
-        cardList.add(new CardPrice(R.drawable.op08_058_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-058/l-p"));
+//        cardList.add(new CardPrice(R.drawable.op08_058_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-058/l-p"));
         cardList.add(new CardPrice(R.drawable.op08_098_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-098/l-p"));
 
         // PRB01
@@ -107,7 +140,7 @@ public class PricesFragment extends Fragment {
         // OP09
         cardList.add(new CardPrice(R.drawable.op09_001_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-001/l-p"));
 //        cardList.add(new CardPrice(R.drawable.op09_022_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-022/l-p"));
-        cardList.add(new CardPrice(R.drawable.op09_042_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-042/l-p"));
+//        cardList.add(new CardPrice(R.drawable.op09_042_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-042/l-p"));
         cardList.add(new CardPrice(R.drawable.op09_061_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-061/l-p"));
 //        cardList.add(new CardPrice(R.drawable.op09_062_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-062/l-p"));
         cardList.add(new CardPrice(R.drawable.op09_081_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-081/l-p"));
@@ -185,6 +218,161 @@ public class PricesFragment extends Fragment {
         cardAdapter = new CardAdapter(getContext(), cardList);
         recyclerView.setAdapter(cardAdapter);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+
+        sharedPreferences = requireContext().getSharedPreferences("PortfolioData", Context.MODE_PRIVATE);
+
+        personalCardList = new ArrayList<>();
+        personalCardList.add(new PersonalCard(R.drawable.op01_031_p1, "https://onepiece-card-atari.jp/expansion/romance-dawn/card/op01-031/l-p", 30.0f));
+
+        preloadInitialData();
+        lineChart = view.findViewById(R.id.portfolioChart);
+        setupLineChart();
+        loadAndUpdateData();
+
         return view;
+    }
+
+    private void setupLineChart() {
+        lineChart.setTouchEnabled(false);
+        lineChart.setDragEnabled(false);
+        lineChart.setScaleEnabled(false);
+        lineChart.setHighlightPerDragEnabled(false);
+        lineChart.setHighlightPerTapEnabled(false);
+        lineChart.getLegend().setEnabled(false);
+        lineChart.getDescription().setEnabled(false);
+
+        XAxis xAxis = lineChart.getXAxis();
+        xAxis.setDrawGridLines(false);
+        xAxis.setDrawAxisLine(true);
+        xAxis.setDrawLabels(false);
+        xAxis.setAxisLineWidth(1f);
+        xAxis.setAxisLineColor(Color.parseColor("#373737"));
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+
+        YAxis leftAxis = lineChart.getAxisLeft();
+        leftAxis.setDrawGridLines(false);
+        leftAxis.setDrawLabels(false);
+        leftAxis.setDrawAxisLine(false);
+
+        YAxis rightAxis = lineChart.getAxisRight();
+        rightAxis.setDrawAxisLine(true);
+        rightAxis.setAxisLineWidth(1f);
+        rightAxis.setAxisLineColor(Color.parseColor("#373737"));
+        rightAxis.setTextColor(Color.parseColor("#BCBCBC"));
+        rightAxis.setDrawGridLines(false);
+    }
+
+    private void preloadInitialData() {
+        String initialDate = "2024-12-28";
+        if (!sharedPreferences.contains(initialDate)) {
+            // Store initial price for 28th December 2024
+            sharedPreferences.edit().putFloat(initialDate, 30.0f).apply();
+        }
+    }
+
+    private void loadAndUpdateData() {
+        priceEntries = new ArrayList<>();
+
+        // Load stored data
+        Map<String, ?> storedData = sharedPreferences.getAll();
+
+        // Convert the stored data into a list and sort it
+        List<Map.Entry<String, Float>> sortedEntries = new ArrayList<>();
+        for (Map.Entry<String, ?> entry : storedData.entrySet()) {
+            try {
+                sortedEntries.add(Map.entry(entry.getKey(), Float.parseFloat(entry.getValue().toString())));
+            } catch (Exception e) {
+                e.printStackTrace(); // Log parsing errors
+            }
+        }
+        sortedEntries.sort(Comparator.comparing(Map.Entry::getKey)); // Sort by date
+
+        // Use a final or effectively final index
+        int[] index = {0};
+        for (Map.Entry<String, Float> entry : sortedEntries) {
+            priceEntries.add(new Entry(index[0], entry.getValue()));
+            index[0]++;
+        }
+
+        // Check if today's price is already calculated
+        String today = dateFormat.format(new Date());
+        if (!sharedPreferences.contains(today)) {
+            // Fetch today's total value asynchronously
+            new Thread(() -> {
+                float totalValue = calculateTotalValue();
+                sharedPreferences.edit().putFloat(today, totalValue).apply();
+
+                // Add today's data to the graph on UI thread
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    priceEntries.add(new Entry(index[0], totalValue)); // Use the updated index
+                    index[0]++;
+                    updateGraph();
+                });
+            }).start();
+        } else {
+            updateGraph();
+        }
+    }
+
+
+
+    private void updateGraph() {
+        LineDataSet lineDataSet = new LineDataSet(priceEntries, "");
+        lineDataSet.setColor(Color.parseColor("#FFD700"));       // Line color
+        lineDataSet.setCircleColor(Color.parseColor("#FFD700")); // Circle color
+        lineDataSet.setDrawValues(false);       // Disable value labels
+        lineDataSet.setDrawCircles(false);      // Hide data points (circles)
+        lineDataSet.setLineWidth(3f);           // Line thickness
+
+        // Highlight the last data point with a circle
+        if (!priceEntries.isEmpty()) {
+            int lastIndex = priceEntries.size() - 1;
+            Entry lastEntry = priceEntries.get(lastIndex);
+
+            // Add a special dataset for the last point
+            List<Entry> lastPoint = new ArrayList<>();
+            lastPoint.add(lastEntry);
+
+            LineDataSet lastPointDataSet = new LineDataSet(lastPoint, "");
+            lastPointDataSet.setColor(Color.parseColor("#FFD700"));          // Use the same line color
+            lastPointDataSet.setCircleColor(Color.parseColor("#FFD700"));     // Circle color for the last point
+            lastPointDataSet.setCircleHoleColor(Color.parseColor("#FFD700"));
+            lastPointDataSet.setCircleRadius(4f);          // Size of the circle
+            lastPointDataSet.setDrawCircles(true);          // Enable circle
+            lastPointDataSet.setDrawValues(false);          // No value label
+            lastPointDataSet.setHighlightEnabled(false);    // Disable highlighting
+            lastPointDataSet.setLineWidth(0f);              // No connecting line for this dataset
+
+            // Combine datasets
+            LineData lineData = new LineData(lineDataSet, lastPointDataSet);
+            lineChart.setData(lineData);
+        } else {
+            lineChart.setData(new LineData(lineDataSet));
+        }
+
+        lineChart.invalidate(); // Refresh the chart
+    }
+
+
+    private float calculateTotalValue() {
+        float total = 0;
+        for (PersonalCard card : personalCardList) {
+            float realTimePrice = fetchCardPrice(card.getUrl());
+            total += realTimePrice;
+            Log.d("AVGPRICE", "" + total);
+        }
+        return total;
+    }
+
+    private float fetchCardPrice(String url) {
+        try {
+            // Fetch and parse the HTML document (this should ideally be done asynchronously)
+            Document doc = Jsoup.connect(url).get();
+            String avgPriceText = doc.select("table.table_info tbody tr td").first().text();
+            return Float.parseFloat(avgPriceText.replaceAll("[^\\d.]", "")) * 0.03f;
+        } catch (Exception e) {
+            e.printStackTrace(); // Log the error
+            return -1f; // Return -1 if there's an error
+        }
     }
 }
