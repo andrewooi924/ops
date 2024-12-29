@@ -235,6 +235,7 @@ public class PricesFragment extends Fragment {
         personalCardList.add(new PersonalCard(R.drawable.op02_025_p1, "https://onepiece-card-atari.jp/expansion/paramount-war/card/p02-025/l-p", 30.0f));
         personalCardList.add(new PersonalCard(R.drawable.op02_026_p1, "https://onepiece-card-atari.jp/expansion/paramount-war/card/op02-026/l-p", 59.4f));
         personalCardList.add(new PersonalCard(R.drawable.op02_071_p1, "https://onepiece-card-atari.jp/expansion/paramount-war/card/op02-071/l-p", 30.0f));
+        personalCardList.add(new PersonalCard(R.drawable.op03_021_p1, "https://onepiece-card-atari.jp/expansion/mighty-enemies/card/op03-021/l-p", 0.0f));
         personalCardList.add(new PersonalCard(R.drawable.op05_001_p1, "https://onepiece-card-atari.jp/expansion/awakening-of-the-new-era/card/op05-001/l-p", 32.4f));
         personalCardList.add(new PersonalCard(R.drawable.op05_002_p1, "https://onepiece-card-atari.jp/expansion/awakening-of-the-new-era/card/op05-002/l-p", 28.5f));
         personalCardList.add(new PersonalCard(R.drawable.op05_022_p1, "https://onepiece-card-atari.jp/expansion/awakening-of-the-new-era/card/op05-022/l-p", 20.4f));
@@ -258,6 +259,15 @@ public class PricesFragment extends Fragment {
         personalCardList.add(new PersonalCard(R.drawable.st01_005_p3, "https://tier-one-onepiece.jp/view/item/000000001872", 4.5f));
         personalCardList.add(new PersonalCard(R.drawable.op02_059_p2, "https://tier-one-onepiece.jp/view/item/000000001869", 58.5f));
         personalCardList.add(new PersonalCard(R.drawable.st03_008_p4, "https://tier-one-onepiece.jp/view/item/000000001870", 16.5f));
+        personalCardList.add(new PersonalCard(R.drawable.p_028_p2, "https://tier-one-onepiece.jp/view/item/000000001855", 12.0f));
+        personalCardList.add(new PersonalCard(R.drawable.op01_005_p4, "https://tier-one-onepiece.jp/view/item/000000001854", 54.0f));
+        personalCardList.add(new PersonalCard(R.drawable.st01_006_p7, "https://tier-one-onepiece.jp/view/item/000000001857", 24.0f));
+        personalCardList.add(new PersonalCard(R.drawable.st01_008_p3, "https://tier-one-onepiece.jp/view/item/000000001858", 15.0f));
+        personalCardList.add(new PersonalCard(R.drawable.op01_021_p5, "https://tier-one-onepiece.jp/view/item/000000001856", 0.0f));
+        personalCardList.add(new PersonalCard(R.drawable.p_001_p5, "https://tier-one-onepiece.jp/view/item/000000001852", 17.25f));
+        personalCardList.add(new PersonalCard(R.drawable.op01_016_p6, "https://tier-one-onepiece.jp/view/item/000000001850", 38.25f));
+        personalCardList.add(new PersonalCard(R.drawable.st09_012_p1, "https://tier-one-onepiece.jp/view/item/000000001853", 53.25f));
+        personalCardList.add(new PersonalCard(R.drawable.st01_013_p4, "https://tier-one-onepiece.jp/view/item/000000001851", 17.25f));
 
         preloadInitialData();
         lineChart = view.findViewById(R.id.portfolioChart);
@@ -265,12 +275,12 @@ public class PricesFragment extends Fragment {
         portfolioSubtitle = view.findViewById(R.id.portfolioSubtitle);
         setupLineChart();
         loadAndUpdateData();
-        calculatePriceDifference();
 
         return view;
     }
 
     private void setupLineChart() {
+        lineChart.setNoDataText("Loading portfolio...");
         lineChart.setTouchEnabled(false);
         lineChart.setDragEnabled(false);
         lineChart.setScaleEnabled(false);
@@ -362,6 +372,7 @@ public class PricesFragment extends Fragment {
                 }
 
                 updateGraph();
+                calculatePriceDifference();
             });
         }).start();
     }
