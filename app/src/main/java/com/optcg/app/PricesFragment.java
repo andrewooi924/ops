@@ -294,7 +294,7 @@ public class PricesFragment extends Fragment {
         lineChart.getDescription().setEnabled(false);
         lineChart.animateX(200);
 
-        PortfolioMarkerView markerView = new PortfolioMarkerView(getContext(), R.layout.portfolio_marker_view);
+        PortfolioMarkerView markerView = new PortfolioMarkerView(getContext(), R.layout.portfolio_marker_view, lineChart);
         lineChart.setMarker(markerView);
 
         Paint highlightPaint = lineChart.getRenderer().getPaintHighlight();
@@ -445,6 +445,8 @@ public class PricesFragment extends Fragment {
             lineChart.setData(new LineData(lineDataSet));
         }
 
+        lineChart.setExtraOffsets(0, 50, 0, 0);
+
         lineChart.invalidate(); // Refresh the chart
     }
 
@@ -481,6 +483,7 @@ public class PricesFragment extends Fragment {
             lineData.addDataSet(highlightDataSet); // Add the highlight data set
         }
 
+        lineChart.setExtraOffsets(0, 50, 0, 0);
         lineChart.setData(lineData);
         lineChart.invalidate(); // Refresh the chart
     }
@@ -559,13 +562,20 @@ public class PricesFragment extends Fragment {
             symbolColor = Color.GREEN;
             percentageChangeFormatted = decimalFormat.format(percentageChange);
             priceDifferenceFormatted = decimalFormat.format(priceDifference);
+            if (percentageChange < 1) {
+                percentageChangeFormatted = "0" + percentageChangeFormatted;
+                priceDifferenceFormatted = "0" + priceDifferenceFormatted;
+            }
         }
         else if (percentageChange < 0) {
             percentageChange = -percentageChange;
             percentageChangeFormatted = decimalFormat.format(percentageChange);
-            percentageChangeFormatted = "0" + percentageChangeFormatted;
             priceDifference = -priceDifference;
             priceDifferenceFormatted = decimalFormat.format(priceDifference);
+            if (percentageChange < 1) {
+                percentageChangeFormatted = "0" + percentageChangeFormatted;
+                priceDifferenceFormatted = "0" + priceDifferenceFormatted;
+            }
             symbol = "▼";
             symbolColor = Color.RED;
         }
