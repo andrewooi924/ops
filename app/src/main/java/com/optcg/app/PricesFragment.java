@@ -3,6 +3,8 @@ package com.optcg.app;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.DashPathEffect;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -28,6 +30,8 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -281,13 +285,38 @@ public class PricesFragment extends Fragment {
 
     private void setupLineChart() {
         lineChart.setNoDataText("Loading portfolio...");
-        lineChart.setTouchEnabled(false);
-        lineChart.setDragEnabled(false);
-        lineChart.setScaleEnabled(false);
-        lineChart.setHighlightPerDragEnabled(false);
-        lineChart.setHighlightPerTapEnabled(false);
+        lineChart.setTouchEnabled(true);
+        lineChart.setDragEnabled(true);
+        lineChart.setScaleEnabled(true);
+        lineChart.setHighlightPerDragEnabled(true);
+        lineChart.setHighlightPerTapEnabled(true);
         lineChart.getLegend().setEnabled(false);
         lineChart.getDescription().setEnabled(false);
+        lineChart.animateX(200);
+
+        PortfolioMarkerView markerView = new PortfolioMarkerView(getContext(), R.layout.portfolio_marker_view);
+        lineChart.setMarker(markerView);
+
+        Paint highlightPaint = lineChart.getRenderer().getPaintHighlight();
+        highlightPaint.setPathEffect(new DashPathEffect(new float[]{10f, 5f}, 0)); // Dashed line
+        highlightPaint.setStrokeWidth(2f); // Adjust thickness
+        highlightPaint.setColor(Color.LTGRAY); // Adjust color
+
+        // Disable horizontal highlight lines explicitly
+        lineChart.setDrawMarkers(true); // Ensure marker works on selection
+
+        lineChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+            @Override
+            public void onValueSelected(Entry e, Highlight h) {
+                updateGraphWithHighlight(e);
+            }
+
+            @Override
+            public void onNothingSelected() {
+                Entry defaultEntry = priceEntries.isEmpty() ? null : priceEntries.get(priceEntries.size() - 1);
+                updateGraphWithHighlight(defaultEntry);
+            }
+        });
 
         XAxis xAxis = lineChart.getXAxis();
         xAxis.setDrawGridLines(false);
@@ -419,6 +448,43 @@ public class PricesFragment extends Fragment {
         lineChart.invalidate(); // Refresh the chart
     }
 
+    private void updateGraphWithHighlight(Entry highlightedEntry) {
+        LineDataSet lineDataSet = new LineDataSet(priceEntries, "");
+        lineDataSet.setColor(Color.parseColor("#FFD700"));       // Line color
+        lineDataSet.setCircleColor(Color.parseColor("#FFD700")); // Circle color
+        lineDataSet.setDrawValues(false);       // Disable value labels
+        lineDataSet.setDrawCircles(false);      // Hide data points (circles)
+        lineDataSet.setLineWidth(3f);           // Line thickness
+
+        // Highlight configuration
+        lineDataSet.setHighlightEnabled(true); // Enable highlighting
+        lineDataSet.setHighLightColor(Color.LTGRAY); // Vertical line color
+        lineDataSet.enableDashedHighlightLine(10f, 5f, 0f); // Dashed effect
+
+        List<Entry> highlightPoints = new ArrayList<>();
+        if (highlightedEntry != null) {
+            highlightPoints.add(highlightedEntry);
+        }
+
+        LineDataSet highlightDataSet = new LineDataSet(highlightPoints, "");
+        highlightDataSet.setColor(Color.parseColor("#FFD700"));          // Same line color
+        highlightDataSet.setCircleColor(Color.parseColor("#FFD700"));     // Circle color
+        highlightDataSet.setCircleHoleColor(Color.parseColor("#FFD700"));
+        highlightDataSet.setCircleRadius(4f);          // Size of the circle
+        highlightDataSet.setDrawCircles(true);          // Enable circle
+        highlightDataSet.setDrawValues(false);          // No value label
+        highlightDataSet.setHighlightEnabled(false);    // Disable highlighting
+        highlightDataSet.setLineWidth(0f);              // No connecting line for this dataset
+
+        LineData lineData = new LineData(lineDataSet);
+        if (!highlightPoints.isEmpty()) {
+            lineData.addDataSet(highlightDataSet); // Add the highlight data set
+        }
+
+        lineChart.setData(lineData);
+        lineChart.invalidate(); // Refresh the chart
+    }
+
 
     private float calculateTotalValue() {
         float total = 0;
@@ -476,7 +542,7 @@ public class PricesFragment extends Fragment {
 
         // 2. Difference between current day and yesterday
         float priceDifference = currentPrice - yesterdayPrice;
-        String priceDifferenceFormatted = decimalFormat.format(priceDifference);
+        String priceDifferenceFormatted;
 
         // 3. Percentage increase or decrease from yesterday
         float percentageChange = 0f;
@@ -486,14 +552,20 @@ public class PricesFragment extends Fragment {
 
         String symbol;
         int symbolColor;
-        String percentageChangeFormatted = decimalFormat.format(percentageChange);
+        String percentageChangeFormatted;
 
         if (percentageChange > 0) {
             symbol = "▲";
             symbolColor = Color.GREEN;
+            percentageChangeFormatted = decimalFormat.format(percentageChange);
+            priceDifferenceFormatted = decimalFormat.format(priceDifference);
         }
         else if (percentageChange < 0) {
             percentageChange = -percentageChange;
+            percentageChangeFormatted = decimalFormat.format(percentageChange);
+            percentageChangeFormatted = "0" + percentageChangeFormatted;
+            priceDifference = -priceDifference;
+            priceDifferenceFormatted = decimalFormat.format(priceDifference);
             symbol = "▼";
             symbolColor = Color.RED;
         }
@@ -506,7 +578,7 @@ public class PricesFragment extends Fragment {
 
 
         portfolioTotalValue.setText("MYR " + totalPrice);
-        portfolioSubtitle.setText(symbol + " " + percentageChangeFormatted + "% (MYR " + priceDifferenceFormatted + ")");
+        portfolioSubtitle.setText(symbol + " MYR " + priceDifferenceFormatted + " (" + percentageChangeFormatted + "%)");
         portfolioSubtitle.setTextColor(symbolColor);
     }
 }
