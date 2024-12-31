@@ -298,12 +298,13 @@ public class PricesFragment extends Fragment {
         lineChart.setMarker(markerView);
 
         Paint highlightPaint = lineChart.getRenderer().getPaintHighlight();
-        highlightPaint.setPathEffect(new DashPathEffect(new float[]{10f, 5f}, 0)); // Dashed line
+        highlightPaint.setPathEffect(new DashPathEffect(new float[]{10f, 5f}, 0)); // Dotted line effect
         highlightPaint.setStrokeWidth(2f); // Adjust thickness
         highlightPaint.setColor(Color.LTGRAY); // Adjust color
 
         // Disable horizontal highlight lines explicitly
         lineChart.setDrawMarkers(true); // Ensure marker works on selection
+        lineChart.setHighlightPerTapEnabled(true);
 
         lineChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
             @Override
@@ -451,42 +452,77 @@ public class PricesFragment extends Fragment {
     }
 
     private void updateGraphWithHighlight(Entry highlightedEntry) {
-        LineDataSet lineDataSet = new LineDataSet(priceEntries, "");
-        lineDataSet.setColor(Color.parseColor("#FFD700"));       // Line color
-        lineDataSet.setCircleColor(Color.parseColor("#FFD700")); // Circle color
-        lineDataSet.setDrawValues(false);       // Disable value labels
-        lineDataSet.setDrawCircles(false);      // Hide data points (circles)
-        lineDataSet.setLineWidth(3f);           // Line thickness
+        List<Entry> activeEntries = new ArrayList<>();
+        List<Entry> inactiveEntries = new ArrayList<>();
 
-        // Highlight configuration
-        lineDataSet.setHighlightEnabled(true); // Enable highlighting
-        lineDataSet.setHighLightColor(Color.LTGRAY); // Vertical line color
-        lineDataSet.enableDashedHighlightLine(10f, 5f, 0f); // Dashed effect
+        boolean isInactive = false;
+        for (Entry entry : priceEntries) {
+            if (highlightedEntry != null && entry.getX() > highlightedEntry.getX()) {
+                // Transition to inactive segment
+                if (!isInactive && !activeEntries.isEmpty()) {
+                    // Add the last active point to the inactive segment to connect lines
+                    inactiveEntries.add(activeEntries.get(activeEntries.size() - 1));
+                }
+                isInactive = true;
+            }
 
-        List<Entry> highlightPoints = new ArrayList<>();
+            if (isInactive) {
+                inactiveEntries.add(entry);
+            } else {
+                activeEntries.add(entry);
+            }
+        }
+
+        // Active segment dataset
+        LineDataSet activeDataSet = new LineDataSet(activeEntries, "");
+        activeDataSet.setColor(Color.parseColor("#FFD700")); // Bright color
+        activeDataSet.setLineWidth(3f);
+        activeDataSet.setDrawCircles(false);
+        activeDataSet.setDrawValues(false);
+        activeDataSet.setDrawHorizontalHighlightIndicator(false);
+        activeDataSet.setHighlightEnabled(true);
+        activeDataSet.setHighLightColor(Color.LTGRAY);
+        activeDataSet.enableDashedHighlightLine(10f, 5f, 0f);
+
+        // Inactive segment dataset (lower opacity)
+        LineDataSet inactiveDataSet = new LineDataSet(inactiveEntries, "");
+        inactiveDataSet.setColor(Color.argb(100, 255, 215, 0)); // Reduced opacity (ARGB)
+        inactiveDataSet.setLineWidth(3f);
+        inactiveDataSet.setDrawCircles(false);
+        inactiveDataSet.setDrawValues(false);
+        inactiveDataSet.setDrawHorizontalHighlightIndicator(false);
+        inactiveDataSet.setHighlightEnabled(true);
+        inactiveDataSet.setHighLightColor(Color.LTGRAY);
+        inactiveDataSet.enableDashedHighlightLine(10f, 5f, 0f);
+
+        // Highlighted point dataset
+        List<Entry> highlightedEntries = new ArrayList<>();
         if (highlightedEntry != null) {
-            highlightPoints.add(highlightedEntry);
+            highlightedEntries.add(highlightedEntry);
         }
 
-        LineDataSet highlightDataSet = new LineDataSet(highlightPoints, "");
-        highlightDataSet.setColor(Color.parseColor("#FFD700"));          // Same line color
-        highlightDataSet.setCircleColor(Color.parseColor("#FFD700"));     // Circle color
-        highlightDataSet.setCircleHoleColor(Color.parseColor("#FFD700"));
-        highlightDataSet.setCircleRadius(4f);          // Size of the circle
-        highlightDataSet.setDrawCircles(true);          // Enable circle
-        highlightDataSet.setDrawValues(false);          // No value label
-        highlightDataSet.setHighlightEnabled(false);    // Disable highlighting
-        highlightDataSet.setLineWidth(0f);              // No connecting line for this dataset
+        LineDataSet highlightedDataSet = new LineDataSet(highlightedEntries, "");
+        highlightedDataSet.setCircleColor(Color.parseColor("#FFD700")); // Circle color
+        highlightedDataSet.setCircleHoleColor(Color.parseColor("#FFD700"));
+        highlightedDataSet.setCircleRadius(4f);
+        highlightedDataSet.setDrawCircles(true);
+        highlightedDataSet.setDrawValues(false);
+        highlightedDataSet.setDrawHorizontalHighlightIndicator(false);
 
-        LineData lineData = new LineData(lineDataSet);
-        if (!highlightPoints.isEmpty()) {
-            lineData.addDataSet(highlightDataSet); // Add the highlight data set
+        Paint highlightPaint = lineChart.getRenderer().getPaintHighlight();
+        highlightPaint.setPathEffect(new DashPathEffect(new float[]{10f, 5f}, 0)); // Make it dotted
+        highlightPaint.setStrokeWidth(2f); // Adjust thickness
+        highlightPaint.setColor(Color.LTGRAY); // Line color
+
+        LineData lineData = new LineData(activeDataSet, inactiveDataSet);
+        if (!highlightedEntries.isEmpty()) {
+            lineData.addDataSet(highlightedDataSet);
         }
 
-        lineChart.setExtraOffsets(0, 50, 0, 0);
         lineChart.setData(lineData);
-        lineChart.invalidate(); // Refresh the chart
+        lineChart.invalidate();
     }
+
 
 
     private float calculateTotalValue() {
