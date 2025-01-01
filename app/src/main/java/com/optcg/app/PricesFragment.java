@@ -117,7 +117,7 @@ public class PricesFragment extends Fragment {
 //        cardList.add(new CardPrice(R.drawable.op05_098_p1, "https://onepiece-card-atari.jp/expansion/awakening-of-the-new-era/card/op05-098/l-p"));
 
         // OP06
-        cardList.add(new CardPrice(R.drawable.op06_001_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-001/l-p"));
+//        cardList.add(new CardPrice(R.drawable.op06_001_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-001/l-p"));
 //        cardList.add(new CardPrice(R.drawable.op06_020_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-020/l-p"));
 //        cardList.add(new CardPrice(R.drawable.op06_021_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-021/l-p"));
         cardList.add(new CardPrice(R.drawable.op06_022_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-022/l-p"));
@@ -152,9 +152,9 @@ public class PricesFragment extends Fragment {
         cardList.add(new CardPrice(R.drawable.op09_001_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-001/l-p"));
 //        cardList.add(new CardPrice(R.drawable.op09_022_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-022/l-p"));
 //        cardList.add(new CardPrice(R.drawable.op09_042_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-042/l-p"));
-        cardList.add(new CardPrice(R.drawable.op09_061_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-061/l-p"));
+//        cardList.add(new CardPrice(R.drawable.op09_061_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-061/l-p"));
 //        cardList.add(new CardPrice(R.drawable.op09_062_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-062/l-p"));
-        cardList.add(new CardPrice(R.drawable.op09_081_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-081/l-p"));
+//        cardList.add(new CardPrice(R.drawable.op09_081_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-081/l-p"));
 
         // OP10
         cardList.add(new CardPrice(R.drawable.op10_001_p1, "https://onepiece-card-atari.jp/expansion/royal-blood/card/op10-001/l-p"));
@@ -246,6 +246,7 @@ public class PricesFragment extends Fragment {
         personalCardList.add(new PersonalCard(R.drawable.op05_041_p1, "https://onepiece-card-atari.jp/expansion/awakening-of-the-new-era/card/op05-041/l-p", 18.0f));
         personalCardList.add(new PersonalCard(R.drawable.op05_060_p1, "https://onepiece-card-atari.jp/expansion/awakening-of-the-new-era/card/op05-060/l-p", 84.0f));
         personalCardList.add(new PersonalCard(R.drawable.op05_098_p1, "https://onepiece-card-atari.jp/expansion/awakening-of-the-new-era/card/op05-098/l-p", 48.0f));
+        personalCardList.add(new PersonalCard(R.drawable.op06_001_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-001/l-p", 98.4f));
         personalCardList.add(new PersonalCard(R.drawable.op06_020_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-020/l-p", 16.8f));
         personalCardList.add(new PersonalCard(R.drawable.op06_021_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-021/l-p", 77.1f));
         personalCardList.add(new PersonalCard(R.drawable.op06_042_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-042/l-p", 105.0f));
@@ -258,7 +259,9 @@ public class PricesFragment extends Fragment {
         personalCardList.add(new PersonalCard(R.drawable.prb01_001_p1, "https://onepiece-card-atari.jp/expansion/one-piece-card-the-best/card/prb01-001/l-p", 60.0f));
         personalCardList.add(new PersonalCard(R.drawable.op09_022_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-022/l-p", 27.0f));
         personalCardList.add(new PersonalCard(R.drawable.op09_042_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-042/l-p", 32.4f));
+        personalCardList.add(new PersonalCard(R.drawable.op09_061_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-061/l-p", 83.4f));
         personalCardList.add(new PersonalCard(R.drawable.op09_062_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-062/l-p", 28.5f));
+        personalCardList.add(new PersonalCard(R.drawable.op09_081_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-081/l-p", 56.4f));
         personalCardList.add(new PersonalCard(R.drawable.op01_013_p3, "https://tier-one-onepiece.jp/view/item/000000001871", 16.5f));
         personalCardList.add(new PersonalCard(R.drawable.st01_005_p3, "https://tier-one-onepiece.jp/view/item/000000001872", 4.5f));
         personalCardList.add(new PersonalCard(R.drawable.op02_059_p2, "https://tier-one-onepiece.jp/view/item/000000001869", 58.5f));
@@ -277,8 +280,8 @@ public class PricesFragment extends Fragment {
         lineChart = view.findViewById(R.id.portfolioChart);
         portfolioTotalValue = view.findViewById(R.id.portfolioTotalValue);
         portfolioSubtitle = view.findViewById(R.id.portfolioSubtitle);
-        setupLineChart();
         loadAndUpdateData();
+        setupLineChart();
 
         return view;
     }
@@ -446,7 +449,7 @@ public class PricesFragment extends Fragment {
             lineChart.setData(new LineData(lineDataSet));
         }
 
-        lineChart.setExtraOffsets(0, 50, 0, 0);
+        lineChart.setExtraOffsets(0, 40, 0, 0);
 
         lineChart.invalidate(); // Refresh the chart
     }
