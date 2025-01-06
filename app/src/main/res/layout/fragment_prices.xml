@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/portfolioTotalValue"
             android:layout_alignParentEnd="true"
-            android:text="0.00% (MYR 0.00)"
+            android:text="MYR 0.00 (0.00%)"
             android:textSize="12sp"
             android:textColor="#808080" />
     </RelativeLayout>

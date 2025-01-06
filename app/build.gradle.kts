@@ -47,4 +47,5 @@ dependencies {
     implementation("me.relex:circleindicator:2.1.6")
     implementation("org.jsoup:jsoup:1.18.3")
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 }

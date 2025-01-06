@@ -50,7 +50,7 @@ public class PortfolioMarkerView extends MarkerView {
     @Override
     public MPPointF getOffsetForDrawingAtPoint(float posX, float posY) {
         float offsetX = -(getWidth() / 2f);
-        float offsetY = -(posY - lineChart.getHeight() + 550); // Position above the chart, consistent for all markers
+        float offsetY = -(posY - lineChart.getHeight() + 575); // Position above the chart, consistent for all markers
 
         // Use the chart's dimensions directly
         if (lineChart != null) {
@@ -63,7 +63,7 @@ public class PortfolioMarkerView extends MarkerView {
 
             // Adjust for rightmost marker
             if (posX + offsetX + getWidth() > chartWidth) {
-                offsetX = chartWidth - posX - getWidth() - 20; // Align to the right edge
+                offsetX = chartWidth - posX - getWidth() - 35; // Align to the right edge
             }
         }
 

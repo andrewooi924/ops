@@ -63,6 +63,8 @@ public class PricesFragment extends Fragment {
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
     private TextView portfolioTotalValue;
     private TextView portfolioSubtitle;
+    private LineDataSet lineDataSet;
+    private LineDataSet lastPointDataSet;
 
     @Nullable
     @Override
@@ -75,19 +77,19 @@ public class PricesFragment extends Fragment {
         cardList.add(new CardPrice(R.drawable.op01_001_p1, "https://onepiece-card-atari.jp/expansion/romance-dawn/card/op01-001/l-p"));
         cardList.add(new CardPrice(R.drawable.op01_002_p1, "https://onepiece-card-atari.jp/expansion/romance-dawn/card/op01-002/l-p"));
         cardList.add(new CardPrice(R.drawable.op01_003_p1, "https://onepiece-card-atari.jp/expansion/romance-dawn/card/op01-003/l-p"));
-//        cardList.add(new CardPrice(R.drawable.op01_031_p1, "https://onepiece-card-atari.jp/expansion/romance-dawn/card/op01-031/l-p"));
+        cardList.add(new CardPrice(R.drawable.op01_031_p1, "https://onepiece-card-atari.jp/expansion/romance-dawn/card/op01-031/l-p"));
         cardList.add(new CardPrice(R.drawable.op01_060_p1, "https://onepiece-card-atari.jp/expansion/romance-dawn/card/op01-060/l-p"));
         cardList.add(new CardPrice(R.drawable.op01_061_p1, "https://onepiece-card-atari.jp/expansion/romance-dawn/card/op01-061/l-p"));
         cardList.add(new CardPrice(R.drawable.op01_062_p1, "https://onepiece-card-atari.jp/expansion/romance-dawn/card/op01-062/l-p"));
-//        cardList.add(new CardPrice(R.drawable.op01_091_p1, "https://onepiece-card-atari.jp/expansion/romance-dawn/card/op01-091/l-p"));
+        cardList.add(new CardPrice(R.drawable.op01_091_p1, "https://onepiece-card-atari.jp/expansion/romance-dawn/card/op01-091/l-p"));
 
         // OP02
-//        cardList.add(new CardPrice(R.drawable.op02_001_p1, "https://onepiece-card-atari.jp/expansion/paramount-war/card/op02-001/l-p"));
+        cardList.add(new CardPrice(R.drawable.op02_001_p1, "https://onepiece-card-atari.jp/expansion/paramount-war/card/op02-001/l-p"));
         cardList.add(new CardPrice(R.drawable.op02_002_p1, "https://onepiece-card-atari.jp/expansion/paramount-war/card/op02-002/l-p"));
-//        cardList.add(new CardPrice(R.drawable.op02_025_p1, "https://onepiece-card-atari.jp/expansion/paramount-war/card/p02-025/l-p"));
-//        cardList.add(new CardPrice(R.drawable.op02_026_p1, "https://onepiece-card-atari.jp/expansion/paramount-war/card/op02-026/l-p"));
+        cardList.add(new CardPrice(R.drawable.op02_025_p1, "https://onepiece-card-atari.jp/expansion/paramount-war/card/p02-025/l-p"));
+        cardList.add(new CardPrice(R.drawable.op02_026_p1, "https://onepiece-card-atari.jp/expansion/paramount-war/card/op02-026/l-p"));
         cardList.add(new CardPrice(R.drawable.op02_049_p1, "https://onepiece-card-atari.jp/expansion/paramount-war/card/op02-049/l-p"));
-//        cardList.add(new CardPrice(R.drawable.op02_071_p1, "https://onepiece-card-atari.jp/expansion/paramount-war/card/op02-071/l-p"));
+        cardList.add(new CardPrice(R.drawable.op02_071_p1, "https://onepiece-card-atari.jp/expansion/paramount-war/card/op02-071/l-p"));
         cardList.add(new CardPrice(R.drawable.op02_072_p1, "https://onepiece-card-atari.jp/expansion/paramount-war/card/op02-072/l-p"));
         cardList.add(new CardPrice(R.drawable.op02_093_p1, "https://onepiece-card-atari.jp/expansion/paramount-war/card/op02-093/l-p"));
 
@@ -109,20 +111,20 @@ public class PricesFragment extends Fragment {
         cardList.add(new CardPrice(R.drawable.op04_058_p1, "https://onepiece-card-atari.jp/expansion/kingdoms-of-intrigue/card/op04-058/l-p"));
 
         // OP05
-//        cardList.add(new CardPrice(R.drawable.op05_001_p1, "https://onepiece-card-atari.jp/expansion/awakening-of-the-new-era/card/op05-001/l-p"));
-//        cardList.add(new CardPrice(R.drawable.op05_002_p1, "https://onepiece-card-atari.jp/expansion/awakening-of-the-new-era/card/op05-002/l-p"));
-//        cardList.add(new CardPrice(R.drawable.op05_022_p1, "https://onepiece-card-atari.jp/expansion/awakening-of-the-new-era/card/op05-022/l-p"));
-//        cardList.add(new CardPrice(R.drawable.op05_041_p1, "https://onepiece-card-atari.jp/expansion/awakening-of-the-new-era/card/op05-041/l-p"));
-//        cardList.add(new CardPrice(R.drawable.op05_060_p1, "https://onepiece-card-atari.jp/expansion/awakening-of-the-new-era/card/op05-060/l-p"));
-//        cardList.add(new CardPrice(R.drawable.op05_098_p1, "https://onepiece-card-atari.jp/expansion/awakening-of-the-new-era/card/op05-098/l-p"));
+        cardList.add(new CardPrice(R.drawable.op05_001_p1, "https://onepiece-card-atari.jp/expansion/awakening-of-the-new-era/card/op05-001/l-p"));
+        cardList.add(new CardPrice(R.drawable.op05_002_p1, "https://onepiece-card-atari.jp/expansion/awakening-of-the-new-era/card/op05-002/l-p"));
+        cardList.add(new CardPrice(R.drawable.op05_022_p1, "https://onepiece-card-atari.jp/expansion/awakening-of-the-new-era/card/op05-022/l-p"));
+        cardList.add(new CardPrice(R.drawable.op05_041_p1, "https://onepiece-card-atari.jp/expansion/awakening-of-the-new-era/card/op05-041/l-p"));
+        cardList.add(new CardPrice(R.drawable.op05_060_p1, "https://onepiece-card-atari.jp/expansion/awakening-of-the-new-era/card/op05-060/l-p"));
+        cardList.add(new CardPrice(R.drawable.op05_098_p1, "https://onepiece-card-atari.jp/expansion/awakening-of-the-new-era/card/op05-098/l-p"));
 
         // OP06
-//        cardList.add(new CardPrice(R.drawable.op06_001_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-001/l-p"));
-//        cardList.add(new CardPrice(R.drawable.op06_020_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-020/l-p"));
-//        cardList.add(new CardPrice(R.drawable.op06_021_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-021/l-p"));
+        cardList.add(new CardPrice(R.drawable.op06_001_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-001/l-p"));
+        cardList.add(new CardPrice(R.drawable.op06_020_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-020/l-p"));
+        cardList.add(new CardPrice(R.drawable.op06_021_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-021/l-p"));
         cardList.add(new CardPrice(R.drawable.op06_022_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-022/l-p"));
-//        cardList.add(new CardPrice(R.drawable.op06_042_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-042/l-p"));
-//        cardList.add(new CardPrice(R.drawable.op06_080_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-080/l-p"));
+        cardList.add(new CardPrice(R.drawable.op06_042_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-042/l-p"));
+        cardList.add(new CardPrice(R.drawable.op06_080_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-080/l-p"));
 
         // EB01
         cardList.add(new CardPrice(R.drawable.eb01_001_p1, "https://onepiece-card-atari.jp/expansion/memorial-collection/card/eb01-001/l-p"));
@@ -138,23 +140,20 @@ public class PricesFragment extends Fragment {
         cardList.add(new CardPrice(R.drawable.op07_097_p1, "https://onepiece-card-atari.jp/expansion/500-yeas-in-the-future/card/op07-097/l-p"));
 
         // OP08
-//        cardList.add(new CardPrice(R.drawable.op08_001_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-001/l-p"));
-//        cardList.add(new CardPrice(R.drawable.op08_002_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-002/l-p"));
-//        cardList.add(new CardPrice(R.drawable.op08_021_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-021/l-p"));
-//        cardList.add(new CardPrice(R.drawable.op08_057_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-057/l-p"));
-//        cardList.add(new CardPrice(R.drawable.op08_058_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-058/l-p"));
+        cardList.add(new CardPrice(R.drawable.op08_001_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-001/l-p"));
+        cardList.add(new CardPrice(R.drawable.op08_002_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-002/l-p"));
+        cardList.add(new CardPrice(R.drawable.op08_021_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-021/l-p"));
+        cardList.add(new CardPrice(R.drawable.op08_057_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-057/l-p"));
+        cardList.add(new CardPrice(R.drawable.op08_058_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-058/l-p"));
         cardList.add(new CardPrice(R.drawable.op08_098_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-098/l-p"));
-
-        // PRB01
-//        cardList.add(new CardPrice(R.drawable.prb01_001_p1, "https://onepiece-card-atari.jp/expansion/one-piece-card-the-best/card/prb01-001/l-p"));
 
         // OP09
         cardList.add(new CardPrice(R.drawable.op09_001_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-001/l-p"));
-//        cardList.add(new CardPrice(R.drawable.op09_022_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-022/l-p"));
-//        cardList.add(new CardPrice(R.drawable.op09_042_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-042/l-p"));
-//        cardList.add(new CardPrice(R.drawable.op09_061_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-061/l-p"));
-//        cardList.add(new CardPrice(R.drawable.op09_062_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-062/l-p"));
-//        cardList.add(new CardPrice(R.drawable.op09_081_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-081/l-p"));
+        cardList.add(new CardPrice(R.drawable.op09_022_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-022/l-p"));
+        cardList.add(new CardPrice(R.drawable.op09_042_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-042/l-p"));
+        cardList.add(new CardPrice(R.drawable.op09_061_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-061/l-p"));
+        cardList.add(new CardPrice(R.drawable.op09_062_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-062/l-p"));
+        cardList.add(new CardPrice(R.drawable.op09_081_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-081/l-p"));
 
         // OP10
         cardList.add(new CardPrice(R.drawable.op10_001_p1, "https://onepiece-card-atari.jp/expansion/royal-blood/card/op10-001/l-p"));
@@ -183,6 +182,9 @@ public class PricesFragment extends Fragment {
         cardList.add(new CardPrice(R.drawable.op07_015_p2, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op07-015/sp"));
         cardList.add(new CardPrice(R.drawable.op05_093_p2, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op05-093/sp"));
         cardList.add(new CardPrice(R.drawable.op04_119_p2, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op04-119/sp"));
+
+        // PRB01
+        cardList.add(new CardPrice(R.drawable.prb01_001_p1, "https://onepiece-card-atari.jp/expansion/one-piece-card-the-best/card/prb01-001/l-p"));
 
         // PROMO
         cardList.add(new CardPrice(R.drawable.p_035, "https://tier-one-onepiece.jp/view/item/000000000891"));
@@ -234,12 +236,14 @@ public class PricesFragment extends Fragment {
 
         personalCardList = new ArrayList<>();
         personalCardList.add(new PersonalCard(R.drawable.op01_031_p1, "https://onepiece-card-atari.jp/expansion/romance-dawn/card/op01-031/l-p", 30.0f));
+        personalCardList.add(new PersonalCard(R.drawable.op01_062_p1, "https://onepiece-card-atari.jp/expansion/romance-dawn/card/op01-062/l-p", 60.0f));
         personalCardList.add(new PersonalCard(R.drawable.op01_091_p1, "https://onepiece-card-atari.jp/expansion/romance-dawn/card/op01-091/l-p", 30.0f));
         personalCardList.add(new PersonalCard(R.drawable.op02_001_p1, "https://onepiece-card-atari.jp/expansion/paramount-war/card/op02-001/l-p", 0.0f));
         personalCardList.add(new PersonalCard(R.drawable.op02_025_p1, "https://onepiece-card-atari.jp/expansion/paramount-war/card/p02-025/l-p", 30.0f));
         personalCardList.add(new PersonalCard(R.drawable.op02_026_p1, "https://onepiece-card-atari.jp/expansion/paramount-war/card/op02-026/l-p", 59.4f));
         personalCardList.add(new PersonalCard(R.drawable.op02_071_p1, "https://onepiece-card-atari.jp/expansion/paramount-war/card/op02-071/l-p", 30.0f));
         personalCardList.add(new PersonalCard(R.drawable.op03_021_p1, "https://onepiece-card-atari.jp/expansion/mighty-enemies/card/op03-021/l-p", 0.0f));
+        personalCardList.add(new PersonalCard(R.drawable.op04_020_p1, "https://onepiece-card-atari.jp/expansion/kingdoms-of-intrigue/card/op04-020/l-p", 18.0f));
         personalCardList.add(new PersonalCard(R.drawable.op05_001_p1, "https://onepiece-card-atari.jp/expansion/awakening-of-the-new-era/card/op05-001/l-p", 32.4f));
         personalCardList.add(new PersonalCard(R.drawable.op05_002_p1, "https://onepiece-card-atari.jp/expansion/awakening-of-the-new-era/card/op05-002/l-p", 28.5f));
         personalCardList.add(new PersonalCard(R.drawable.op05_022_p1, "https://onepiece-card-atari.jp/expansion/awakening-of-the-new-era/card/op05-022/l-p", 20.4f));
@@ -251,17 +255,24 @@ public class PricesFragment extends Fragment {
         personalCardList.add(new PersonalCard(R.drawable.op06_021_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-021/l-p", 77.1f));
         personalCardList.add(new PersonalCard(R.drawable.op06_042_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-042/l-p", 105.0f));
         personalCardList.add(new PersonalCard(R.drawable.op06_080_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-080/l-p", 30.0f));
+        personalCardList.add(new PersonalCard(R.drawable.op07_001_p1, "https://onepiece-card-atari.jp/expansion/500-yeas-in-the-future/card/op07-001/l-p", 18.0f));
+        personalCardList.add(new PersonalCard(R.drawable.op07_059_p1, "https://onepiece-card-atari.jp/expansion/500-yeas-in-the-future/card/op07-059/l-p", 18.0f));
         personalCardList.add(new PersonalCard(R.drawable.op08_001_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-001/l-p", 26.4f));
         personalCardList.add(new PersonalCard(R.drawable.op08_002_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-002/l-p", 32.4f));
         personalCardList.add(new PersonalCard(R.drawable.op08_021_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-021/l-p", 20.4f));
         personalCardList.add(new PersonalCard(R.drawable.op08_057_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-057/l-p", 26.4f));
         personalCardList.add(new PersonalCard(R.drawable.op08_058_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-058/l-p", 72.0f));
-        personalCardList.add(new PersonalCard(R.drawable.prb01_001_p1, "https://onepiece-card-atari.jp/expansion/one-piece-card-the-best/card/prb01-001/l-p", 60.0f));
         personalCardList.add(new PersonalCard(R.drawable.op09_022_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-022/l-p", 27.0f));
         personalCardList.add(new PersonalCard(R.drawable.op09_042_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-042/l-p", 32.4f));
         personalCardList.add(new PersonalCard(R.drawable.op09_061_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-061/l-p", 83.4f));
         personalCardList.add(new PersonalCard(R.drawable.op09_062_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-062/l-p", 28.5f));
         personalCardList.add(new PersonalCard(R.drawable.op09_081_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-081/l-p", 56.4f));
+        personalCardList.add(new PersonalCard(R.drawable.op10_002_p1, "https://onepiece-card-atari.jp/expansion/royal-blood/card/op10-002/l-p", 14.4f));
+        personalCardList.add(new PersonalCard(R.drawable.prb01_001_p1, "https://onepiece-card-atari.jp/expansion/one-piece-card-the-best/card/prb01-001/l-p", 60.0f));
+        personalCardList.add(new PersonalCard(R.drawable.eb01_021_p1, "https://onepiece-card-atari.jp/expansion/memorial-collection/card/eb01-021/l-p", 15.0f));
+        personalCardList.add(new PersonalCard(R.drawable.eb01_040_p1, "https://onepiece-card-atari.jp/expansion/memorial-collection/card/eb01-040/l-p", 15.0f));
+
+        // PROMOS
         personalCardList.add(new PersonalCard(R.drawable.op01_013_p3, "https://tier-one-onepiece.jp/view/item/000000001871", 16.5f));
         personalCardList.add(new PersonalCard(R.drawable.st01_005_p3, "https://tier-one-onepiece.jp/view/item/000000001872", 4.5f));
         personalCardList.add(new PersonalCard(R.drawable.op02_059_p2, "https://tier-one-onepiece.jp/view/item/000000001869", 58.5f));
@@ -275,6 +286,36 @@ public class PricesFragment extends Fragment {
         personalCardList.add(new PersonalCard(R.drawable.op01_016_p6, "https://tier-one-onepiece.jp/view/item/000000001850", 38.25f));
         personalCardList.add(new PersonalCard(R.drawable.st09_012_p1, "https://tier-one-onepiece.jp/view/item/000000001853", 53.25f));
         personalCardList.add(new PersonalCard(R.drawable.st01_013_p4, "https://tier-one-onepiece.jp/view/item/000000001851", 17.25f));
+
+        // LUFFY DON
+        personalCardList.add(new PersonalCard(R.drawable.op01_001_p1, "https://tier-one-onepiece.jp/view/item/000000000835", 7.44f));
+
+        // ZORO DON
+        personalCardList.add(new PersonalCard(R.drawable.op01_001_p1, "https://tier-one-onepiece.jp/view/item/000000000836", 7.44f));
+
+        // USOPP DON
+        personalCardList.add(new PersonalCard(R.drawable.op01_001_p1, "https://tier-one-onepiece.jp/view/item/000000000837", 7.44f));
+
+        // SANJI DON
+        personalCardList.add(new PersonalCard(R.drawable.op01_001_p1, "https://tier-one-onepiece.jp/view/item/000000000839", 7.44f));
+
+        // NAMI DON
+        personalCardList.add(new PersonalCard(R.drawable.op01_001_p1, "https://tier-one-onepiece.jp/view/item/000000000838", 7.44f));
+
+        // CHOPPER DON
+        personalCardList.add(new PersonalCard(R.drawable.op01_001_p1, "https://tier-one-onepiece.jp/view/item/000000000840", 7.44f));
+
+        // ROBIN DON
+        personalCardList.add(new PersonalCard(R.drawable.op01_001_p1, "https://tier-one-onepiece.jp/view/item/000000000841", 7.44f));
+
+        // FRANKY DON
+        personalCardList.add(new PersonalCard(R.drawable.op01_001_p1, "https://tier-one-onepiece.jp/view/item/000000000842", 7.44f));
+
+        // BROOK DON
+        personalCardList.add(new PersonalCard(R.drawable.op01_001_p1, "https://tier-one-onepiece.jp/view/item/000000000843", 7.44f));
+
+        // JINBE DON
+        personalCardList.add(new PersonalCard(R.drawable.op01_001_p1, "https://tier-one-onepiece.jp/view/item/000000000844", 7.44f));
 
         preloadInitialData();
         lineChart = view.findViewById(R.id.portfolioChart);
@@ -303,7 +344,6 @@ public class PricesFragment extends Fragment {
         Paint highlightPaint = lineChart.getRenderer().getPaintHighlight();
         highlightPaint.setPathEffect(new DashPathEffect(new float[]{10f, 5f}, 0)); // Dotted line effect
         highlightPaint.setStrokeWidth(2f); // Adjust thickness
-        highlightPaint.setColor(Color.LTGRAY); // Adjust color
 
         // Disable horizontal highlight lines explicitly
         lineChart.setDrawMarkers(true); // Ensure marker works on selection
@@ -416,12 +456,20 @@ public class PricesFragment extends Fragment {
 
 
     private void updateGraph() {
-        LineDataSet lineDataSet = new LineDataSet(priceEntries, "");
-        lineDataSet.setColor(Color.parseColor("#FFD700"));       // Line color
-        lineDataSet.setCircleColor(Color.parseColor("#FFD700")); // Circle color
-        lineDataSet.setDrawValues(false);       // Disable value labels
-        lineDataSet.setDrawCircles(false);      // Hide data points (circles)
-        lineDataSet.setLineWidth(3f);           // Line thickness
+        if (lineDataSet == null) {
+            // Initialize the LineDataSet for the first time
+            lineDataSet = new LineDataSet(priceEntries, "");
+            lineDataSet.setColor(Color.parseColor("#FFD700"));
+            lineDataSet.setCircleColor(Color.parseColor("#FFD700"));
+            lineDataSet.setDrawValues(false);
+            lineDataSet.setDrawCircles(false);
+            lineDataSet.setLineWidth(3f);
+            lineDataSet.setDrawHorizontalHighlightIndicator(false);
+            lineDataSet.enableDashedHighlightLine(10f, 5f, 0f);
+        } else {
+            // Update the existing dataset
+            lineDataSet.notifyDataSetChanged();
+        }
 
         // Highlight the last data point with a circle
         if (!priceEntries.isEmpty()) {
@@ -432,24 +480,37 @@ public class PricesFragment extends Fragment {
             List<Entry> lastPoint = new ArrayList<>();
             lastPoint.add(lastEntry);
 
-            LineDataSet lastPointDataSet = new LineDataSet(lastPoint, "");
-            lastPointDataSet.setColor(Color.parseColor("#FFD700"));          // Use the same line color
-            lastPointDataSet.setCircleColor(Color.parseColor("#FFD700"));     // Circle color for the last point
-            lastPointDataSet.setCircleHoleColor(Color.parseColor("#FFD700"));
-            lastPointDataSet.setCircleRadius(4f);          // Size of the circle
-            lastPointDataSet.setDrawCircles(true);          // Enable circle
-            lastPointDataSet.setDrawValues(false);          // No value label
-            lastPointDataSet.setHighlightEnabled(false);    // Disable highlighting
-            lastPointDataSet.setLineWidth(0f);              // No connecting line for this dataset
+            if (!priceEntries.isEmpty()) {
+                lastPointDataSet = new LineDataSet(lastPoint, "");
+                lastPointDataSet.setColor(Color.parseColor("#FFD700"));          // Use the same line color
+                lastPointDataSet.setCircleColor(Color.parseColor("#FFD700"));     // Circle color for the last point
+                lastPointDataSet.setCircleHoleColor(Color.parseColor("#FFD700"));
+                lastPointDataSet.setCircleRadius(4f);          // Size of the circle
+                lastPointDataSet.setDrawCircles(true);          // Enable circle
+                lastPointDataSet.setDrawValues(false);          // No value label
+                lastPointDataSet.setHighlightEnabled(false);    // Disable highlighting
+                lastPointDataSet.setLineWidth(0f);              // No connecting line for this dataset
+                lastPointDataSet.setDrawHorizontalHighlightIndicator(false);
+                lastPointDataSet.enableDashedHighlightLine(10f, 5f, 0f);
+            } else {
+                lastPointDataSet.clear();
+                lastPointDataSet.addEntry(lastEntry);
+                lastPointDataSet.notifyDataSetChanged();
+            }
 
             // Combine datasets
-            LineData lineData = new LineData(lineDataSet, lastPointDataSet);
+            LineData lineData = new LineData(lineDataSet);
+            if (lastPointDataSet != null) {
+                lineData.addDataSet(lastPointDataSet);
+            }
+
             lineChart.setData(lineData);
-        } else {
-            lineChart.setData(new LineData(lineDataSet));
         }
 
-        lineChart.setExtraOffsets(0, 40, 0, 0);
+        Paint highlightPaint = lineChart.getRenderer().getPaintHighlight();
+        highlightPaint.setPathEffect(new DashPathEffect(new float[]{10f, 5f}, 0)); // Make it dotted
+        highlightPaint.setStrokeWidth(2f); // Adjust thickness
+        lineChart.setExtraOffsets(0, 50, 0, 0);
 
         lineChart.invalidate(); // Refresh the chart
     }
@@ -484,7 +545,6 @@ public class PricesFragment extends Fragment {
         activeDataSet.setDrawValues(false);
         activeDataSet.setDrawHorizontalHighlightIndicator(false);
         activeDataSet.setHighlightEnabled(true);
-        activeDataSet.setHighLightColor(Color.LTGRAY);
         activeDataSet.enableDashedHighlightLine(10f, 5f, 0f);
 
         // Inactive segment dataset (lower opacity)
@@ -495,7 +555,6 @@ public class PricesFragment extends Fragment {
         inactiveDataSet.setDrawValues(false);
         inactiveDataSet.setDrawHorizontalHighlightIndicator(false);
         inactiveDataSet.setHighlightEnabled(true);
-        inactiveDataSet.setHighLightColor(Color.LTGRAY);
         inactiveDataSet.enableDashedHighlightLine(10f, 5f, 0f);
 
         // Highlighted point dataset
@@ -515,7 +574,6 @@ public class PricesFragment extends Fragment {
         Paint highlightPaint = lineChart.getRenderer().getPaintHighlight();
         highlightPaint.setPathEffect(new DashPathEffect(new float[]{10f, 5f}, 0)); // Make it dotted
         highlightPaint.setStrokeWidth(2f); // Adjust thickness
-        highlightPaint.setColor(Color.LTGRAY); // Line color
 
         LineData lineData = new LineData(activeDataSet, inactiveDataSet);
         if (!highlightedEntries.isEmpty()) {
@@ -565,7 +623,8 @@ public class PricesFragment extends Fragment {
         } catch (Exception e) {
             e.printStackTrace(); // Log the error
             return -1f; // Return -1 if there's an error
-        }    }
+        }
+    }
 
     private void calculatePriceDifference() {
         // Get current date and yesterday's date
@@ -601,9 +660,11 @@ public class PricesFragment extends Fragment {
             symbolColor = Color.GREEN;
             percentageChangeFormatted = decimalFormat.format(percentageChange);
             priceDifferenceFormatted = decimalFormat.format(priceDifference);
+            if (priceDifference < 1) {
+                priceDifferenceFormatted = "0" + priceDifferenceFormatted;
+            }
             if (percentageChange < 1) {
                 percentageChangeFormatted = "0" + percentageChangeFormatted;
-                priceDifferenceFormatted = "0" + priceDifferenceFormatted;
             }
         }
         else if (percentageChange < 0) {
@@ -611,9 +672,11 @@ public class PricesFragment extends Fragment {
             percentageChangeFormatted = decimalFormat.format(percentageChange);
             priceDifference = -priceDifference;
             priceDifferenceFormatted = decimalFormat.format(priceDifference);
+            if (priceDifference < 1) {
+                priceDifferenceFormatted = "0" + priceDifferenceFormatted;
+            }
             if (percentageChange < 1) {
                 percentageChangeFormatted = "0" + percentageChangeFormatted;
-                priceDifferenceFormatted = "0" + priceDifferenceFormatted;
             }
             symbol = "▼";
             symbolColor = Color.RED;
