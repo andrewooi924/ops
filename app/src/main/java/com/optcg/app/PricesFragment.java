@@ -321,8 +321,8 @@ public class PricesFragment extends Fragment {
         lineChart = view.findViewById(R.id.portfolioChart);
         portfolioTotalValue = view.findViewById(R.id.portfolioTotalValue);
         portfolioSubtitle = view.findViewById(R.id.portfolioSubtitle);
-        loadAndUpdateData();
         setupLineChart();
+        loadAndUpdateData();
 
         return view;
     }
@@ -393,6 +393,12 @@ public class PricesFragment extends Fragment {
             // Store initial price for 28th December 2024
             sharedPreferences.edit().putFloat(initialDate, total).apply();
         }
+
+        if (sharedPreferences.contains("2025-01-07")) {
+            sharedPreferences.edit()
+                    .putFloat("2025-01-07", 2778.0f)
+                    .apply();
+        }
     }
 
     private void loadAndUpdateData() {
@@ -424,33 +430,39 @@ public class PricesFragment extends Fragment {
 
         // Check if today's price is already calculated
         String today = dateFormat.format(new Date());
-        // Fetch today's total value asynchronously
-        new Thread(() -> {
-            float totalValue = calculateTotalValue();
-            sharedPreferences.edit().putFloat(today, totalValue).apply();
+        float todayValue = sharedPreferences.getFloat(today, -1f);
 
-            // Add today's data to the graph on UI thread
-            new Handler(Looper.getMainLooper()).post(() -> {
-                boolean updated = false;
+        if (todayValue == -1f || todayValue < 0) {
+            // Fetch today's total value asynchronously
+            new Thread(() -> {
+                float totalValue = calculateTotalValue();
+                sharedPreferences.edit().putFloat(today, totalValue).apply();
 
-                // Check if today's entry exists and update it
-                for (Entry entry : priceEntries) {
-                    if (entry.getX() == (index[0] - 1)) {
-                        entry.setY(totalValue);
-                        updated = true;
-                        break;
+                // Add today's data to the graph on UI thread
+                new Handler(Looper.getMainLooper()).post(() -> {
+                    boolean updated = false;
+
+                    // Check if today's entry exists and update it
+                    for (Entry entry : priceEntries) {
+                        if (entry.getX() == (index[0] - 1)) {
+                            entry.setY(totalValue);
+                            updated = true;
+                            break;
+                        }
                     }
-                }
 
-                if (!updated) {
-                    priceEntries.add(new Entry(index[0], totalValue)); // Use the updated index
-                    index[0]++;
-                }
+                    if (!updated) {
+                        priceEntries.add(new Entry(index[0], totalValue)); // Use the updated index
+                        index[0]++;
+                    }
 
-                updateGraph();
-                calculatePriceDifference();
-            });
-        }).start();
+                    updateGraph();
+                    calculatePriceDifference();
+                });
+            }).start();
+        } else {
+            calculatePriceDifference();
+        }
     }
 
 

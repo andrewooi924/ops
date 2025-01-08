@@ -16,8 +16,15 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.work.Constraints;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.NetworkType;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 
 import java.io.File;
+import java.util.Calendar;
+import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -28,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        schedulePortfolioUpdate();
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -92,7 +100,38 @@ public class MainActivity extends AppCompatActivity {
         transaction.commit();
     }
 
-//    public CardRepository getCardRepository() {
-//        return cardRepository;
-//    }
+    private long calculateDelay() {
+        Calendar current = Calendar.getInstance();
+        Calendar next11AM = Calendar.getInstance();
+        next11AM.set(Calendar.HOUR_OF_DAY, 11);
+        next11AM.set(Calendar.MINUTE, 0);
+        next11AM.set(Calendar.SECOND, 0);
+
+        if (current.after(next11AM)) {
+            next11AM.add(Calendar.DAY_OF_YEAR, 1);
+        }
+
+        return next11AM.getTimeInMillis() - current.getTimeInMillis();
+    }
+
+    private void schedulePortfolioUpdate() {
+        long initialDelay = calculateDelay();
+
+        Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED) // Require network
+                .build();
+
+        PeriodicWorkRequest workRequest = new PeriodicWorkRequest.Builder(
+                PortfolioUpdateWorker.class,
+                24, TimeUnit.HOURS
+        ).setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)
+                .build();
+
+
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+                "PortfolioUpdateWork",
+                ExistingPeriodicWorkPolicy.REPLACE, // Replace if already scheduled
+                workRequest
+        );
+    }
 }

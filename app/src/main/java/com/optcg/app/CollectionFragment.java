@@ -75,6 +75,9 @@ public class CollectionFragment extends Fragment implements CollectionAdapter.On
             case 6:
                 fragment = OP07CollectionFragment.newInstance(sharedImageView.getTransitionName());
                 break;
+            case 7:
+                fragment = OP08CollectionFragment.newInstance(sharedImageView.getTransitionName());
+                break;
             default:
                 fragment = new OP01CollectionFragment();
         }
@@ -84,17 +87,4 @@ public class CollectionFragment extends Fragment implements CollectionAdapter.On
         transaction.addToBackStack(null);
         transaction.commit();
     }
-
-//    private boolean onMenuItemClick(MenuItem item) {
-//        switch (item.getItemId()) {
-//            case R.id.action_search:
-//                // Handle search action
-//                return true;
-//            case R.id.action_filter:
-//                // Handle filter action
-//                return true;
-//            default:
-//                return false;
-//        }
-//    }
 }
