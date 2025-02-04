@@ -26,6 +26,13 @@
   <a href="#license">License</a>
 </p>
 
+## Showcase
+| Home | Sets | Collection | Portfolio & Prices |
+| :---: | :---: | :---: | :---: |
+| ![Screenshot_20250205-043042](https://github.com/user-attachments/assets/a3ed016c-7894-4151-8af3-1cd363b41502) | ![Screenshot_20250205-043058](https://github.com/user-attachments/assets/5609baf8-7ecf-4fcc-ac72-57ad6456fdfb) | ![Screenshot_20250205-043146](https://github.com/user-attachments/assets/4c8df7ce-5de0-4e0a-826c-43d50a75ec06) | ![Screenshot_20250205-043214](https://github.com/user-attachments/assets/eba6d56d-aac4-42eb-ab34-328ac93db2dd) |
+
+
+
 ## Key Features
 
 * Booster Pack Simulator for all 10 base booster sets.
