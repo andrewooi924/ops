@@ -28,7 +28,7 @@
 
 ## App Showcase
 |    Home    |    Sets    | Collection | Portfolio & Prices |
-| :---: | :---: | :---: | :---: |
+| :--- | :--- | :--- | :--- |
 | ![Screenshot_20250205-043042](https://github.com/user-attachments/assets/1524b362-5948-44dc-9256-102e34fb765d) | ![Screenshot_20250205-043058](https://github.com/user-attachments/assets/4e07fd8e-fbff-4148-8ce9-2e7d5e269110) | ![Screenshot_20250205-043146](https://github.com/user-attachments/assets/4c8df7ce-5de0-4e0a-826c-43d50a75ec06) | ![Screenshot_20250205-043214](https://github.com/user-attachments/assets/deb2572b-4cdb-4424-895b-608523447946) |
 
 ## Pull Simulation
