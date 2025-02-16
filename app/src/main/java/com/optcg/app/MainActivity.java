@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
     private long calculateDelay() {
         Calendar current = Calendar.getInstance();
         Calendar next11AM = Calendar.getInstance();
-        next11AM.set(Calendar.HOUR_OF_DAY, 11);
+        next11AM.set(Calendar.HOUR_OF_DAY, 12);
         next11AM.set(Calendar.MINUTE, 0);
         next11AM.set(Calendar.SECOND, 0);
 

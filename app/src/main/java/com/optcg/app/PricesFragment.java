@@ -394,11 +394,11 @@ public class PricesFragment extends Fragment {
             sharedPreferences.edit().putFloat(initialDate, total).apply();
         }
 
-        if (sharedPreferences.contains("2025-01-07")) {
-            sharedPreferences.edit()
-                    .putFloat("2025-01-07", 2778.0f)
-                    .apply();
-        }
+//        if (sharedPreferences.contains("2025-02-14")) {
+//            sharedPreferences.edit()
+//                    .putFloat("2025-02-14", 2759.58f)
+//                    .apply();
+//        }
     }
 
     private void loadAndUpdateData() {
@@ -432,7 +432,7 @@ public class PricesFragment extends Fragment {
         String today = dateFormat.format(new Date());
         float todayValue = sharedPreferences.getFloat(today, -1f);
 
-        if (todayValue == -1f || todayValue < 0) {
+        if (todayValue == -1f) {
             // Fetch today's total value asynchronously
             new Thread(() -> {
                 float totalValue = calculateTotalValue();
@@ -478,6 +478,7 @@ public class PricesFragment extends Fragment {
             lineDataSet.setLineWidth(3f);
             lineDataSet.setDrawHorizontalHighlightIndicator(false);
             lineDataSet.enableDashedHighlightLine(10f, 5f, 0f);
+            lineDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
         } else {
             // Update the existing dataset
             lineDataSet.notifyDataSetChanged();
@@ -555,6 +556,7 @@ public class PricesFragment extends Fragment {
         activeDataSet.setLineWidth(3f);
         activeDataSet.setDrawCircles(false);
         activeDataSet.setDrawValues(false);
+        activeDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
         activeDataSet.setDrawHorizontalHighlightIndicator(false);
         activeDataSet.setHighlightEnabled(true);
         activeDataSet.enableDashedHighlightLine(10f, 5f, 0f);
@@ -566,6 +568,7 @@ public class PricesFragment extends Fragment {
         inactiveDataSet.setDrawCircles(false);
         inactiveDataSet.setDrawValues(false);
         inactiveDataSet.setDrawHorizontalHighlightIndicator(false);
+        inactiveDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
         inactiveDataSet.setHighlightEnabled(true);
         inactiveDataSet.enableDashedHighlightLine(10f, 5f, 0f);
 
@@ -578,6 +581,7 @@ public class PricesFragment extends Fragment {
         LineDataSet highlightedDataSet = new LineDataSet(highlightedEntries, "");
         highlightedDataSet.setCircleColor(Color.parseColor("#FFD700")); // Circle color
         highlightedDataSet.setCircleHoleColor(Color.parseColor("#FFD700"));
+        highlightedDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
         highlightedDataSet.setCircleRadius(4f);
         highlightedDataSet.setDrawCircles(true);
         highlightedDataSet.setDrawValues(false);
