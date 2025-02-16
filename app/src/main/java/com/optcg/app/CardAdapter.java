@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -79,12 +80,12 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder
             holder.cardAvgPrice.setText("Fetching...");
             holder.cardMovement.setText("");
 
-            if (cardPrefix.startsWith("st") || cardPrefix.startsWith("p")) {
-                fetchCardPricesB(card.getUrl(), holder);
+            if (cardPrefix.startsWith("op") || cardPrefix.startsWith("prb") || cardPrefix.startsWith("eb")) {
+                fetchCardPricesA(card.getUrl(), holder);
             }
             else {
                 // Fetch the prices for this card asynchronously
-                fetchCardPricesA(card.getUrl(), holder);
+                fetchCardPricesB(card.getUrl(), holder);
             }
         }
     }
@@ -123,9 +124,9 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder
                 String crashText = crashElement != null ? crashElement.text().replace("月間暴落差額", "").replace("-", "").trim() : "0円";
 
                 // Update UI
-                String soaringInRM = formatAsRM(parsePriceToInt(soaringText) * 0.025);
-                String crashInRM = formatAsRM(parsePriceToInt(crashText) * 0.025);
-                String avgPriceInRM = formatAsRM(parsePriceToInt(avgPrice) * 0.025);
+                String soaringInRM = formatAsRM(parsePriceToInt(soaringText) * 0.03);
+                String crashInRM = formatAsRM(parsePriceToInt(crashText) * 0.03);
+                String avgPriceInRM = formatAsRM(parsePriceToInt(avgPrice) * 0.03);
 
                 CardData cardData = new CardData(avgPrice, soaringText, crashText);
                 cardDataCache.put(url, cardData);
@@ -183,7 +184,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder
                 String avgPrice = priceElement != null ? priceElement.text().replaceAll("[^\\d]", "") : "0"; // Extract numeric value (removing non-numeric characters)
 
                 // Process and convert average price into RM format
-                String avgPriceInRM = formatAsRM(parsePriceToInt(avgPrice) * 0.025);
+                String avgPriceInRM = formatAsRM(parsePriceToInt(avgPrice) * 0.03);
 
                 // Create CardData object for caching (so we can use it later if needed)
                 CardData cardData = new CardData(avgPrice, "0円", "0円");
@@ -234,9 +235,9 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder
 
     private void updateCardView(CardViewHolder holder, CardData cardData) {
         // Update the view using the cached card data
-        String avgPriceInRM = formatAsRM(parsePriceToInt(cardData.getAvgPrice()) * 0.025);
-        String soaringInRM = formatAsRM(parsePriceToInt(cardData.getSoaringPrice()) * 0.025);
-        String crashInRM = formatAsRM(parsePriceToInt(cardData.getCrashPrice()) * 0.025);
+        String avgPriceInRM = formatAsRM(parsePriceToInt(cardData.getAvgPrice()) * 0.03);
+        String soaringInRM = formatAsRM(parsePriceToInt(cardData.getSoaringPrice()) * 0.03);
+        String crashInRM = formatAsRM(parsePriceToInt(cardData.getCrashPrice()) * 0.03);
 
         String movementText;
         String symbol;
