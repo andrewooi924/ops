@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,11 +35,16 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
+import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.w3c.dom.Text;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.text.SimpleDateFormat;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
@@ -47,6 +53,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -429,6 +436,9 @@ public class PricesFragment extends Fragment {
         portfolioSubtitle = view.findViewById(R.id.portfolioSubtitle);
         setupLineChart();
         loadAndUpdateData();
+
+//        restorePortfolioData();
+//        backupPortfolioData();
 
         return view;
     }
@@ -847,6 +857,63 @@ public class PricesFragment extends Fragment {
             return Integer.parseInt(priceText.replace(",", "").replace("円", "").trim());
         } catch (NumberFormatException e) {
             return 0;
+        }
+    }
+
+    private void backupPortfolioData() {
+        SharedPreferences prefs = requireContext().getSharedPreferences("PortfolioData", Context.MODE_PRIVATE);
+        Map<String, ?> allEntries = prefs.getAll();
+
+        try {
+            JSONObject jsonObject = new JSONObject();
+            for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
+                jsonObject.put(entry.getKey(), entry.getValue().toString());
+            }
+
+            String jsonString = jsonObject.toString();
+            File backupFile = new File(requireContext().getExternalFilesDir(null), "portfolio_backup.json");
+
+            FileWriter writer = new FileWriter(backupFile);
+            writer.write(jsonString);
+            writer.close();
+
+            Toast.makeText(requireContext(), "Backup saved: " + backupFile.getAbsolutePath(), Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(requireContext(), "Backup failed", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void restorePortfolioData() {
+        File backupFile = new File(requireContext().getExternalFilesDir(null), "portfolio_backup.json");
+
+        if (!backupFile.exists()) {
+            Toast.makeText(requireContext(), "No backup file found", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(backupFile));
+            StringBuilder jsonString = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                jsonString.append(line);
+            }
+            reader.close();
+
+            JSONObject jsonObject = new JSONObject(jsonString.toString());
+            SharedPreferences.Editor editor = requireContext().getSharedPreferences("PortfolioData", Context.MODE_PRIVATE).edit();
+
+            for (Iterator<String> it = jsonObject.keys(); it.hasNext(); ) {
+                String key = it.next();
+                editor.putString(key, jsonObject.getString(key)); // Modify this if using different data types
+            }
+            editor.apply();
+
+            Toast.makeText(requireContext(), "Portfolio data restored!", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(requireContext(), "Restore failed", Toast.LENGTH_SHORT).show();
         }
     }
 }

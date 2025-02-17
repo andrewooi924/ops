@@ -417,6 +417,18 @@ public class OP05SimActivity extends AppCompatActivity {
         pulledCards.add(randomCard);
         if (!sharedPreferences.getBoolean(cardId4 + "_isCollected", false)) {
             isNew.add(true);
+            int newCount = sharedPreferences.getInt(cardId4 + "_count", 0) + 1;
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putInt(TOTAL_COUNT, sharedPreferences.getInt(TOTAL_COUNT, 0) + 1);
+            if (rarity.equals("C")) {
+                editor.putInt(TOTAL_C, sharedPreferences.getInt(TOTAL_C, 0) + 1);
+            }
+            else if (rarity.equals("UC")) {
+                editor.putInt(TOTAL_UC, sharedPreferences.getInt(TOTAL_UC, 0) + 1);
+            }
+            editor.putInt(cardId4 + "_count", newCount);
+            editor.putBoolean(cardId4 + "_isCollected", true);
+            editor.apply();
         }
         else {
             isNew.add(false);
@@ -438,20 +450,6 @@ public class OP05SimActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 animate(card4);
-                int newCount = sharedPreferences.getInt(cardId4 + "_count", 0) + 1;
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                if (!sharedPreferences.getBoolean(cardId4 + "_isCollected", false)) {
-                    editor.putInt(TOTAL_COUNT, sharedPreferences.getInt(TOTAL_COUNT, 0) + 1);
-                    if (rarity.equals("C")) {
-                        editor.putInt(TOTAL_C, sharedPreferences.getInt(TOTAL_C, 0) + 1);
-                    }
-                    else if (rarity.equals("UC")) {
-                        editor.putInt(TOTAL_UC, sharedPreferences.getInt(TOTAL_UC, 0) + 1);
-                    }
-                }
-                editor.putInt(cardId4 + "_count", newCount);
-                editor.putBoolean(cardId4 + "_isCollected", true);
-                editor.apply();
             }
         });
 
@@ -473,6 +471,18 @@ public class OP05SimActivity extends AppCompatActivity {
         pulledCards.add(randomCard);
         if (!sharedPreferences.getBoolean(cardId3 + "_isCollected", false)) {
             isNew.add(true);
+            int newCount = sharedPreferences.getInt(cardId3 + "_count", 0) + 1;
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putInt(TOTAL_COUNT, sharedPreferences.getInt(TOTAL_COUNT, 0) + 1);
+            if (rarity.equals("C")) {
+                editor.putInt(TOTAL_C, sharedPreferences.getInt(TOTAL_C, 0) + 1);
+            }
+            else if (rarity.equals("UC")) {
+                editor.putInt(TOTAL_UC, sharedPreferences.getInt(TOTAL_UC, 0) + 1);
+            }
+            editor.putInt(cardId3 + "_count", newCount);
+            editor.putBoolean(cardId3 + "_isCollected", true);
+            editor.apply();
         }
         else {
             isNew.add(false);
@@ -494,20 +504,6 @@ public class OP05SimActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 animate(card3);
-                int newCount = sharedPreferences.getInt(cardId3 + "_count", 0) + 1;
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                if (!sharedPreferences.getBoolean(cardId3 + "_isCollected", false)) {
-                    editor.putInt(TOTAL_COUNT, sharedPreferences.getInt(TOTAL_COUNT, 0) + 1);
-                    if (rarity.equals("C")) {
-                        editor.putInt(TOTAL_C, sharedPreferences.getInt(TOTAL_C, 0) + 1);
-                    }
-                    else if (rarity.equals("UC")) {
-                        editor.putInt(TOTAL_UC, sharedPreferences.getInt(TOTAL_UC, 0) + 1);
-                    }
-                }
-                editor.putInt(cardId3 + "_count", newCount);
-                editor.putBoolean(cardId3 + "_isCollected", true);
-                editor.apply();
             }
         });
 
@@ -529,6 +525,18 @@ public class OP05SimActivity extends AppCompatActivity {
         pulledCards.add(randomCard);
         if (!sharedPreferences.getBoolean(cardId2 + "_isCollected", false)) {
             isNew.add(true);
+            int newCount = sharedPreferences.getInt(cardId2 + "_count", 0) + 1;
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putInt(TOTAL_COUNT, sharedPreferences.getInt(TOTAL_COUNT, 0) + 1);
+            if (rarity.equals("C")) {
+                editor.putInt(TOTAL_C, sharedPreferences.getInt(TOTAL_C, 0) + 1);
+            }
+            else if (rarity.equals("UC")) {
+                editor.putInt(TOTAL_UC, sharedPreferences.getInt(TOTAL_UC, 0) + 1);
+            }
+            editor.putInt(cardId2 + "_count", newCount);
+            editor.putBoolean(cardId2 + "_isCollected", true);
+            editor.apply();
         }
         else {
             isNew.add(false);
@@ -550,20 +558,6 @@ public class OP05SimActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 animate(card2);
-                int newCount = sharedPreferences.getInt(cardId2 + "_count", 0) + 1;
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                if (!sharedPreferences.getBoolean(cardId2 + "_isCollected", false)) {
-                    editor.putInt(TOTAL_COUNT, sharedPreferences.getInt(TOTAL_COUNT, 0) + 1);
-                    if (rarity.equals("C")) {
-                        editor.putInt(TOTAL_C, sharedPreferences.getInt(TOTAL_C, 0) + 1);
-                    }
-                    else if (rarity.equals("UC")) {
-                        editor.putInt(TOTAL_UC, sharedPreferences.getInt(TOTAL_UC, 0) + 1);
-                    }
-                }
-                editor.putInt(cardId2 + "_count", newCount);
-                editor.putBoolean(cardId2 + "_isCollected", true);
-                editor.apply();
             }
         });
 
@@ -585,6 +579,18 @@ public class OP05SimActivity extends AppCompatActivity {
         pulledCards.add(randomCard);
         if (!sharedPreferences.getBoolean(cardId1 + "_isCollected", false)) {
             isNew.add(true);
+            int newCount = sharedPreferences.getInt(cardId1 + "_count", 0) + 1;
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putInt(TOTAL_COUNT, sharedPreferences.getInt(TOTAL_COUNT, 0) + 1);
+            if (rarity.equals("C")) {
+                editor.putInt(TOTAL_C, sharedPreferences.getInt(TOTAL_C, 0) + 1);
+            }
+            else if (rarity.equals("UC")) {
+                editor.putInt(TOTAL_UC, sharedPreferences.getInt(TOTAL_UC, 0) + 1);
+            }
+            editor.putInt(cardId1 + "_count", newCount);
+            editor.putBoolean(cardId1 + "_isCollected", true);
+            editor.apply();
         }
         else {
             isNew.add(false);
@@ -606,20 +612,6 @@ public class OP05SimActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 animate(card1);
-                int newCount = sharedPreferences.getInt(cardId1 + "_count", 0) + 1;
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                if (!sharedPreferences.getBoolean(cardId1 + "_isCollected", false)) {
-                    editor.putInt(TOTAL_COUNT, sharedPreferences.getInt(TOTAL_COUNT, 0) + 1);
-                    if (rarity.equals("C")) {
-                        editor.putInt(TOTAL_C, sharedPreferences.getInt(TOTAL_C, 0) + 1);
-                    }
-                    else if (rarity.equals("UC")) {
-                        editor.putInt(TOTAL_UC, sharedPreferences.getInt(TOTAL_UC, 0) + 1);
-                    }
-                }
-                editor.putInt(cardId1 + "_count", newCount);
-                editor.putBoolean(cardId1 + "_isCollected", true);
-                editor.apply();
             }
         });
 
