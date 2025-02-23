@@ -126,6 +126,8 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder
                 // Update UI
                 String soaringInRM = formatAsRM(parsePriceToInt(soaringText) * 0.03);
                 String crashInRM = formatAsRM(parsePriceToInt(crashText) * 0.03);
+                int diff = (parsePriceToInt(soaringText) - parsePriceToInt(crashText));
+                String diffInRM = formatAsRM(diff * 0.03);
                 String avgPriceInRM = formatAsRM(parsePriceToInt(avgPrice) * 0.03);
 
                 CardData cardData = new CardData(avgPrice, soaringText, crashText);
@@ -135,14 +137,28 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder
                 String symbol;
                 int symbolColor;
 
-                if (!soaringText.equals("0円")) {
+//                if (!soaringText.equals("0円")) {
+//                    symbol = "▲";
+//                    symbolColor = Color.GREEN;
+//                    movementText = soaringInRM + " (" + soaringText + ")";
+//                } else if (!crashText.equals("0円")) {
+//                    symbol = "▼";
+//                    symbolColor = Color.RED;
+//                    movementText = crashInRM + " (" + crashText + ")";
+//                } else {
+//                    symbol = "●";
+//                    symbolColor = Color.parseColor("#FFD700");
+//                    movementText = "RM0.00 (0円)";
+//                }
+
+                if (diff > 0) {
                     symbol = "▲";
                     symbolColor = Color.GREEN;
-                    movementText = soaringInRM + " (" + soaringText + ")";
-                } else if (!crashText.equals("0円")) {
+                    movementText = diffInRM + " (" + diff + "円)";
+                } else if (diff < 0) {
                     symbol = "▼";
                     symbolColor = Color.RED;
-                    movementText = crashInRM + " (" + crashText + ")";
+                    movementText = diffInRM + " (" + Math.abs(diff) + "円)";
                 } else {
                     symbol = "●";
                     symbolColor = Color.parseColor("#FFD700");
@@ -230,27 +246,43 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder
     }
 
     private String formatAsRM(double value) {
-        return String.format("RM%.2f", value);
+        return String.format("RM%.2f", Math.abs(value));
     }
 
     private void updateCardView(CardViewHolder holder, CardData cardData) {
         // Update the view using the cached card data
         String avgPriceInRM = formatAsRM(parsePriceToInt(cardData.getAvgPrice()) * 0.03);
         String soaringInRM = formatAsRM(parsePriceToInt(cardData.getSoaringPrice()) * 0.03);
+        int diff = (parsePriceToInt(cardData.getSoaringPrice()) - parsePriceToInt(cardData.getCrashPrice()));
+        String diffInRM = formatAsRM(diff * 0.03);
         String crashInRM = formatAsRM(parsePriceToInt(cardData.getCrashPrice()) * 0.03);
 
         String movementText;
         String symbol;
         int symbolColor;
 
-        if (!cardData.getSoaringPrice().equals("0円")) {
+//        if (!cardData.getSoaringPrice().equals("0円")) {
+//            symbol = "▲";
+//            symbolColor = Color.GREEN;
+//            movementText = soaringInRM + " (" + cardData.getSoaringPrice() + ")";
+//        } else if (!cardData.getCrashPrice().equals("0円")) {
+//            symbol = "▼";
+//            symbolColor = Color.RED;
+//            movementText = crashInRM + " (" + cardData.getCrashPrice() + ")";
+//        } else {
+//            symbol = "●";
+//            symbolColor = Color.parseColor("#FFD700");
+//            movementText = "RM0.00 (0円)";
+//        }
+
+        if (diff > 0) {
             symbol = "▲";
             symbolColor = Color.GREEN;
-            movementText = soaringInRM + " (" + cardData.getSoaringPrice() + ")";
-        } else if (!cardData.getCrashPrice().equals("0円")) {
+            movementText = diffInRM + " (" + diff + "円)";
+        } else if (diff < 0) {
             symbol = "▼";
             symbolColor = Color.RED;
-            movementText = crashInRM + " (" + cardData.getCrashPrice() + ")";
+            movementText = diffInRM + " (" + Math.abs(diff) + "円)";
         } else {
             symbol = "●";
             symbolColor = Color.parseColor("#FFD700");

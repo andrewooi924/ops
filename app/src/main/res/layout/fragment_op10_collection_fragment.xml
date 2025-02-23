@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#201c1c">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:id="@+id/op10_top"
+            android:layout_width="450dp"
+            android:layout_height="190dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/op10CollectionRecyclerView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <ImageView
+                android:id="@+id/op10_set_img"
+                android:layout_width="170dp"
+                android:layout_height="170dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="16dp"
+                android:layout_marginBottom="8dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/op10_collection" />
+
+            <LinearLayout
+                android:layout_width="240dp"
+                android:layout_height="230dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="16dp"
+                android:orientation="vertical"
+                android:layout_marginEnd="8dp">
+
+                <TextView
+                    android:id="@+id/op10_set_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginTop="13dp"
+                    android:text="OP10 - Royal Blood"
+                    android:textColor="#FFFFFF"
+                    android:textSize="20sp" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp">
+
+                    <FrameLayout
+                        android:id="@+id/op10Progress"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_marginTop="25dp"
+                        android:gravity="center"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <com.mikhaellopez.circularprogressbar.CircularProgressBar
+                            android:id="@+id/op10ProgressCircle"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            app:cpb_background_progressbar_color="#b6bbd8"
+                            app:cpb_background_progressbar_width="5dp"
+                            app:cpb_progress_direction="to_right"
+                            app:cpb_progressbar_color="#3f51b5"
+                            app:cpb_progressbar_width="10dp"
+                            app:cpb_round_border="false" />
+
+                        <TextView
+                            android:id="@+id/op10ProgressText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="0%"
+                            android:textColor="@color/white"
+                            android:textSize="16sp"/>
+                    </FrameLayout>
+
+                    <GridLayout
+                        android:id="@+id/op10RarityGrid"
+                        android:layout_width="155dp"
+                        android:layout_height="120dp"
+                        android:rowCount="3"
+                        android:columnCount="3"
+                        android:layout_marginTop="15dp"
+                        app:layout_constraintStart_toEndOf="@id/op10Progress"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent">
+
+                        <!-- Example Cell 1 -->
+                        <LinearLayout
+                            android:layout_width="9dp"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="4dp"
+                            android:layout_gravity="fill"
+                            android:layout_columnWeight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/op10CCollected"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0/49"
+                                android:layout_gravity="center"
+                                android:textColor="@color/white"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:id="@+id/op10C"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:text="C"
+                                android:textSize="14sp"
+                                android:textColor="@color/white"
+                                android:textStyle="bold"/>
+                        </LinearLayout>
+
+                        <!-- Repeat for other cells (2 to 6) -->
+                        <!-- Example Cell 2 -->
+                        <LinearLayout
+                            android:layout_width="9dp"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="4dp"
+                            android:layout_gravity="fill"
+                            android:layout_columnWeight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/op10UCCollected"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:textColor="@color/white"
+                                android:text="0/32"
+                                android:textSize="14sp"/>
+
+                            <TextView
+                                android:id="@+id/op10UC"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:text="UC"
+                                android:textSize="14sp"
+                                android:textColor="@color/white"
+                                android:textStyle="bold"/>
+                        </LinearLayout>
+
+                        <!-- Continue to add LinearLayouts for remaining cells up to 6 -->
+                        <!-- Cell 3 -->
+                        <LinearLayout
+                            android:layout_width="9dp"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="4dp"
+                            android:layout_gravity="fill"
+                            android:layout_columnWeight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/op10RCollected"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:textColor="@color/white"
+                                android:text="0/32"
+                                android:textSize="14sp"/>
+
+                            <TextView
+                                android:id="@+id/op10R"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:textColor="@color/white"
+                                android:text="R"
+                                android:textSize="14sp"
+                                android:textStyle="bold"/>
+                        </LinearLayout>
+
+                        <!-- Continue this pattern for cells 4, 5, and 6 -->
+                        <!-- Cell 4 -->
+                        <LinearLayout
+                            android:layout_width="9dp"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="4dp"
+                            android:layout_gravity="fill"
+                            android:layout_columnWeight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/op10SRCollected"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:textColor="@color/white"
+                                android:text="0/20"
+                                android:textSize="14sp"/>
+
+                            <TextView
+                                android:id="@+id/op10SR"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:textColor="@color/white"
+                                android:text="SR"
+                                android:textSize="14sp"
+                                android:textStyle="bold"/>
+                        </LinearLayout>
+
+                        <!-- Cell 5 -->
+                        <LinearLayout
+                            android:layout_width="9dp"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="4dp"
+                            android:layout_gravity="fill"
+                            android:layout_columnWeight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/op10LCollected"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:textColor="@color/white"
+                                android:text="0/16"
+                                android:textSize="14sp"/>
+
+                            <TextView
+                                android:id="@+id/op10L"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:textColor="@color/white"
+                                android:text="L"
+                                android:textSize="14sp"
+                                android:textStyle="bold"/>
+                        </LinearLayout>
+
+                        <!-- Cell 6 -->
+                        <LinearLayout
+                            android:layout_width="9dp"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="4dp"
+                            android:layout_gravity="fill"
+                            android:layout_columnWeight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/op10SECCollected"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:textColor="@color/white"
+                                android:text="0/5"
+                                android:textSize="14sp"/>
+
+                            <TextView
+                                android:id="@+id/op10SEC"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:textColor="@color/white"
+                                android:text="SEC"
+                                android:textSize="14sp"
+                                android:textStyle="bold"/>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="9dp"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="4dp"
+                            android:layout_gravity="fill"
+                            android:layout_columnWeight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/op10SPCollected"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:textColor="@color/white"
+                                android:text="0/3"
+                                android:textSize="14sp"/>
+
+                            <TextView
+                                android:id="@+id/op10SP"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:textColor="@color/white"
+                                android:text="SP"
+                                android:textSize="14sp"
+                                android:textStyle="bold"/>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="9dp"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="4dp"
+                            android:layout_gravity="fill"
+                            android:layout_columnWeight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/op10MRCollected"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:textColor="@color/white"
+                                android:text="0/3"
+                                android:textSize="14sp"/>
+
+                            <TextView
+                                android:id="@+id/op10MR"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:textColor="@color/white"
+                                android:text="MR"
+                                android:textSize="14sp"
+                                android:textStyle="bold"/>
+                        </LinearLayout>
+
+                    </GridLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
+        </RelativeLayout>
+
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/op10CollectionRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:padding="2dp"
+            android:scrollbars="none"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/op10_top"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

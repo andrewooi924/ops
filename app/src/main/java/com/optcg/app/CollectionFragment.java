@@ -40,11 +40,14 @@ public class CollectionFragment extends Fragment implements CollectionAdapter.On
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2)); // 2 columns
 
         // Initialize list of image resources
-        menuImages = Arrays.asList(R.drawable.op01_collection, R.drawable.op02_collection,
+        menuImages = Arrays.asList(
+                R.drawable.op01_collection, R.drawable.op02_collection,
                 R.drawable.op03_collection, R.drawable.op04_collection,
                 R.drawable.op05_collection, R.drawable.op06_collection,
                 R.drawable.op07_collection, R.drawable.op08_collection,
-                R.drawable.op09_collection, R.drawable.op10_collection);
+                R.drawable.op09_collection, R.drawable.op10_collection,
+                R.drawable.eb01_collection, R.drawable.eb02_collection
+                );
 
         // Set up adapter with only images
         collectionAdapter = new CollectionAdapter(getContext(), menuImages, this);
@@ -77,6 +80,12 @@ public class CollectionFragment extends Fragment implements CollectionAdapter.On
                 break;
             case 7:
                 fragment = OP08CollectionFragment.newInstance(sharedImageView.getTransitionName());
+                break;
+            case 8:
+                fragment = OP09CollectionFragment.newInstance(sharedImageView.getTransitionName());
+                break;
+            case 9:
+                fragment = OP10CollectionFragment.newInstance(sharedImageView.getTransitionName());
                 break;
             default:
                 fragment = new OP01CollectionFragment();

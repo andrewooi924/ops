@@ -312,16 +312,13 @@ public class PricesFragment extends Fragment {
         for (CardPrice card : combinedList) {
             fetchMovement(card.getUrl(), (soaringPrice, crashPrice) -> {
 
-                if (soaringPrice > 0) {
-                    card.setPrice(soaringPrice);
-                } else if (crashPrice > 0) {
-                    card.setPrice(crashPrice);
-                }
+                int diff = soaringPrice - crashPrice;
+                card.setPrice(Math.abs(diff));
 
                 requireActivity().runOnUiThread(() -> {
-                    if (soaringPrice > 0) {
+                    if (diff > 0) {
                         positiveList.add(card);
-                    } else if (crashPrice > 0) {
+                    } else if (diff < 0) {
                         negativeList.add(card);
                     }
 
@@ -510,11 +507,11 @@ public class PricesFragment extends Fragment {
             sharedPreferences.edit().putFloat(initialDate, total).apply();
         }
 
-//        if (sharedPreferences.contains("2025-02-14")) {
-//            sharedPreferences.edit()
-//                    .putFloat("2025-02-14", 2759.58f)
-//                    .apply();
-//        }
+        if (sharedPreferences.contains("2025-02-21")) {
+            sharedPreferences.edit()
+                    .putFloat("2025-02-21", 2719.38f)
+                    .apply();
+        }
     }
 
     private void loadAndUpdateData() {
@@ -548,7 +545,7 @@ public class PricesFragment extends Fragment {
         String today = dateFormat.format(new Date());
         float todayValue = sharedPreferences.getFloat(today, -1f);
 
-        if (todayValue == -1f) {
+        if (todayValue == -1f || todayValue < 0) {
             // Fetch today's total value asynchronously
             new Thread(() -> {
                 float totalValue = calculateTotalValue();
