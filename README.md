@@ -26,10 +26,9 @@
   <a href="#license">License</a>
 </p>
 
-## App Showcase
 |    Home    |    Sets    | Collection | Portfolio & Prices |
 | :---: | :---: | :---: | :---: |
-| <img src="https://github.com/user-attachments/assets/1524b362-5948-44dc-9256-102e34fb765d" width="200"> | <img src="https://github.com/user-attachments/assets/4e07fd8e-fbff-4148-8ce9-2e7d5e269110" width="200"> | <img src="https://github.com/user-attachments/assets/4c8df7ce-5de0-4e0a-826c-43d50a75ec06" width="200"> | <img src="https://github.com/user-attachments/assets/deb2572b-4cdb-4424-895b-608523447946" width="200"> |
+| <img src="https://github.com/user-attachments/assets/1524b362-5948-44dc-9256-102e34fb765d" width="200" height="400"> | <img src="https://github.com/user-attachments/assets/4e07fd8e-fbff-4148-8ce9-2e7d5e269110" width="200" height="400"> | <img src="https://github.com/user-attachments/assets/4c8df7ce-5de0-4e0a-826c-43d50a75ec06" width="200" height="400"> | <img src="https://github.com/user-attachments/assets/deb2572b-4cdb-4424-895b-608523447946" width="200" height="400"> |
 
 ## Pull Simulation
 
