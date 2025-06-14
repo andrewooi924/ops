@@ -1,11 +1,9 @@
 package com.optcg.app;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.transition.TransitionInflater;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.widget.LinearLayout;
 
 import androidx.activity.EdgeToEdge;
@@ -28,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
 
-    private LinearLayout btnHome, btnShop, btnCollection, btnPrice, btnDeck;
+    private LinearLayout btnHome, btnShop, btnCollection, btnPrice, btnPortfolio;
     private View currentSelectedTab;
     private CardViewModel cardViewModel;
 
@@ -51,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
         btnShop = findViewById(R.id.btnShop);
         btnCollection = findViewById(R.id.btnCollection);
         btnPrice = findViewById(R.id.btnPrice);
-        btnDeck = findViewById(R.id.btnDeck);
+        btnPortfolio = findViewById(R.id.btnPortfolio);
 
         cardViewModel = new ViewModelProvider(this).get(CardViewModel.class);
 
@@ -73,11 +71,11 @@ public class MainActivity extends AppCompatActivity {
         });
         btnPrice.setOnClickListener(v -> {
             setTabSelected(v);
-            loadFragment(new PricesFragment());
-        });
-        btnDeck.setOnClickListener(v -> {
-            setTabSelected(v);
             loadFragment(new DeckFragment());
+        });
+        btnPortfolio.setOnClickListener(v -> {
+            setTabSelected(v);
+            loadFragment(new PortfolioFragment());
         });
 
         // Display size of shared preferences

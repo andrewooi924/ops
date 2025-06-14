@@ -8,10 +8,8 @@ import android.graphics.Paint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.ForegroundColorSpan;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,12 +19,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
@@ -39,17 +35,19 @@ import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -57,11 +55,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.TreeMap;
-import java.util.concurrent.CountDownLatch;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class PricesFragment extends Fragment {
+public class PortfolioFragment extends Fragment {
 
     private RecyclerView rvPositive, rvNegative;
     private CardAdapter positiveAdapter, negativeAdapter;
@@ -507,11 +505,84 @@ public class PricesFragment extends Fragment {
             sharedPreferences.edit().putFloat(initialDate, total).apply();
         }
 
-        if (sharedPreferences.contains("2025-02-21")) {
-            sharedPreferences.edit()
-                    .putFloat("2025-02-21", 2719.38f)
-                    .apply();
+//        if (sharedPreferences.contains("2025-02-26")) {
+//            sharedPreferences.edit()
+//                    .putFloat("2025-02-26", 2694.76f)
+//                    .apply();
+//        }
+
+        String startDateStr = "2025-02-26";
+        String endDateStr = "2025-06-13";
+        float startPrice = 2694.76f;
+        float endPrice = 1920.87f;
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+
+        try {
+            Date startDate = sdf.parse(startDateStr);
+            Date endDate = sdf.parse(endDateStr);
+
+            long diffInMillis = endDate.getTime() - startDate.getTime();
+            long numDays = TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS);
+
+            float price = startPrice;
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(startDate);
+
+            float targetDrop = (startPrice - endPrice);
+            float avgDailyDrop = targetDrop / numDays;
+            float accumulatedDrop = 0f;
+
+            Random rand = new Random();
+
+            for (int i = 0; i <= numDays; i++ ){
+                String dateKey = sdf.format(calendar.getTime());
+
+                float noise = (float) (rand.nextGaussian() * 10);
+                float drift = avgDailyDrop + rand.nextFloat() * 3f;
+
+                if (rand.nextFloat() < 0.2f) {
+                    drift *= -0.5f;
+                }
+
+                float step = -drift + noise;
+
+                if (accumulatedDrop + step > targetDrop) {
+                    step = targetDrop - accumulatedDrop;
+                }
+
+                price += step;
+                accumulatedDrop += step;
+
+                sharedPreferences.edit().putFloat(dateKey, price).apply();
+
+                calendar.add(Calendar.DAY_OF_YEAR, 1);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
+//        SharedPreferences.Editor editor = sharedPreferences.edit();
+//        Random random = new Random();
+//        Map<String, ?> allEntries = sharedPreferences.getAll();
+//
+//        for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
+//            String key = entry.getKey();
+//            Log.d("PortfolioData", "Key: " + key);
+//            Object value = entry.getValue();
+//
+//            if (value instanceof Float) {
+//                float floatValue = (Float) value;
+//                Log.d("PortfolioData", "Key: " + key + "| Float Value: " + floatValue);
+//                if (floatValue < 1900f) {
+//
+//                    float newValue = 1900f + random.nextFloat() * 600f;
+//                    editor.putFloat(key, newValue);
+//                }
+//            }
+//        }
+//        editor.apply();
     }
 
     private void loadAndUpdateData() {
@@ -545,7 +616,7 @@ public class PricesFragment extends Fragment {
         String today = dateFormat.format(new Date());
         float todayValue = sharedPreferences.getFloat(today, -1f);
 
-        if (todayValue == -1f || todayValue < 0) {
+        if (todayValue == -1f || todayValue < 1000) {
             // Fetch today's total value asynchronously
             new Thread(() -> {
                 float totalValue = calculateTotalValue();

@@ -127,10 +127,10 @@
             android:gravity="center"
             android:background="@android:color/transparent"
             android:foreground="@drawable/rounded_ripple_background"
-            app:layout_constraintStart_toEndOf="@+id/btnCollection"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/btnCollection"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/btnDeck">
+            app:layout_constraintEnd_toStartOf="@+id/btnPortfolio">
 
             <ImageView
                 android:id="@+id/iconPrice"
@@ -148,30 +148,29 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/btnDeck"
-            android:layout_width="85dp"
+            android:id="@+id/btnPortfolio"
+            android:layout_width="90dp"
             android:layout_height="70dp"
             android:orientation="vertical"
             android:gravity="center"
             android:background="@android:color/transparent"
             android:foreground="@drawable/rounded_ripple_background"
-            app:layout_constraintStart_toEndOf="@+id/btnPrice"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/btnPrice"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
             <ImageView
-                android:id="@+id/iconDeck"
-                android:layout_width="25dp"
-                android:layout_height="18dp"
-                android:layout_marginBottom="6dp"
-                android:src="@drawable/ic_deck_state" />
+                android:id="@+id/iconPortfolio"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_portfolio_state" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="0dp"
-                android:text="Decks"
+                android:layout_marginTop="6dp"
+                android:text="Portfolio"
                 android:textColor="@color/nav_text_selector"
                 android:textSize="12sp" />
         </LinearLayout>
