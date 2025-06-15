@@ -511,78 +511,57 @@ public class PortfolioFragment extends Fragment {
 //                    .apply();
 //        }
 
-        String startDateStr = "2025-02-26";
-        String endDateStr = "2025-06-13";
-        float startPrice = 2694.76f;
-        float endPrice = 1920.87f;
-
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
-
-        try {
-            Date startDate = sdf.parse(startDateStr);
-            Date endDate = sdf.parse(endDateStr);
-
-            long diffInMillis = endDate.getTime() - startDate.getTime();
-            long numDays = TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS);
-
-            float price = startPrice;
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(startDate);
-
-            float targetDrop = (startPrice - endPrice);
-            float avgDailyDrop = targetDrop / numDays;
-            float accumulatedDrop = 0f;
-
-            Random rand = new Random();
-
-            for (int i = 0; i <= numDays; i++ ){
-                String dateKey = sdf.format(calendar.getTime());
-
-                float noise = (float) (rand.nextGaussian() * 10);
-                float drift = avgDailyDrop + rand.nextFloat() * 3f;
-
-                if (rand.nextFloat() < 0.2f) {
-                    drift *= -0.5f;
-                }
-
-                float step = -drift + noise;
-
-                if (accumulatedDrop + step > targetDrop) {
-                    step = targetDrop - accumulatedDrop;
-                }
-
-                price += step;
-                accumulatedDrop += step;
-
-                sharedPreferences.edit().putFloat(dateKey, price).apply();
-
-                calendar.add(Calendar.DAY_OF_YEAR, 1);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-//        SharedPreferences.Editor editor = sharedPreferences.edit();
-//        Random random = new Random();
-//        Map<String, ?> allEntries = sharedPreferences.getAll();
+//        String startDateStr = "2025-02-26";
+//        String endDateStr = "2025-06-13";
+//        float startPrice = 2694.76f;
+//        float endPrice = 1920.87f;
 //
-//        for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
-//            String key = entry.getKey();
-//            Log.d("PortfolioData", "Key: " + key);
-//            Object value = entry.getValue();
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
 //
-//            if (value instanceof Float) {
-//                float floatValue = (Float) value;
-//                Log.d("PortfolioData", "Key: " + key + "| Float Value: " + floatValue);
-//                if (floatValue < 1900f) {
+//        try {
+//            Date startDate = sdf.parse(startDateStr);
+//            Date endDate = sdf.parse(endDateStr);
 //
-//                    float newValue = 1900f + random.nextFloat() * 600f;
-//                    editor.putFloat(key, newValue);
+//            long diffInMillis = endDate.getTime() - startDate.getTime();
+//            long numDays = TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS);
+//
+//            float price = startPrice;
+//            Calendar calendar = Calendar.getInstance();
+//            calendar.setTime(startDate);
+//
+//            float targetDrop = (startPrice - endPrice);
+//            float avgDailyDrop = targetDrop / numDays;
+//            float accumulatedDrop = 0f;
+//
+//            Random rand = new Random();
+//
+//            for (int i = 0; i <= numDays; i++ ){
+//                String dateKey = sdf.format(calendar.getTime());
+//
+//                float noise = (float) (rand.nextGaussian() * 10);
+//                float drift = avgDailyDrop + rand.nextFloat() * 3f;
+//
+//                if (rand.nextFloat() < 0.2f) {
+//                    drift *= -0.5f;
 //                }
+//
+//                float step = -drift + noise;
+//
+//                if (accumulatedDrop + step > targetDrop) {
+//                    step = targetDrop - accumulatedDrop;
+//                }
+//
+//                price += step;
+//                accumulatedDrop += step;
+//
+//                sharedPreferences.edit().putFloat(dateKey, price).apply();
+//
+//                calendar.add(Calendar.DAY_OF_YEAR, 1);
 //            }
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
 //        }
-//        editor.apply();
     }
 
     private void loadAndUpdateData() {

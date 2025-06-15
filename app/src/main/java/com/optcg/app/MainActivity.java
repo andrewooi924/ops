@@ -100,16 +100,31 @@ public class MainActivity extends AppCompatActivity {
 
     private long calculateDelay() {
         Calendar current = Calendar.getInstance();
-        Calendar next11AM = Calendar.getInstance();
-        next11AM.set(Calendar.HOUR_OF_DAY, 12);
-        next11AM.set(Calendar.MINUTE, 0);
-        next11AM.set(Calendar.SECOND, 0);
+//        Calendar next11AM = Calendar.getInstance();
+//        next11AM.set(Calendar.HOUR_OF_DAY, 12);
+//        next11AM.set(Calendar.MINUTE, 0);
+//        next11AM.set(Calendar.SECOND, 0);
+//
+//        if (current.after(next11AM)) {
+//            next11AM.add(Calendar.DAY_OF_YEAR, 1);
+//        }
+//
+//        return next11AM.getTimeInMillis() - current.getTimeInMillis();
 
-        if (current.after(next11AM)) {
-            next11AM.add(Calendar.DAY_OF_YEAR, 1);
+        int currentHour = current.get(Calendar.HOUR_OF_DAY);
+        int nextCheckpointHour = ((currentHour / 6) + 1) * 6 % 24;
+
+        Calendar nextRun = (Calendar) current.clone();
+        nextRun.set(Calendar.HOUR_OF_DAY, nextCheckpointHour);
+        nextRun.set(Calendar.MINUTE, 0);
+        nextRun.set(Calendar.SECOND, 0);
+        nextRun.set(Calendar.MILLISECOND, 0);
+
+        if (nextCheckpointHour <= currentHour) {
+            nextRun.add(Calendar.DAY_OF_MONTH, 1);
         }
 
-        return next11AM.getTimeInMillis() - current.getTimeInMillis();
+        return nextRun.getTimeInMillis() - current.getTimeInMillis();
     }
 
     private void schedulePortfolioUpdate() {
@@ -121,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
 
         PeriodicWorkRequest workRequest = new PeriodicWorkRequest.Builder(
                 PortfolioUpdateWorker.class,
-                24, TimeUnit.HOURS
+                6, TimeUnit.HOURS
         ).setInitialDelay(initialDelay, TimeUnit.MILLISECONDS)
                 .build();
 
