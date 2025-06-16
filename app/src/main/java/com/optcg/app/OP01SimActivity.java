@@ -5,11 +5,14 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AlphaAnimation;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -737,6 +740,11 @@ public class OP01SimActivity extends AppCompatActivity {
                 cardFrame.addView(symbolView);
             }
 
+            // Allow card popup on pressing card
+            cardFrame.setOnClickListener(v -> {
+                showCardPopup(cardResourceId);
+            });
+
             // Add the cardFrame (which contains both card and symbol) to the GridLayout
             gridLayout.addView(cardFrame);
         }
@@ -752,5 +760,42 @@ public class OP01SimActivity extends AppCompatActivity {
         slideUp.setDuration(500);
         slideUp.setFillAfter(true);
         resultContainer.startAnimation(slideUp);
+    }
+
+    private void showCardPopup(int cardResId) {
+        // Create a dimmed full-screen overlay
+        FrameLayout overlay = new FrameLayout(this);
+        overlay.setBackgroundColor(Color.parseColor("#AA000000"));
+        overlay.setLayoutParams(new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+        ));
+
+        // Create the enlarged card view
+        ImageView largeCard = new ImageView(this);
+        largeCard.setImageResource(cardResId);
+        FrameLayout.LayoutParams cardParams = new FrameLayout.LayoutParams(
+                1000, 1500  // Adjust size as needed
+        );
+        cardParams.gravity = Gravity.CENTER;
+        largeCard.setLayoutParams(cardParams);
+        largeCard.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        largeCard.setPadding(16, 16, 16, 16);
+
+        // Add the card to the overlay
+        overlay.addView(largeCard);
+
+        // Add close-on-tap functionality
+        overlay.setOnClickListener(v -> {
+            ((ViewGroup) overlay.getParent()).removeView(overlay);
+        });
+
+        // Add the overlay to your root container
+        ((ViewGroup) findViewById(android.R.id.content)).addView(overlay);
+
+        // Optional: Fade in animation
+        AlphaAnimation fadeIn = new AlphaAnimation(0.0f, 1.0f);
+        fadeIn.setDuration(200);
+        overlay.startAnimation(fadeIn);
     }
 }
