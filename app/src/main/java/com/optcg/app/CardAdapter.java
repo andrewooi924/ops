@@ -34,9 +34,17 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder
     private List<CardPrice> cardList;
     private Map<String, CardData> cardDataCache = new HashMap<>();
 
-    public CardAdapter(Context context, List<CardPrice> cardList) {
+    public enum Mode {
+        PORTFOLIO,
+        WISHLIST
+    }
+
+    private Mode mode;
+
+    public CardAdapter(Context context, List<CardPrice> cardList, Mode mode) {
         this.context = context;
         this.cardList = cardList;
+        this.mode = mode;
     }
 
     @NonNull
@@ -87,6 +95,13 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder
                 // Fetch the prices for this card asynchronously
                 fetchCardPricesB(card.getUrl(), holder);
             }
+        }
+
+        if (mode == Mode.WISHLIST) {
+            ViewGroup.LayoutParams params = holder.cardImage.getLayoutParams();
+            params.height = dpToPx(225);
+            params.width = dpToPx(169);
+            holder.cardImage.setLayoutParams(params);
         }
     }
 
@@ -305,5 +320,10 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder
             // Set the styled text
             holder.cardMovement.setText(spannableMovement);
         });
+    }
+
+    private int dpToPx(int dp) {
+        float density = context.getResources().getDisplayMetrics().density;
+        return Math.round(dp * density);
     }
 }

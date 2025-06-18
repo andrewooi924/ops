@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
         });
         btnPrice.setOnClickListener(v -> {
             setTabSelected(v);
-            loadFragment(new DeckFragment());
+            loadFragment(new WishlistFragment());
         });
         btnPortfolio.setOnClickListener(v -> {
             setTabSelected(v);

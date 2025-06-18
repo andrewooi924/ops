@@ -1,5 +1,7 @@
 package com.optcg.app;
 
+import static com.optcg.app.CardAdapter.Mode.PORTFOLIO;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -249,8 +251,8 @@ public class PortfolioFragment extends Fragment {
         positiveList = new ArrayList<>();
         negativeList = new ArrayList<>();
 
-        positiveAdapter = new CardAdapter(getContext(), positiveList);
-        negativeAdapter = new CardAdapter(getContext(), negativeList);
+        positiveAdapter = new CardAdapter(getContext(), positiveList, PORTFOLIO);
+        negativeAdapter = new CardAdapter(getContext(), negativeList, PORTFOLIO);
 
         rvPositive.setAdapter(positiveAdapter);
         rvNegative.setAdapter(negativeAdapter);
@@ -274,9 +276,11 @@ public class PortfolioFragment extends Fragment {
         combinedList.add(new CardPrice(R.drawable.op06_001_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-001/l-p"));
         combinedList.add(new CardPrice(R.drawable.op06_020_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-020/l-p"));
         combinedList.add(new CardPrice(R.drawable.op06_021_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-021/l-p"));
+        combinedList.add(new CardPrice(R.drawable.op06_022_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-022/l-p"));
         combinedList.add(new CardPrice(R.drawable.op06_042_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-042/l-p"));
         combinedList.add(new CardPrice(R.drawable.op06_080_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-080/l-p"));
         combinedList.add(new CardPrice(R.drawable.op07_001_p1, "https://onepiece-card-atari.jp/expansion/500-yeas-in-the-future/card/op07-001/l-p"));
+        combinedList.add(new CardPrice(R.drawable.op07_019_p1, "https://onepiece-card-atari.jp/expansion/500-yeas-in-the-future/card/op07-019/l-p"));
         combinedList.add(new CardPrice(R.drawable.op07_059_p1, "https://onepiece-card-atari.jp/expansion/500-yeas-in-the-future/card/op07-059/l-p"));
         combinedList.add(new CardPrice(R.drawable.op08_001_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-001/l-p"));
         combinedList.add(new CardPrice(R.drawable.op08_002_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-002/l-p"));
@@ -289,9 +293,11 @@ public class PortfolioFragment extends Fragment {
         combinedList.add(new CardPrice(R.drawable.op09_062_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-062/l-p"));
         combinedList.add(new CardPrice(R.drawable.op09_081_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-081/l-p"));
         combinedList.add(new CardPrice(R.drawable.op10_002_p1, "https://onepiece-card-atari.jp/expansion/royal-blood/card/op10-002/l-p"));
+        combinedList.add(new CardPrice(R.drawable.op10_022_p1, "https://onepiece-card-atari.jp/expansion/royal-blood/card/op10-022/l-p"));
         combinedList.add(new CardPrice(R.drawable.prb01_001_p1, "https://onepiece-card-atari.jp/expansion/one-piece-card-the-best/card/prb01-001/l-p"));
         combinedList.add(new CardPrice(R.drawable.eb01_021_p1, "https://onepiece-card-atari.jp/expansion/memorial-collection/card/eb01-021/l-p"));
         combinedList.add(new CardPrice(R.drawable.eb01_040_p1, "https://onepiece-card-atari.jp/expansion/memorial-collection/card/eb01-040/l-p"));
+
 
         positiveList.clear();
         negativeList.clear();
@@ -361,9 +367,11 @@ public class PortfolioFragment extends Fragment {
         personalCardList.add(new PersonalCard(R.drawable.op06_001_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-001/l-p", 98.4f));
         personalCardList.add(new PersonalCard(R.drawable.op06_020_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-020/l-p", 16.8f));
         personalCardList.add(new PersonalCard(R.drawable.op06_021_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-021/l-p", 77.1f));
+        personalCardList.add(new PersonalCard(R.drawable.op06_022_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-022/l-p", 0.0f));
         personalCardList.add(new PersonalCard(R.drawable.op06_042_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-042/l-p", 105.0f));
         personalCardList.add(new PersonalCard(R.drawable.op06_080_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-080/l-p", 30.0f));
         personalCardList.add(new PersonalCard(R.drawable.op07_001_p1, "https://onepiece-card-atari.jp/expansion/500-yeas-in-the-future/card/op07-001/l-p", 18.0f));
+        personalCardList.add(new PersonalCard(R.drawable.op07_019_p1, "https://onepiece-card-atari.jp/expansion/500-yeas-in-the-future/card/op07-019/l-p", 0.0f));
         personalCardList.add(new PersonalCard(R.drawable.op07_059_p1, "https://onepiece-card-atari.jp/expansion/500-yeas-in-the-future/card/op07-059/l-p", 18.0f));
         personalCardList.add(new PersonalCard(R.drawable.op08_001_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-001/l-p", 26.4f));
         personalCardList.add(new PersonalCard(R.drawable.op08_002_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-002/l-p", 32.4f));
@@ -376,6 +384,7 @@ public class PortfolioFragment extends Fragment {
         personalCardList.add(new PersonalCard(R.drawable.op09_062_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-062/l-p", 28.5f));
         personalCardList.add(new PersonalCard(R.drawable.op09_081_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-081/l-p", 56.4f));
         personalCardList.add(new PersonalCard(R.drawable.op10_002_p1, "https://onepiece-card-atari.jp/expansion/royal-blood/card/op10-002/l-p", 14.4f));
+        personalCardList.add(new PersonalCard(R.drawable.op10_022_p1, "https://onepiece-card-atari.jp/expansion/royal-blood/card/op10-022/l-p", 20.0f));
         personalCardList.add(new PersonalCard(R.drawable.prb01_001_p1, "https://onepiece-card-atari.jp/expansion/one-piece-card-the-best/card/prb01-001/l-p", 60.0f));
         personalCardList.add(new PersonalCard(R.drawable.eb01_021_p1, "https://onepiece-card-atari.jp/expansion/memorial-collection/card/eb01-021/l-p", 15.0f));
         personalCardList.add(new PersonalCard(R.drawable.eb01_040_p1, "https://onepiece-card-atari.jp/expansion/memorial-collection/card/eb01-040/l-p", 15.0f));
@@ -505,11 +514,12 @@ public class PortfolioFragment extends Fragment {
             sharedPreferences.edit().putFloat(initialDate, total).apply();
         }
 
-//        if (sharedPreferences.contains("2025-02-26")) {
+//        sharedPreferences.contains("2025-06-15")) {
 //            sharedPreferences.edit()
-//                    .putFloat("2025-02-26", 2694.76f)
+//                    .putFloat("2025-06-15", 1918.64f)
 //                    .apply();
 //        }
+//        if (s
 
 //        String startDateStr = "2025-02-26";
 //        String endDateStr = "2025-06-13";
