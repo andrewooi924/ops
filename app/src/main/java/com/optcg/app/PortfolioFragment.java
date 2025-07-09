@@ -75,6 +75,8 @@ public class PortfolioFragment extends Fragment {
     private TextView portfolioSubtitle;
     private LineDataSet lineDataSet;
     private LineDataSet lastPointDataSet;
+    private static final String CARD_COUNT_KEY = "last_card_count";
+
 
     @Nullable
     @Override
@@ -258,15 +260,27 @@ public class PortfolioFragment extends Fragment {
         rvNegative.setAdapter(negativeAdapter);
 
         // COMBINED LIST FOR MOVEMENT FETCHING AND SORTING
+        combinedList.add(new CardPrice(R.drawable.op01_002_p1, "https://onepiece-card-atari.jp/expansion/romance-dawn/card/op01-002/l-p"));
         combinedList.add(new CardPrice(R.drawable.op01_031_p1, "https://onepiece-card-atari.jp/expansion/romance-dawn/card/op01-031/l-p"));
+        combinedList.add(new CardPrice(R.drawable.op01_060_p1, "https://onepiece-card-atari.jp/expansion/romance-dawn/card/op01-060/l-p"));
+        combinedList.add(new CardPrice(R.drawable.op01_061_p1, "https://onepiece-card-atari.jp/expansion/romance-dawn/card/op01-061/l-p"));
         combinedList.add(new CardPrice(R.drawable.op01_062_p1, "https://onepiece-card-atari.jp/expansion/romance-dawn/card/op01-062/l-p"));
         combinedList.add(new CardPrice(R.drawable.op01_091_p1, "https://onepiece-card-atari.jp/expansion/romance-dawn/card/op01-091/l-p"));
         combinedList.add(new CardPrice(R.drawable.op02_001_p1, "https://onepiece-card-atari.jp/expansion/paramount-war/card/op02-001/l-p"));
         combinedList.add(new CardPrice(R.drawable.op02_025_p1, "https://onepiece-card-atari.jp/expansion/paramount-war/card/p02-025/l-p"));
         combinedList.add(new CardPrice(R.drawable.op02_026_p1, "https://onepiece-card-atari.jp/expansion/paramount-war/card/op02-026/l-p"));
+        combinedList.add(new CardPrice(R.drawable.op02_049_p1, "https://onepiece-card-atari.jp/expansion/paramount-war/card/op02-049/l-p"));
         combinedList.add(new CardPrice(R.drawable.op02_071_p1, "https://onepiece-card-atari.jp/expansion/paramount-war/card/op02-071/l-p"));
+        combinedList.add(new CardPrice(R.drawable.op02_072_p1, "https://onepiece-card-atari.jp/expansion/paramount-war/card/op02-072/l-p"));
+        combinedList.add(new CardPrice(R.drawable.op02_093_p1, "https://onepiece-card-atari.jp/expansion/paramount-war/card/op02-093/l-p"));
         combinedList.add(new CardPrice(R.drawable.op03_021_p1, "https://onepiece-card-atari.jp/expansion/mighty-enemies/card/op03-021/l-p"));
+        combinedList.add(new CardPrice(R.drawable.op03_058_p1, "https://onepiece-card-atari.jp/expansion/mighty-enemies/card/op03-058/l-p"));
+        combinedList.add(new CardPrice(R.drawable.op03_076_p1, "https://onepiece-card-atari.jp/expansion/mighty-enemies/card/op03-076/l-p"));
+        combinedList.add(new CardPrice(R.drawable.op03_077_p1, "https://onepiece-card-atari.jp/expansion/mighty-enemies/card/op03-077/l-p"));
+        combinedList.add(new CardPrice(R.drawable.op03_099_p1, "https://onepiece-card-atari.jp/expansion/mighty-enemies/card/op03-099/l-p"));
         combinedList.add(new CardPrice(R.drawable.op04_020_p1, "https://onepiece-card-atari.jp/expansion/kingdoms-of-intrigue/card/op04-020/l-p"));
+        combinedList.add(new CardPrice(R.drawable.op04_040_p1, "https://onepiece-card-atari.jp/expansion/kingdoms-of-intrigue/card/op04-040/l-p"));
+        combinedList.add(new CardPrice(R.drawable.op04_058_p1, "https://onepiece-card-atari.jp/expansion/kingdoms-of-intrigue/card/op04-058/l-p"));
         combinedList.add(new CardPrice(R.drawable.op05_001_p1, "https://onepiece-card-atari.jp/expansion/awakening-of-the-new-era/card/op05-001/l-p"));
         combinedList.add(new CardPrice(R.drawable.op05_002_p1, "https://onepiece-card-atari.jp/expansion/awakening-of-the-new-era/card/op05-002/l-p"));
         combinedList.add(new CardPrice(R.drawable.op05_022_p1, "https://onepiece-card-atari.jp/expansion/awakening-of-the-new-era/card/op05-022/l-p"));
@@ -281,23 +295,33 @@ public class PortfolioFragment extends Fragment {
         combinedList.add(new CardPrice(R.drawable.op06_080_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-080/l-p"));
         combinedList.add(new CardPrice(R.drawable.op07_001_p1, "https://onepiece-card-atari.jp/expansion/500-yeas-in-the-future/card/op07-001/l-p"));
         combinedList.add(new CardPrice(R.drawable.op07_019_p1, "https://onepiece-card-atari.jp/expansion/500-yeas-in-the-future/card/op07-019/l-p"));
+        combinedList.add(new CardPrice(R.drawable.op07_038_p1, "https://onepiece-card-atari.jp/expansion/500-yeas-in-the-future/card/op07-038/l-p"));
         combinedList.add(new CardPrice(R.drawable.op07_059_p1, "https://onepiece-card-atari.jp/expansion/500-yeas-in-the-future/card/op07-059/l-p"));
         combinedList.add(new CardPrice(R.drawable.op08_001_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-001/l-p"));
         combinedList.add(new CardPrice(R.drawable.op08_002_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-002/l-p"));
         combinedList.add(new CardPrice(R.drawable.op08_021_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-021/l-p"));
         combinedList.add(new CardPrice(R.drawable.op08_057_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-057/l-p"));
         combinedList.add(new CardPrice(R.drawable.op08_058_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-058/l-p"));
+        combinedList.add(new CardPrice(R.drawable.op08_098_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-098/l-p"));
+        combinedList.add(new CardPrice(R.drawable.op09_001_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-001/l-p"));
         combinedList.add(new CardPrice(R.drawable.op09_022_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-022/l-p"));
         combinedList.add(new CardPrice(R.drawable.op09_042_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-042/l-p"));
         combinedList.add(new CardPrice(R.drawable.op09_061_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-061/l-p"));
         combinedList.add(new CardPrice(R.drawable.op09_062_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-062/l-p"));
         combinedList.add(new CardPrice(R.drawable.op09_081_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-081/l-p"));
+        combinedList.add(new CardPrice(R.drawable.op10_001_p1, "https://onepiece-card-atari.jp/expansion/royal-blood/card/op10-001/l-p"));
         combinedList.add(new CardPrice(R.drawable.op10_002_p1, "https://onepiece-card-atari.jp/expansion/royal-blood/card/op10-002/l-p"));
+        combinedList.add(new CardPrice(R.drawable.op10_003_p1, "https://onepiece-card-atari.jp/expansion/royal-blood/card/op10-003/l-p"));
         combinedList.add(new CardPrice(R.drawable.op10_022_p1, "https://onepiece-card-atari.jp/expansion/royal-blood/card/op10-022/l-p"));
+        combinedList.add(new CardPrice(R.drawable.op10_042_p1, "https://onepiece-card-atari.jp/expansion/royal-blood/card/op10-042/l-p"));
+        combinedList.add(new CardPrice(R.drawable.op10_099_p1, "https://onepiece-card-atari.jp/expansion/royal-blood/card/op10-099/l-p"));
+        combinedList.add(new CardPrice(R.drawable.op11_001_p1, "https://onepiece-card-atari.jp/expansion/a-fist-of-divine-speed/card/op11-001/l-p"));
+        combinedList.add(new CardPrice(R.drawable.op11_021_p1, "https://onepiece-card-atari.jp/expansion/a-fist-of-divine-speed/card/op11-021/l-p"));
+        combinedList.add(new CardPrice(R.drawable.op11_041_p1, "https://onepiece-card-atari.jp/expansion/a-fist-of-divine-speed/card/op11-041/l-p"));
+        combinedList.add(new CardPrice(R.drawable.op11_062_p1, "https://onepiece-card-atari.jp/expansion/a-fist-of-divine-speed/card/op11-062/l-p"));
         combinedList.add(new CardPrice(R.drawable.prb01_001_p1, "https://onepiece-card-atari.jp/expansion/one-piece-card-the-best/card/prb01-001/l-p"));
         combinedList.add(new CardPrice(R.drawable.eb01_021_p1, "https://onepiece-card-atari.jp/expansion/memorial-collection/card/eb01-021/l-p"));
         combinedList.add(new CardPrice(R.drawable.eb01_040_p1, "https://onepiece-card-atari.jp/expansion/memorial-collection/card/eb01-040/l-p"));
-
 
         positiveList.clear();
         negativeList.clear();
@@ -349,15 +373,27 @@ public class PortfolioFragment extends Fragment {
         sharedPreferences = requireContext().getSharedPreferences("PortfolioData", Context.MODE_PRIVATE);
 
         personalCardList = new ArrayList<>();
+        personalCardList.add(new PersonalCard(R.drawable.op01_002_p1, "https://onepiece-card-atari.jp/expansion/romance-dawn/card/op01-002/l-p", 0.0f));
         personalCardList.add(new PersonalCard(R.drawable.op01_031_p1, "https://onepiece-card-atari.jp/expansion/romance-dawn/card/op01-031/l-p", 30.0f));
+        personalCardList.add(new PersonalCard(R.drawable.op01_060_p1, "https://onepiece-card-atari.jp/expansion/romance-dawn/card/op01-060/l-p", 81.0f));
+        personalCardList.add(new PersonalCard(R.drawable.op01_061_p1, "https://onepiece-card-atari.jp/expansion/romance-dawn/card/op01-061/l-p", 35.0f));
         personalCardList.add(new PersonalCard(R.drawable.op01_062_p1, "https://onepiece-card-atari.jp/expansion/romance-dawn/card/op01-062/l-p", 60.0f));
         personalCardList.add(new PersonalCard(R.drawable.op01_091_p1, "https://onepiece-card-atari.jp/expansion/romance-dawn/card/op01-091/l-p", 30.0f));
         personalCardList.add(new PersonalCard(R.drawable.op02_001_p1, "https://onepiece-card-atari.jp/expansion/paramount-war/card/op02-001/l-p", 0.0f));
         personalCardList.add(new PersonalCard(R.drawable.op02_025_p1, "https://onepiece-card-atari.jp/expansion/paramount-war/card/p02-025/l-p", 30.0f));
         personalCardList.add(new PersonalCard(R.drawable.op02_026_p1, "https://onepiece-card-atari.jp/expansion/paramount-war/card/op02-026/l-p", 59.4f));
+        personalCardList.add(new PersonalCard(R.drawable.op02_049_p1, "https://onepiece-card-atari.jp/expansion/paramount-war/card/op02-049/l-p", 18.0f));
         personalCardList.add(new PersonalCard(R.drawable.op02_071_p1, "https://onepiece-card-atari.jp/expansion/paramount-war/card/op02-071/l-p", 30.0f));
+        personalCardList.add(new PersonalCard(R.drawable.op02_072_p1, "https://onepiece-card-atari.jp/expansion/paramount-war/card/op02-072/l-p", 18.0f));
+        personalCardList.add(new PersonalCard(R.drawable.op02_093_p1, "https://onepiece-card-atari.jp/expansion/paramount-war/card/op02-093/l-p", 45.0f));
         personalCardList.add(new PersonalCard(R.drawable.op03_021_p1, "https://onepiece-card-atari.jp/expansion/mighty-enemies/card/op03-021/l-p", 0.0f));
+        personalCardList.add(new PersonalCard(R.drawable.op03_058_p1, "https://onepiece-card-atari.jp/expansion/mighty-enemies/card/op03-058/l-p", 18.0f));
+        personalCardList.add(new PersonalCard(R.drawable.op03_076_p1, "https://onepiece-card-atari.jp/expansion/mighty-enemies/card/op03-076/l-p", 18.0f));
+        personalCardList.add(new PersonalCard(R.drawable.op03_077_p1, "https://onepiece-card-atari.jp/expansion/mighty-enemies/card/op03-077/l-p", 21.0f));
+        personalCardList.add(new PersonalCard(R.drawable.op03_099_p1, "https://onepiece-card-atari.jp/expansion/mighty-enemies/card/op03-099/l-p", 90.0f));
         personalCardList.add(new PersonalCard(R.drawable.op04_020_p1, "https://onepiece-card-atari.jp/expansion/kingdoms-of-intrigue/card/op04-020/l-p", 18.0f));
+        personalCardList.add(new PersonalCard(R.drawable.op04_040_p1, "https://onepiece-card-atari.jp/expansion/kingdoms-of-intrigue/card/op04-040/l-p", 9.0f));
+        personalCardList.add(new PersonalCard(R.drawable.op04_058_p1, "https://onepiece-card-atari.jp/expansion/kingdoms-of-intrigue/card/op04-058/l-p", 15.0f));
         personalCardList.add(new PersonalCard(R.drawable.op05_001_p1, "https://onepiece-card-atari.jp/expansion/awakening-of-the-new-era/card/op05-001/l-p", 32.4f));
         personalCardList.add(new PersonalCard(R.drawable.op05_002_p1, "https://onepiece-card-atari.jp/expansion/awakening-of-the-new-era/card/op05-002/l-p", 28.5f));
         personalCardList.add(new PersonalCard(R.drawable.op05_022_p1, "https://onepiece-card-atari.jp/expansion/awakening-of-the-new-era/card/op05-022/l-p", 20.4f));
@@ -372,19 +408,30 @@ public class PortfolioFragment extends Fragment {
         personalCardList.add(new PersonalCard(R.drawable.op06_080_p1, "https://onepiece-card-atari.jp/expansion/wings-of-captain/card/op06-080/l-p", 30.0f));
         personalCardList.add(new PersonalCard(R.drawable.op07_001_p1, "https://onepiece-card-atari.jp/expansion/500-yeas-in-the-future/card/op07-001/l-p", 18.0f));
         personalCardList.add(new PersonalCard(R.drawable.op07_019_p1, "https://onepiece-card-atari.jp/expansion/500-yeas-in-the-future/card/op07-019/l-p", 0.0f));
+        personalCardList.add(new PersonalCard(R.drawable.op07_038_p1, "https://onepiece-card-atari.jp/expansion/500-yeas-in-the-future/card/op07-038/l-p", 81.0f));
         personalCardList.add(new PersonalCard(R.drawable.op07_059_p1, "https://onepiece-card-atari.jp/expansion/500-yeas-in-the-future/card/op07-059/l-p", 18.0f));
         personalCardList.add(new PersonalCard(R.drawable.op08_001_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-001/l-p", 26.4f));
         personalCardList.add(new PersonalCard(R.drawable.op08_002_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-002/l-p", 32.4f));
         personalCardList.add(new PersonalCard(R.drawable.op08_021_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-021/l-p", 20.4f));
         personalCardList.add(new PersonalCard(R.drawable.op08_057_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-057/l-p", 26.4f));
         personalCardList.add(new PersonalCard(R.drawable.op08_058_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-058/l-p", 72.0f));
+        personalCardList.add(new PersonalCard(R.drawable.op08_098_p1, "https://onepiece-card-atari.jp/expansion/two-legends/card/op08-098/l-p", 18.2f));
+        personalCardList.add(new PersonalCard(R.drawable.op09_001_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-001/l-p", 54.0f));
         personalCardList.add(new PersonalCard(R.drawable.op09_022_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-022/l-p", 27.0f));
         personalCardList.add(new PersonalCard(R.drawable.op09_042_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-042/l-p", 32.4f));
         personalCardList.add(new PersonalCard(R.drawable.op09_061_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-061/l-p", 83.4f));
         personalCardList.add(new PersonalCard(R.drawable.op09_062_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-062/l-p", 28.5f));
         personalCardList.add(new PersonalCard(R.drawable.op09_081_p1, "https://onepiece-card-atari.jp/expansion/emperors-in-the-new-world/card/op09-081/l-p", 56.4f));
+        personalCardList.add(new PersonalCard(R.drawable.op10_001_p1, "https://onepiece-card-atari.jp/expansion/royal-blood/card/op10-001/l-p", 24.0f));
         personalCardList.add(new PersonalCard(R.drawable.op10_002_p1, "https://onepiece-card-atari.jp/expansion/royal-blood/card/op10-002/l-p", 14.4f));
+        personalCardList.add(new PersonalCard(R.drawable.op10_003_p1, "https://onepiece-card-atari.jp/expansion/royal-blood/card/op10-003/l-p", 10.0f));
         personalCardList.add(new PersonalCard(R.drawable.op10_022_p1, "https://onepiece-card-atari.jp/expansion/royal-blood/card/op10-022/l-p", 20.0f));
+        personalCardList.add(new PersonalCard(R.drawable.op10_042_p1, "https://onepiece-card-atari.jp/expansion/royal-blood/card/op10-042/l-p", 24.0f));
+        personalCardList.add(new PersonalCard(R.drawable.op10_099_p1, "https://onepiece-card-atari.jp/expansion/royal-blood/card/op10-099/l-p", 21.0f));
+        personalCardList.add(new PersonalCard(R.drawable.op11_001_p1, "https://onepiece-card-atari.jp/expansion/a-fist-of-divine-speed/card/op11-001/l-p", 15.0f));
+        personalCardList.add(new PersonalCard(R.drawable.op11_021_p1, "https://onepiece-card-atari.jp/expansion/a-fist-of-divine-speed/card/op11-021/l-p", 9.0f));
+        personalCardList.add(new PersonalCard(R.drawable.op11_041_p1, "https://onepiece-card-atari.jp/expansion/a-fist-of-divine-speed/card/op11-041/l-p", 75.0f));
+        personalCardList.add(new PersonalCard(R.drawable.op11_062_p1, "https://onepiece-card-atari.jp/expansion/a-fist-of-divine-speed/card/op11-062/l-p", 21.0f));
         personalCardList.add(new PersonalCard(R.drawable.prb01_001_p1, "https://onepiece-card-atari.jp/expansion/one-piece-card-the-best/card/prb01-001/l-p", 60.0f));
         personalCardList.add(new PersonalCard(R.drawable.eb01_021_p1, "https://onepiece-card-atari.jp/expansion/memorial-collection/card/eb01-021/l-p", 15.0f));
         personalCardList.add(new PersonalCard(R.drawable.eb01_040_p1, "https://onepiece-card-atari.jp/expansion/memorial-collection/card/eb01-040/l-p", 15.0f));
@@ -575,6 +622,11 @@ public class PortfolioFragment extends Fragment {
     }
 
     private void loadAndUpdateData() {
+        SharedPreferences prefs = requireContext().getSharedPreferences("PortfolioData", Context.MODE_PRIVATE);
+        int lastCount = prefs.getInt(CARD_COUNT_KEY, -1);
+        int currentCount = personalCardList.size();
+        boolean forceUpdate = lastCount != currentCount;
+
         priceEntries = new ArrayList<>();
 
         // Load stored data
@@ -605,7 +657,7 @@ public class PortfolioFragment extends Fragment {
         String today = dateFormat.format(new Date());
         float todayValue = sharedPreferences.getFloat(today, -1f);
 
-        if (todayValue == -1f || todayValue < 1000) {
+        if (true) {
             // Fetch today's total value asynchronously
             new Thread(() -> {
                 float totalValue = calculateTotalValue();
@@ -631,6 +683,8 @@ public class PortfolioFragment extends Fragment {
 
                     updateGraph();
                     calculatePriceDifference();
+
+                    sharedPreferences.edit().putInt(CARD_COUNT_KEY, personalCardList.size()).apply();
                 });
             }).start();
         } else {

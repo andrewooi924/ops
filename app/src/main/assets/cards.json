@@ -10256,7 +10256,7 @@
         "img": "cards/op05/op05_017.png"
     },
     {
-        "id": "op01_016_p2",
+        "id": "op01_016_p4",
         "number": "OP01-016",
         "rarity": "SP CARD",
         "role": "CHARACTER",
@@ -10269,7 +10269,7 @@
         "type": "Straw Hat Crew",
         "effect": "[On Play] Look at 5 cards from the top of your deck; reveal up to 1 {Straw Hat Crew} type card other than [Nami] and add it to your hand. Then, place the rest at the bottom of your deck in any order.",
         "set": "-Awakening of the New Era- [OP-05]",
-        "img": "cards/op05/op01_016_p2.png"
+        "img": "cards/op05/op01_016_p4.png"
     },
     {
         "id": "op05_035",
@@ -12208,7 +12208,7 @@
         "img": "cards/op05/op05_119_p2.png"
     },
     {
-        "id": "st01_012_p2",
+        "id": "st01_012_p4",
         "number": "ST01-012",
         "rarity": "SR",
         "role": "CHARACTER",

@@ -440,6 +440,10 @@ public class OP10SimActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 animate(card4);
+                int newCount = sharedPreferences.getInt(cardId4 + "_count", 0) + 1;
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putInt(cardId4 + "_count", newCount);
+                editor.apply();
             }
         });
 
@@ -494,6 +498,10 @@ public class OP10SimActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 animate(card3);
+                int newCount = sharedPreferences.getInt(cardId3 + "_count", 0) + 1;
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putInt(cardId3 + "_count", newCount);
+                editor.apply();
             }
         });
 
@@ -548,6 +556,10 @@ public class OP10SimActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 animate(card2);
+                int newCount = sharedPreferences.getInt(cardId2 + "_count", 0) + 1;
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putInt(cardId2 + "_count", newCount);
+                editor.apply();
             }
         });
 
@@ -602,6 +614,10 @@ public class OP10SimActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 animate(card1);
+                int newCount = sharedPreferences.getInt(cardId1 + "_count", 0) + 1;
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putInt(cardId1 + "_count", newCount);
+                editor.apply();
             }
         });
 
