@@ -19,6 +19,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -61,7 +63,9 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder
         String cardPrefix = context.getResources().getResourceEntryName(cardId);
 
         // Set the card image
-        holder.cardImage.setImageResource(cardId);
+        Glide.with(context)
+                .load(cardId)
+                .into(holder.cardImage);
 
         if (!cardPrefix.startsWith("st") && !cardPrefix.startsWith("p")) {
             holder.itemView.setOnClickListener(v -> {

@@ -27,6 +27,8 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.bumptech.glide.Glide;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -263,7 +265,7 @@ public class OP09SimActivity extends AppCompatActivity {
         } while (pulledCards.contains(randomCard));
         String cardId6 = getResources().getResourceEntryName(randomCard);
         String rarity6 = rarity;
-        card6.setImageResource(randomCard);
+        Glide.with(this).load(randomCard).into(card6);
         pulledCards.add(randomCard);
         if (!sharedPreferences.getBoolean(cardId6 + "_isCollected", false)) {
             isNew.add(true);
@@ -373,7 +375,7 @@ public class OP09SimActivity extends AppCompatActivity {
             randomCard = cardResources[randomIndex];
         } while (pulledCards.contains(randomCard));
         String cardId5 = getResources().getResourceEntryName(randomCard);
-        card5.setImageResource(randomCard);
+        Glide.with(this).load(randomCard).into(card5);
         pulledCards.add(randomCard);
         if (!sharedPreferences.getBoolean(cardId5 + "_isCollected", false)) {
             isNew.add(true);
@@ -418,7 +420,7 @@ public class OP09SimActivity extends AppCompatActivity {
             randomCard = cardResources[randomIndex];
         } while (pulledCards.contains(randomCard));
         String cardId4 = getResources().getResourceEntryName(randomCard);
-        card4.setImageResource(randomCard);
+        Glide.with(this).load(randomCard).into(card4);
         pulledCards.add(randomCard);
         if (!sharedPreferences.getBoolean(cardId4 + "_isCollected", false)) {
             isNew.add(true);
@@ -476,7 +478,7 @@ public class OP09SimActivity extends AppCompatActivity {
             randomCard = cardResources[randomIndex];
         } while (pulledCards.contains(randomCard));
         String cardId3 = getResources().getResourceEntryName(randomCard);
-        card3.setImageResource(randomCard);
+        Glide.with(this).load(randomCard).into(card3);
         pulledCards.add(randomCard);
         if (!sharedPreferences.getBoolean(cardId3 + "_isCollected", false)) {
             isNew.add(true);
@@ -534,7 +536,7 @@ public class OP09SimActivity extends AppCompatActivity {
             randomCard = cardResources[randomIndex];
         } while (pulledCards.contains(randomCard));
         String cardId2 = getResources().getResourceEntryName(randomCard);
-        card2.setImageResource(randomCard);
+        Glide.with(this).load(randomCard).into(card2);
         pulledCards.add(randomCard);
         if (!sharedPreferences.getBoolean(cardId2 + "_isCollected", false)) {
             isNew.add(true);
@@ -592,7 +594,7 @@ public class OP09SimActivity extends AppCompatActivity {
             randomCard = cardResources[randomIndex];
         } while (pulledCards.contains(randomCard));
         String cardId1 = getResources().getResourceEntryName(randomCard);
-        card1.setImageResource(randomCard);
+        Glide.with(this).load(randomCard).into(card1);
         pulledCards.add(randomCard);
         if (!sharedPreferences.getBoolean(cardId1 + "_isCollected", false)) {
             isNew.add(true);
@@ -638,7 +640,7 @@ public class OP09SimActivity extends AppCompatActivity {
 
         // Card pack
         ImageView pack = new ImageView(this);
-        pack.setImageResource(R.drawable.op09_pack);
+        Glide.with(this).load(R.drawable.op09_pack).into(pack);
         pack.setLayoutParams(new FrameLayout.LayoutParams(1350, 2700));
         pack.setScaleX(1.65f);
         pack.setScaleY(1.65f);
@@ -773,7 +775,7 @@ public class OP09SimActivity extends AppCompatActivity {
 
             // Create ImageView for the card
             ImageView cardView = new ImageView(this);
-            cardView.setImageResource(cardResourceId);
+            Glide.with(this).load(cardResourceId).into(cardView);
 
             // Set proper size for the card (adjust size as necessary)
             GridLayout.LayoutParams cardParams = new GridLayout.LayoutParams();
@@ -788,7 +790,7 @@ public class OP09SimActivity extends AppCompatActivity {
 
             // Create ImageView for the symbol (circle or any other symbol)
             ImageView symbolView = new ImageView(this);
-            symbolView.setImageResource(R.drawable.ic_new); // Replace with your symbol resource
+            Glide.with(this).load(R.drawable.ic_new).into(symbolView);
             FrameLayout.LayoutParams symbolParams = new FrameLayout.LayoutParams(
                     80, 80 // Size of the symbol (adjust as needed)
             );
@@ -836,7 +838,7 @@ public class OP09SimActivity extends AppCompatActivity {
 
         // Create the enlarged card view
         ImageView largeCard = new ImageView(this);
-        largeCard.setImageResource(cardResId);
+        Glide.with(this).load(cardResId).into(largeCard);
         FrameLayout.LayoutParams cardParams = new FrameLayout.LayoutParams(
                 1000, 1500  // Adjust size as needed
         );

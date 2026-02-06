@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
+import com.bumptech.glide.Glide;
 
 public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.ViewHolder> {
 
@@ -32,7 +33,9 @@ public class CollectionAdapter extends RecyclerView.Adapter<CollectionAdapter.Vi
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         String transitionName = "collectionImage_" + position;
         holder.menuImage.setTransitionName(transitionName);
-        holder.menuImage.setImageResource(menuImages.get(position));
+        Glide.with(context)
+                .load(menuImages.get(position))
+                .into(holder.menuImage);
         holder.itemView.setOnClickListener(v ->
             onItemClickListener.onItemClick(position, holder.menuImage)
         );
