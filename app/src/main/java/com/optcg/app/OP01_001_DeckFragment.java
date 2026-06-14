@@ -31,9 +31,6 @@ import org.jsoup.nodes.Element;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.FutureTask;
 
 public class OP01_001_DeckFragment extends Fragment {
 
@@ -44,6 +41,8 @@ public class OP01_001_DeckFragment extends Fragment {
     private List<CardPrice> cardList;
     private CardViewModel cardViewModel;
     private TextView total;
+    private double leaderPrice = 0;
+    private Double latestTotal = null;
     private static final String ARG_TRANSITION_NAME = "transitionName";
 
     public static OP01_001_DeckFragment newInstance(String transitionName) {
@@ -122,46 +121,44 @@ public class OP01_001_DeckFragment extends Fragment {
         recyclerView.setAdapter(deckAdapter);
 
         total = view.findViewById(R.id.op01_001_total);
-        double leader_price = fetchCardPrice("https://onepiece-card-atari.jp/expansion/romance-dawn/card/op01-001/l-p");
         cardViewModel = new ViewModelProvider(requireActivity()).get(CardViewModel.class);
         cardViewModel.getTotalPrice().observe(getViewLifecycleOwner(), tl -> {
-            // Update the TextView with the new total price
-            total.setText("Total Avg Price: " + String.format("%.2f", tl+leader_price));  // Format as RM
+            latestTotal = tl;
+            updateTotalText();
         });
+        // Fetch the leader card price off the main thread. Previously this blocked on
+        // FutureTask.get() inside onViewCreated, an ANR hazard.
+        fetchLeaderPriceAsync("https://onepiece-card-atari.jp/expansion/romance-dawn/card/op01-001/l-p");
     }
 
-    public double fetchCardPrice(String url) {
-        // Create a Callable to fetch the price
-        Callable<Double> callable = new Callable<Double>() {
-            @Override
-            public Double call() throws Exception {
-                try {
-                    // Fetch and parse the HTML document
-                    Document doc = Jsoup.connect(url).get();
-
-                    // Extract average price
-                    String avgPrice = doc.select("table.table_info tbody tr td").first().text();
-                    return Double.parseDouble(avgPrice.replaceAll("[^\\d]", ""));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return 0.0;  // Return 0 if there's an error
-                }
-            }
-        };
-
-        // Create a FutureTask to run the Callable asynchronously
-        FutureTask<Double> futureTask = new FutureTask<>(callable);
-
-        // Start the task on a separate thread
-        new Thread(futureTask).start();
-
-        try {
-            // Block and wait for the result
-            return futureTask.get();  // This will block until the result is available
-        } catch (Exception e) {
-            e.printStackTrace();
-            return 0.0;  // Return 0 if there's an error or exception during fetching
+    private void updateTotalText() {
+        if (latestTotal != null) {
+            total.setText("Total Avg Price: " + String.format("%.2f", latestTotal + leaderPrice));
         }
+    }
+
+    private void fetchLeaderPriceAsync(String url) {
+        new Thread(() -> {
+            double price = 0.0;
+            try {
+                Document doc = Jsoup.connect(url).get();
+                String avgPrice = doc.select("table.table_info tbody tr td").first().text();
+                price = Double.parseDouble(avgPrice.replaceAll("[^\\d]", ""));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            final double leader = price;
+            if (!isAdded()) {
+                return;
+            }
+            requireActivity().runOnUiThread(() -> {
+                if (!isAdded()) {
+                    return;
+                }
+                leaderPrice = leader;
+                updateTotalText();
+            });
+        }).start();
     }
 
     private int parsePriceToInt(String priceText) {

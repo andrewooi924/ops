@@ -32,7 +32,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -170,27 +169,19 @@ public class DeckAdapter extends RecyclerView.Adapter<DeckAdapter.ViewHolder> {
     }
 
     private void fetchCardPrices(String url, DeckAdapter.ViewHolder holder, String prefix, int count) {
-
-        CountDownLatch latch = new CountDownLatch(1);
-
+        // Fire-and-forget on the executor. The running total is pushed to the ViewModel
+        // by addToTotalPrice() as each price arrives, so there is no need to block the
+        // caller — this method runs from onBindViewHolder on the main thread and the
+        // previous latch.await() was an ANR hazard.
         if (prefix.startsWith("st")) {
-            executorService.submit(() -> fetchCardPricesB(url, holder, latch, count));
+            executorService.submit(() -> fetchCardPricesB(url, holder, count));
         }
         else {
-            executorService.submit(() -> fetchCardPricesA(url, holder, latch, count));
-        }
-
-        try {
-            latch.await();
-            new Handler(Looper.getMainLooper()).post(() -> {
-                cardViewModel.setTotalPrice(totalPrice);
-            });
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            executorService.submit(() -> fetchCardPricesA(url, holder, count));
         }
     }
 
-    private void fetchCardPricesA(String url, DeckAdapter.ViewHolder holder, CountDownLatch latch, int count) {
+    private void fetchCardPricesA(String url, DeckAdapter.ViewHolder holder, int count) {
         new Thread(() -> {
             try {
                 // Fetch and parse the HTML document
@@ -255,13 +246,11 @@ public class DeckAdapter extends RecyclerView.Adapter<DeckAdapter.ViewHolder> {
                 });
             } catch (Exception e) {
                 new Handler(Looper.getMainLooper()).post(() -> holder.cardAvgPrice.setText("Error fetching prices."));
-            } finally {
-                latch.countDown();
             }
         }).start();
     }
 
-    private void fetchCardPricesB(String url, DeckAdapter.ViewHolder holder, CountDownLatch latch, int count) {
+    private void fetchCardPricesB(String url, DeckAdapter.ViewHolder holder, int count) {
         new Thread(() -> {
             try {
                 // Fetch and parse the HTML document
@@ -308,8 +297,6 @@ public class DeckAdapter extends RecyclerView.Adapter<DeckAdapter.ViewHolder> {
             } catch (Exception e) {
                 // If there is an error fetching or parsing, display an error message
                 new Handler(Looper.getMainLooper()).post(() -> holder.cardAvgPrice.setText("Error fetching prices."));
-            } finally {
-                latch.countDown();
             }
         }).start();
     }

@@ -3,6 +3,7 @@ package com.optcg.app;
 import static android.content.Context.MODE_PRIVATE;
 
 import android.content.SharedPreferences;
+import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,6 +29,8 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import me.relex.circleindicator.CircleIndicator3;
 
@@ -45,6 +48,7 @@ public class HomeFragment extends Fragment {
     private static final String PREFS_NAME = "USER_PREFS";
     private SharedPreferences sharedPreferences;
     private TextView berriesText;
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -90,7 +94,6 @@ public class HomeFragment extends Fragment {
         indicator = view.findViewById(R.id.indicator);
         berriesText = view.findViewById(R.id.berriesText);
 
-        cards = loadCardsFromJson();
         sharedPreferences = requireActivity().getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         int berries = sharedPreferences.getInt("berries", 0);
         berriesText.setText(String.valueOf(berries));
@@ -99,23 +102,37 @@ public class HomeFragment extends Fragment {
                 R.drawable.op01_001, R.drawable.op01_002, R.drawable.op01_003, R.drawable.op01_004, R.drawable.op01_005
         );
 
-        viewPagerAdapter = new ViewPagerAdapter(cards, imageResources);
-        viewPager.setAdapter(viewPagerAdapter);
-
-        viewPager.setPageTransformer(new ViewPager2.PageTransformer() {
-            @Override
-            public void transformPage(@NonNull View page, float position) {
-                page.setScaleY(0.85f + (1 - Math.abs(position)) * 0.15f);
+        // cards.json is ~1.4 MB; parse it off the main thread, then wire up the pager.
+        final AssetManager assets = requireContext().getApplicationContext().getAssets();
+        executor.execute(() -> {
+            List<Card> loaded = loadCardsFromJson(assets);
+            if (!isAdded()) {
+                return;
             }
-        });
+            requireActivity().runOnUiThread(() -> {
+                if (!isAdded()) {
+                    return;
+                }
+                cards = loaded;
+                viewPagerAdapter = new ViewPagerAdapter(cards, imageResources);
+                viewPager.setAdapter(viewPagerAdapter);
 
-        indicator.setViewPager(viewPager);
+                viewPager.setPageTransformer(new ViewPager2.PageTransformer() {
+                    @Override
+                    public void transformPage(@NonNull View page, float position) {
+                        page.setScaleY(0.85f + (1 - Math.abs(position)) * 0.15f);
+                    }
+                });
+
+                indicator.setViewPager(viewPager);
+            });
+        });
     }
 
-    private List<Card> loadCardsFromJson() {
+    private List<Card> loadCardsFromJson(AssetManager assets) {
         List<Card> cards = new ArrayList<>();
         try {
-            InputStream inputStream = requireActivity().getAssets().open("cards.json");
+            InputStream inputStream = assets.open("cards.json");
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
             Gson gson = new Gson();
             Type listType = new TypeToken<List<Card>>() {}.getType();
@@ -124,6 +141,12 @@ public class HomeFragment extends Fragment {
             e.printStackTrace();
         }
         return cards;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        executor.shutdownNow();
     }
 
     @Override

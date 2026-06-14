@@ -31,21 +31,24 @@ public class CardRepository {
     }
 
     public void loadCards() {
-        cardDao.getAllCards().observeForever(cards -> {
-            if (cards == null || cards.isEmpty()) {
-                Executors.newSingleThreadExecutor().execute(() -> {
-                    String jsonString = loadJsonFromAssets("cards.json");
-                    if (jsonString != null) {
-                        List<Card> cardList = parseJson(jsonString);
-                        if (cardList != null && !cardList.isEmpty()) {
-                            cardDao.insertAll(cardList);
-                        } else {
-                            Log.e("CardRepository", "No cards to insert from JSON for set");
-                        }
+        // One-shot seed check on a background thread. Previously this used an
+        // observeForever observer that was never removed (a leak); the synchronous
+        // getCards() query gives the same "seed only when empty" behaviour without
+        // holding a permanent observer.
+        Executors.newSingleThreadExecutor().execute(() -> {
+            List<Card> existing = cardDao.getCards();
+            if (existing == null || existing.isEmpty()) {
+                String jsonString = loadJsonFromAssets("cards.json");
+                if (jsonString != null) {
+                    List<Card> cardList = parseJson(jsonString);
+                    if (cardList != null && !cardList.isEmpty()) {
+                        cardDao.insertAll(cardList);
                     } else {
-                        Log.e("CardRepository", "Failed to load JSON for set");
+                        Log.e("CardRepository", "No cards to insert from JSON for set");
                     }
-                });
+                } else {
+                    Log.e("CardRepository", "Failed to load JSON for set");
+                }
             }
         });
     }

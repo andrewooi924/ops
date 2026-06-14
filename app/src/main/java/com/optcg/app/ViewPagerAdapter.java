@@ -15,7 +15,6 @@ public class ViewPagerAdapter extends RecyclerView.Adapter<ViewPagerAdapter.View
 
     private List<Card> cards;
     private List<Integer> imageResources;
-    private int randomInt;
 
     public ViewPagerAdapter(List<Card> cards, List<Integer> imageResources) {
         this.cards = cards;
@@ -31,7 +30,12 @@ public class ViewPagerAdapter extends RecyclerView.Adapter<ViewPagerAdapter.View
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        randomInt = (int)(Math.random()*1373);
+        if (cards == null || cards.isEmpty()) {
+            return;
+        }
+        // Show a random card per page, bounded by the actual list size (previously a
+        // hardcoded 1373 which could exceed cards.size() and throw IndexOutOfBounds).
+        int randomInt = (int) (Math.random() * cards.size());
         Card card = cards.get(randomInt);
         int imageResourceId = holder.itemView.getContext().getResources()
                 .getIdentifier(card.getId(), "drawable", holder.itemView.getContext().getPackageName());

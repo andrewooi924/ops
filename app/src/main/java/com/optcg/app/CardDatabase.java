@@ -23,6 +23,11 @@ public abstract class CardDatabase extends RoomDatabase {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                             CardDatabase.class, CARD_DATABASE_NAME)
+                            // Card metadata is seeded from the bundled cards.json asset, so the
+                            // table holds no user-generated data (collection/portfolio state lives
+                            // in SharedPreferences). On a schema change it is safe to drop and
+                            // re-seed rather than crash for lack of a Migration.
+                            .fallbackToDestructiveMigration()
                             .build();
                 }
             }
