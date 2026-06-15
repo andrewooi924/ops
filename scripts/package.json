@@ -1,0 +1,13 @@
+{
+  "name": "piecelab-scripts",
+  "version": "1.0.0",
+  "private": true,
+  "description": "One-off admin scripts to populate Firestore (card catalog) and Firebase Storage (card images).",
+  "scripts": {
+    "upload:catalog": "node upload-card-catalog.js",
+    "upload:images": "node upload-card-images.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.7.0"
+  }
+}

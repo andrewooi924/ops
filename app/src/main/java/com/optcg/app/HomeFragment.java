@@ -1,36 +1,31 @@
 package com.optcg.app;
 
-import static android.content.Context.MODE_PRIVATE;
-
-import android.content.SharedPreferences;
-import android.content.res.AssetManager;
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.optcg.app.data.repository.UserRepository;
+import com.optcg.app.di.ServiceLocator;
+import com.optcg.app.sync.AuthManager;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import me.relex.circleindicator.CircleIndicator3;
 
@@ -45,10 +40,34 @@ public class HomeFragment extends Fragment {
     private CircleIndicator3 indicator;
     private List<Integer> imageResources;
     private List<Card> cards;
-    private static final String PREFS_NAME = "USER_PREFS";
-    private SharedPreferences sharedPreferences;
+    private UserRepository userRepository;
     private TextView berriesText;
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private CardViewModel cardViewModel;
+    private AuthManager authManager;
+    private TextView accountText;
+    private Button signInButton;
+    private ActivityResultLauncher<Intent> signInLauncher;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        authManager = ServiceLocator.get(requireContext()).authManager();
+        // Must be registered before the fragment is started.
+        signInLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> authManager.handleSignInResult(result.getData(), (success, error) -> {
+                    if (!isAdded()) {
+                        return;
+                    }
+                    if (success) {
+                        Toast.makeText(requireContext(), "Signed in", Toast.LENGTH_SHORT).show();
+                        // Pull/push the user's data now that we have an account.
+                        ServiceLocator.get(requireContext()).syncManager().syncNow();
+                    } else {
+                        Toast.makeText(requireContext(), error != null ? error : "Sign-in failed", Toast.LENGTH_LONG).show();
+                    }
+                }));
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -94,65 +113,69 @@ public class HomeFragment extends Fragment {
         indicator = view.findViewById(R.id.indicator);
         berriesText = view.findViewById(R.id.berriesText);
 
-        sharedPreferences = requireActivity().getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        int berries = sharedPreferences.getInt("berries", 0);
-        berriesText.setText(String.valueOf(berries));
+        userRepository = ServiceLocator.get(requireContext()).userRepository();
+        berriesText.setText(String.valueOf(userRepository.getBerries()));
+
+        // Account / sign-in control.
+        accountText = view.findViewById(R.id.accountText);
+        signInButton = view.findViewById(R.id.signInButton);
+        authManager.session().observe(getViewLifecycleOwner(), s -> {
+            boolean signedIn = s != null && s.signedIn;
+            if (signedIn) {
+                String who = s.displayName != null ? s.displayName : (s.email != null ? s.email : "Signed in");
+                accountText.setText(who);
+                signInButton.setText(R.string.sign_out);
+            } else {
+                accountText.setText("Not signed in");
+                signInButton.setText(R.string.sign_in);
+            }
+        });
+        signInButton.setOnClickListener(v -> {
+            if (authManager.isSignedIn()) {
+                authManager.signOut(() -> {
+                    if (isAdded()) {
+                        Toast.makeText(requireContext(), "Signed out", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } else {
+                Intent intent = authManager.getSignInIntent();
+                if (intent != null) {
+                    signInLauncher.launch(intent);
+                } else {
+                    Toast.makeText(requireContext(), "Sign-in unavailable", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
         imageResources = Arrays.asList(
                 R.drawable.op01_001, R.drawable.op01_002, R.drawable.op01_003, R.drawable.op01_004, R.drawable.op01_005
         );
 
-        // cards.json is ~1.4 MB; parse it off the main thread, then wire up the pager.
-        final AssetManager assets = requireContext().getApplicationContext().getAssets();
-        executor.execute(() -> {
-            List<Card> loaded = loadCardsFromJson(assets);
-            if (!isAdded()) {
+        // Card data now comes from the repository (Room cache, seeded from cards.json) —
+        // no JSON parsing in the UI. Observe and wire the pager once data is available.
+        cardViewModel = new ViewModelProvider(this).get(CardViewModel.class);
+        cardViewModel.getAllCards().observe(getViewLifecycleOwner(), cardList -> {
+            if (cardList == null || cardList.isEmpty() || viewPager.getAdapter() != null) {
                 return;
             }
-            requireActivity().runOnUiThread(() -> {
-                if (!isAdded()) {
-                    return;
+            cards = cardList;
+            viewPagerAdapter = new ViewPagerAdapter(cards, imageResources);
+            viewPager.setAdapter(viewPagerAdapter);
+
+            viewPager.setPageTransformer(new ViewPager2.PageTransformer() {
+                @Override
+                public void transformPage(@NonNull View page, float position) {
+                    page.setScaleY(0.85f + (1 - Math.abs(position)) * 0.15f);
                 }
-                cards = loaded;
-                viewPagerAdapter = new ViewPagerAdapter(cards, imageResources);
-                viewPager.setAdapter(viewPagerAdapter);
-
-                viewPager.setPageTransformer(new ViewPager2.PageTransformer() {
-                    @Override
-                    public void transformPage(@NonNull View page, float position) {
-                        page.setScaleY(0.85f + (1 - Math.abs(position)) * 0.15f);
-                    }
-                });
-
-                indicator.setViewPager(viewPager);
             });
+
+            indicator.setViewPager(viewPager);
         });
-    }
-
-    private List<Card> loadCardsFromJson(AssetManager assets) {
-        List<Card> cards = new ArrayList<>();
-        try {
-            InputStream inputStream = assets.open("cards.json");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-            Gson gson = new Gson();
-            Type listType = new TypeToken<List<Card>>() {}.getType();
-            cards = gson.fromJson(reader, listType);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return cards;
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        executor.shutdownNow();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        int berries = sharedPreferences.getInt("berries", 0);
-        berriesText.setText(String.valueOf(berries));
+        berriesText.setText(String.valueOf(userRepository.getBerries()));
     }
 }

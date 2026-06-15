@@ -95,7 +95,8 @@ public class CardDetailsDialogFragment extends DialogFragment {
             String cardSet = getArguments().getString(ARG_CARD_SET);
             String cardCount = getArguments().getString(ARG_CARD_COUNT);
 
-            cardImage.setImageResource(imageResId);
+            String imageCardId = requireContext().getResources().getResourceEntryName(imageResId);
+            com.optcg.app.di.ServiceLocator.get(requireContext()).cardImageLoader().loadById(imageCardId, cardImage);
             cardNameText.setText(cardName);
             cardIdText.setText(cardId);
             cardRarityText.setText(cardRarity);

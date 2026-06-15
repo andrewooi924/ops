@@ -9,6 +9,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.optcg.app.di.ServiceLocator;
+
 import java.util.List;
 
 public class ViewPagerAdapter extends RecyclerView.Adapter<ViewPagerAdapter.ViewHolder> {
@@ -37,9 +39,9 @@ public class ViewPagerAdapter extends RecyclerView.Adapter<ViewPagerAdapter.View
         // hardcoded 1373 which could exceed cards.size() and throw IndexOutOfBounds).
         int randomInt = (int) (Math.random() * cards.size());
         Card card = cards.get(randomInt);
-        int imageResourceId = holder.itemView.getContext().getResources()
-                .getIdentifier(card.getId(), "drawable", holder.itemView.getContext().getPackageName());
-        holder.imageView.setImageResource(imageResourceId);
+        // Remote image (Card.img) + Glide disk cache, bundled fallback by card id.
+        ServiceLocator.get(holder.itemView.getContext()).cardImageLoader()
+                .load(card.getImg(), card.getId(), holder.imageView);
         holder.tvId.setText(card.getNumber());
         holder.tvName.setText(card.getName());
         holder.tvRarity.setText(card.getRarity());

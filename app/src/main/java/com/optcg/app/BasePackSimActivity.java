@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -28,6 +27,10 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
+import com.optcg.app.data.repository.CollectionRepository;
+import com.optcg.app.data.repository.UserRepository;
+import com.optcg.app.di.ServiceLocator;
+import com.optcg.app.ui.image.CardImageLoader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,28 +53,22 @@ public abstract class BasePackSimActivity extends AppCompatActivity {
     private TextView tvPacksOpened;
     private long lastClickTime = 0;
     private boolean pity;
-    private static final String PREFS_NAME = "COLLECTION_PREFS";
-    private SharedPreferences sharedPreferences;
-    private SharedPreferences userPreferences;
     private final List<Integer> pulledCards = new ArrayList<>();
     private final List<Boolean> isNew = new ArrayList<>();
     private int[] cardResources;
     private CardViewModel cardViewModel;
+    private CollectionRepository collectionRepository;
+    private UserRepository userRepository;
+    private CardImageLoader cardImageLoader;
     private String rarity;
     private boolean isAA = false;
 
     private PackSimConfig config;
 
-    // Prefs keys, derived from the config prefix (matches the original constants).
-    private String keyPacksOpened;
-    private String totalCount;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         config = getConfig();
-        keyPacksOpened = config.prefix + "_packs_opened";
-        totalCount = config.prefix + "_total_count";
 
         EdgeToEdge.enable(this);
         setContentView(config.layoutResId);
@@ -101,9 +98,10 @@ public abstract class BasePackSimActivity extends AppCompatActivity {
         resultContainer = findViewById(R.id.resultContainer);
         pity = false;
 
-        // Handle shared preferences
-        userPreferences = getSharedPreferences("USER_PREFS", MODE_PRIVATE);
-        sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        // Collection and currency state via repositories (still SharedPreferences-backed).
+        collectionRepository = ServiceLocator.get(this).collectionRepository();
+        userRepository = ServiceLocator.get(this).userRepository();
+        cardImageLoader = ServiceLocator.get(this).cardImageLoader();
 
         tvPacksOpened = findViewById(R.id.tvPacksOpened);
         handleCardStack();
@@ -113,8 +111,7 @@ public abstract class BasePackSimActivity extends AppCompatActivity {
 
     private void handleCardStack() {
         // Increment pack count
-        int packsOpened = sharedPreferences.getInt(keyPacksOpened, 0) + 1;
-        sharedPreferences.edit().putInt(keyPacksOpened, packsOpened).apply();
+        int packsOpened = collectionRepository.incrementPacksOpened(config.prefix);
         tvPacksOpened.setText(String.valueOf(packsOpened));
 
         // Reset flags
@@ -184,7 +181,7 @@ public abstract class BasePackSimActivity extends AppCompatActivity {
     }
 
     private void handlePitySystem() {
-        int packsOpened = sharedPreferences.getInt(keyPacksOpened, 0);
+        int packsOpened = collectionRepository.getPacksOpened(config.prefix);
         if (packsOpened > 0) {
             if (config.hasUltra() && packsOpened % 11520 == 0) {
                 cardResources = config.ultraCards;
@@ -237,15 +234,13 @@ public abstract class BasePackSimActivity extends AppCompatActivity {
         final String cardId6 = getResources().getResourceEntryName(randomCard);
         ImageView card6 = buildCardView(randomCard);
 
-        if (!sharedPreferences.getBoolean(cardId6 + "_isCollected", false)) {
+        if (!collectionRepository.isCollected(cardId6)) {
             isNew.add(true);
         } else {
             isNew.add(false);
             int reward = berryRewardFor(rarity6, featureIsAA);
             if (reward != 0) {
-                userPreferences.edit()
-                        .putInt("berries", userPreferences.getInt("berries", 0) + reward)
-                        .apply();
+                userRepository.addBerries(reward);
             }
         }
 
@@ -259,18 +254,7 @@ public abstract class BasePackSimActivity extends AppCompatActivity {
             lastClickTime = System.currentTimeMillis();
             showButtons();
 
-            int newCount = sharedPreferences.getInt(cardId6 + "_count", 0) + 1;
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            if (!sharedPreferences.getBoolean(cardId6 + "_isCollected", false)) {
-                editor.putInt(totalCount, sharedPreferences.getInt(totalCount, 0) + 1);
-                String tk = totalKeyFor(rarity6);
-                if (tk != null) {
-                    editor.putInt(tk, sharedPreferences.getInt(tk, 0) + 1);
-                }
-            }
-            editor.putInt(cardId6 + "_count", newCount);
-            editor.putBoolean(cardId6 + "_isCollected", true);
-            editor.apply();
+            collectionRepository.recordRevealedCard(cardId6, config.prefix, raritySuffixFor(rarity6));
         });
     }
 
@@ -282,26 +266,16 @@ public abstract class BasePackSimActivity extends AppCompatActivity {
         final String cardId5 = getResources().getResourceEntryName(randomCard);
         ImageView card5 = buildCardView(randomCard);
 
-        if (!sharedPreferences.getBoolean(cardId5 + "_isCollected", false)) {
+        if (!collectionRepository.isCollected(cardId5)) {
             isNew.add(true);
         } else {
             isNew.add(false);
-            userPreferences.edit()
-                    .putInt("berries", userPreferences.getInt("berries", 0) + 300)
-                    .apply();
+            userRepository.addBerries(300);
         }
 
         card5.setOnClickListener(v -> {
             animate(card5);
-            int newCount = sharedPreferences.getInt(cardId5 + "_count", 0) + 1;
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            if (!sharedPreferences.getBoolean(cardId5 + "_isCollected", false)) {
-                editor.putInt(totalCount, sharedPreferences.getInt(totalCount, 0) + 1);
-                editor.putInt(totalKey("r"), sharedPreferences.getInt(totalKey("r"), 0) + 1);
-            }
-            editor.putInt(cardId5 + "_count", newCount);
-            editor.putBoolean(cardId5 + "_isCollected", true);
-            editor.apply();
+            collectionRepository.recordRevealedCard(cardId5, config.prefix, "r");
         });
     }
 
@@ -319,34 +293,21 @@ public abstract class BasePackSimActivity extends AppCompatActivity {
         final String rarityC = rarity;
         ImageView card = buildCardView(randomCard);
 
-        if (!sharedPreferences.getBoolean(cardId + "_isCollected", false)) {
+        if (!collectionRepository.isCollected(cardId)) {
             isNew.add(true);
-            int newCount = sharedPreferences.getInt(cardId + "_count", 0) + 1;
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putInt(totalCount, sharedPreferences.getInt(totalCount, 0) + 1);
-            if (rarityC.equals("C")) {
-                editor.putInt(totalKey("c"), sharedPreferences.getInt(totalKey("c"), 0) + 1);
-            } else if (rarityC.equals("UC")) {
-                editor.putInt(totalKey("uc"), sharedPreferences.getInt(totalKey("uc"), 0) + 1);
-            }
-            editor.putInt(cardId + "_count", newCount);
-            editor.putBoolean(cardId + "_isCollected", true);
-            editor.apply();
+            collectionRepository.recordNewCommon(cardId, config.prefix, rarityC.equals("C") ? "c" : "uc");
         } else {
             isNew.add(false);
-            SharedPreferences.Editor editor = userPreferences.edit();
             if (rarityC.equals("C")) {
-                editor.putInt("berries", userPreferences.getInt("berries", 0) + 100);
+                userRepository.addBerries(100);
             } else if (rarityC.equals("UC")) {
-                editor.putInt("berries", userPreferences.getInt("berries", 0) + 200);
+                userRepository.addBerries(200);
             }
-            editor.apply();
         }
 
         card.setOnClickListener(v -> {
             animate(card);
-            int newCount = sharedPreferences.getInt(cardId + "_count", 0) + 1;
-            sharedPreferences.edit().putInt(cardId + "_count", newCount).apply();
+            collectionRepository.incrementCount(cardId);
         });
     }
 
@@ -366,7 +327,7 @@ public abstract class BasePackSimActivity extends AppCompatActivity {
     /** Builds a card ImageView, loads its art and adds it to the stack. */
     private ImageView buildCardView(int randomCard) {
         ImageView card = new ImageView(this);
-        Glide.with(this).load(randomCard).into(card);
+        cardImageLoader.loadById(getResources().getResourceEntryName(randomCard), card);
         card.setLayoutParams(new FrameLayout.LayoutParams(890, 2700));
         card.setTranslationX(230);
         cardContainer.addView(card);
@@ -407,32 +368,28 @@ public abstract class BasePackSimActivity extends AppCompatActivity {
         }
     }
 
-    private String totalKey(String suffix) {
-        return config.prefix + "_total_" + suffix;
-    }
-
-    /** Maps a rarity to its TOTAL_* prefs key, or null if it has no per-rarity counter. */
-    private String totalKeyFor(String r) {
+    /** Maps a rarity to its per-rarity counter suffix, or null if it has no counter. */
+    private String raritySuffixFor(String r) {
         switch (r) {
             case "C":
-                return totalKey("c");
+                return "c";
             case "UC":
-                return totalKey("uc");
+                return "uc";
             case "R":
-                return totalKey("r");
+                return "r";
             case "SR":
-                return totalKey("sr");
+                return "sr";
             case "L":
-                return totalKey("l");
+                return "l";
             case "SEC":
-                return totalKey("sec");
+                return "sec";
             case "MR":
-                return totalKey("mr");
+                return "mr";
             case "SP":
-                return totalKey("sp");
+                return "sp";
             default:
                 if (config.ultraRarity != null && config.ultraRarity.equals(r)) {
-                    return totalKey(config.ultraRarity.toLowerCase());
+                    return config.ultraRarity.toLowerCase();
                 }
                 return null;
         }
@@ -506,7 +463,7 @@ public abstract class BasePackSimActivity extends AppCompatActivity {
 
             // Create ImageView for the card
             ImageView cardView = new ImageView(this);
-            Glide.with(this).load(cardResourceId).into(cardView);
+            cardImageLoader.loadById(getResources().getResourceEntryName(cardResourceId), cardView);
 
             // Set proper size for the card (adjust size as necessary)
             GridLayout.LayoutParams cardParams = new GridLayout.LayoutParams();
@@ -567,7 +524,7 @@ public abstract class BasePackSimActivity extends AppCompatActivity {
 
         // Create the enlarged card view
         ImageView largeCard = new ImageView(this);
-        Glide.with(this).load(cardResId).into(largeCard);
+        cardImageLoader.loadById(getResources().getResourceEntryName(cardResId), largeCard);
         FrameLayout.LayoutParams cardParams = new FrameLayout.LayoutParams(
                 1000, 1500  // Adjust size as needed
         );

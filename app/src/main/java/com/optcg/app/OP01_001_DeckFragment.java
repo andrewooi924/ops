@@ -24,9 +24,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
+import com.optcg.app.data.repository.PriceRepository;
+import com.optcg.app.di.ServiceLocator;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -126,9 +125,8 @@ public class OP01_001_DeckFragment extends Fragment {
             latestTotal = tl;
             updateTotalText();
         });
-        // Fetch the leader card price off the main thread. Previously this blocked on
-        // FutureTask.get() inside onViewCreated, an ANR hazard.
-        fetchLeaderPriceAsync("https://onepiece-card-atari.jp/expansion/romance-dawn/card/op01-001/l-p");
+        // Leader card price comes from the repository (offline-first cache + remote source).
+        fetchLeaderPrice("https://onepiece-card-atari.jp/expansion/romance-dawn/card/op01-001/l-p");
     }
 
     private void updateTotalText() {
@@ -137,39 +135,14 @@ public class OP01_001_DeckFragment extends Fragment {
         }
     }
 
-    private void fetchLeaderPriceAsync(String url) {
-        new Thread(() -> {
-            double price = 0.0;
-            try {
-                Document doc = Jsoup.connect(url).get();
-                String avgPrice = doc.select("table.table_info tbody tr td").first().text();
-                price = Double.parseDouble(avgPrice.replaceAll("[^\\d]", ""));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            final double leader = price;
-            if (!isAdded()) {
+    private void fetchLeaderPrice(String url) {
+        PriceRepository priceRepository = ServiceLocator.get(requireContext()).priceRepository();
+        priceRepository.getQuote(url, result -> {
+            if (!isAdded() || result.data == null) {
                 return;
             }
-            requireActivity().runOnUiThread(() -> {
-                if (!isAdded()) {
-                    return;
-                }
-                leaderPrice = leader;
-                updateTotalText();
-            });
-        }).start();
-    }
-
-    private int parsePriceToInt(String priceText) {
-        try {
-            return Integer.parseInt(priceText.replace(",", "").replace("円", "").trim());
-        } catch (NumberFormatException e) {
-            return 0;
-        }
-    }
-
-    private String formatAsRM(double value) {
-        return String.format("RM%.2f", value);
+            leaderPrice = result.data.avgYen;
+            updateTotalText();
+        });
     }
 }

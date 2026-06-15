@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "159247162295",
+    "project_id": "piecelab-157cb",
+    "storage_bucket": "piecelab-157cb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:159247162295:android:8c0da4a41e333da1bce632",
+        "android_client_info": {
+          "package_name": "com.optcg.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "159247162295-a6d0pn1qh08h3v7ej9ehh1map442edj9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.optcg.app",
+            "certificate_hash": "85977c3153af9b9c20c6c32b1b3775ded7ad446a"
+          }
+        },
+        {
+          "client_id": "159247162295-r21n13o45ft6qb6hptucucp3cdi8mfe7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCd3NoiR3e-ADQdvhsL3quKb61LRVAl410"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "159247162295-r21n13o45ft6qb6hptucucp3cdi8mfe7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

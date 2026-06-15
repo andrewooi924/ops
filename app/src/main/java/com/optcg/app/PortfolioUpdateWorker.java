@@ -1,16 +1,16 @@
 package com.optcg.app;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
+import com.optcg.app.data.repository.PriceRepository;
+import com.optcg.app.di.ServiceLocator;
+import com.optcg.app.domain.model.PriceQuote;
+import com.optcg.app.util.CurrencyConverter;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -117,54 +117,22 @@ public class PortfolioUpdateWorker extends Worker {
     }
 
     private void updatePortfolioTotalValue() {
-        SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("PortfolioData", Context.MODE_PRIVATE);
-
         String today = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-
         float totalValue = calculateTotalValue();
-
-        sharedPreferences.edit()
-                .putFloat(today, totalValue)
-                .apply();
+        ServiceLocator.get(getApplicationContext()).portfolioRepository().putValueForDate(today, totalValue);
     }
 
     private float calculateTotalValue() {
+        // doWork() runs on a background thread, so a synchronous repository call is fine.
+        PriceRepository priceRepository = ServiceLocator.get(getApplicationContext()).priceRepository();
         float total = 0;
         for (PersonalCard card : personalCardList) {
-            if (card.getUrl().contains("card-atari")) {
-                float realTimePrice = fetchCardPriceA(card.getUrl());
-                total += realTimePrice;
-            }
-            else if (card.getUrl().contains("tier-one")) {
-                float realTimePrice = fetchCardPriceB(card.getUrl());
-                total += realTimePrice;
+            PriceQuote quote = priceRepository.getQuoteSync(card.getUrl());
+            if (quote != null) {
+                total += (float) CurrencyConverter.yenToRmDisplay(quote.avgYen);
             }
             Log.d("AVGPRICE", "" + total);
         }
         return total;
-    }
-
-    private float fetchCardPriceA(String url) {
-        try {
-            // Fetch and parse the HTML document (this should ideally be done asynchronously)
-            Document doc = Jsoup.connect(url).get();
-            String avgPriceText = doc.select("table.table_info tbody tr td").first().text();
-            return Float.parseFloat(avgPriceText.replaceAll("[^\\d.]", "")) * 0.03f;
-        } catch (Exception e) {
-            e.printStackTrace(); // Log the error
-            return -1f; // Return -1 if there's an error
-        }
-    }
-
-    private float fetchCardPriceB(String url) {
-        try {
-            // Fetch and parse the HTML document (this should ideally be done asynchronously)
-            Document doc = Jsoup.connect(url).get();
-            Element priceElement = doc.selectFirst(".item-price-wrap .item-price span[data-id^='makeshop-item-price']");
-            return Float.parseFloat(priceElement.text().replaceAll("[^\\d.]", "")) * 0.03f;
-        } catch (Exception e) {
-            e.printStackTrace(); // Log the error
-            return -1f; // Return -1 if there's an error
-        }
     }
 }

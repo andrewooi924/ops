@@ -1,8 +1,5 @@
 package com.optcg.app;
 
-import static android.content.Context.MODE_PRIVATE;
-
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.transition.TransitionInflater;
 import android.view.LayoutInflater;
@@ -18,6 +15,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.mikhaellopez.circularprogressbar.CircularProgressBar;
+import com.optcg.app.data.repository.CollectionRepository;
+import com.optcg.app.di.ServiceLocator;
 
 /**
  * Shared implementation of a per-set collection screen. Behaviour is identical to the
@@ -68,14 +67,14 @@ public abstract class BaseSetCollectionFragment extends Fragment {
         CircularProgressBar progressCircle = view.findViewById(config.progressCircleId);
         TextView progressText = view.findViewById(config.progressTextId);
 
-        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("COLLECTION_PREFS", MODE_PRIVATE);
-        int totalCount = sharedPreferences.getInt(config.prefix + "_total_count", 0);
+        CollectionRepository collectionRepository = ServiceLocator.get(requireContext()).collectionRepository();
+        int totalCount = collectionRepository.getTotalCount(config.prefix);
         float progress = ((float) totalCount / config.totalDenominator) * 100;
         progressCircle.setProgress(progress);
         progressText.setText((int) progress + "%");
 
         for (SetCollectionConfig.Row row : config.rows) {
-            int count = sharedPreferences.getInt(config.prefix + "_total_" + row.keySuffix, 0);
+            int count = collectionRepository.getTotal(config.prefix, row.keySuffix);
             TextView rowText = view.findViewById(row.viewId);
             rowText.setText(count + "/" + row.denominator);
         }
