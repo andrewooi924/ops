@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name=".di.OptcgApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -43,15 +44,6 @@
             android:exported="false" />
         <activity
             android:name=".MainActivity"
-            android:exported="false" />
-        <activity
-            android:name=".SetAdapter"
-            android:exported="false" />
-        <activity
-            android:name=".CollectionAdapter"
-            android:exported="false" />
-        <activity
-            android:name=".MainMenuAdapter"
             android:exported="false" />
         <activity
             android:name=".OP01SimActivity"

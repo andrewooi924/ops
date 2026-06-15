@@ -2,8 +2,6 @@ package com.optcg.app;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.os.Handler;
-import android.os.Looper;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
@@ -14,39 +12,39 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
+import com.optcg.app.data.repository.PriceRepository;
+import com.optcg.app.di.ServiceLocator;
+import com.optcg.app.domain.model.PriceQuote;
+import com.optcg.app.domain.result.Resource;
+import com.optcg.app.ui.image.CardImageLoader;
+import com.optcg.app.util.CurrencyConverter;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CountDownLatch;
 
 public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder> {
 
-    private Context context;
-    private List<CardPrice> cardList;
-    private Map<String, CardData> cardDataCache = new HashMap<>();
+    private final Context context;
+    private final List<CardPrice> cardList;
+    private final PriceRepository priceRepository;
+    private final CardImageLoader cardImageLoader;
 
     public enum Mode {
         PORTFOLIO,
         WISHLIST
     }
 
-    private Mode mode;
+    private final Mode mode;
 
     public CardAdapter(Context context, List<CardPrice> cardList, Mode mode) {
         this.context = context;
         this.cardList = cardList;
         this.mode = mode;
+        this.priceRepository = ServiceLocator.get(context).priceRepository();
+        this.cardImageLoader = ServiceLocator.get(context).cardImageLoader();
     }
 
     @NonNull
@@ -62,10 +60,8 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder
         int cardId = card.getImageResId();
         String cardPrefix = context.getResources().getResourceEntryName(cardId);
 
-        // Set the card image
-        Glide.with(context)
-                .load(cardId)
-                .into(holder.cardImage);
+        // Set the card image (remote + Glide disk cache, bundled fallback by card id).
+        cardImageLoader.loadById(cardPrefix, holder.cardImage);
 
         if (!cardPrefix.startsWith("st") && !cardPrefix.startsWith("p")) {
             holder.itemView.setOnClickListener(v -> {
@@ -77,29 +73,21 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder
 
                 dialogFragment.show(fragmentManager, "cardPriceDialog");
             });
-        }
-        else {
+        } else {
             holder.itemView.setOnClickListener(null);
         }
 
-        CardData cardData = cardDataCache.get(card.getUrl());
-
-        if (cardData != null) {
-            updateCardView(holder, cardData);
-        }
-        else {
-            // Display placeholder text while fetching
-            holder.cardAvgPrice.setText("Fetching...");
-            holder.cardMovement.setText("");
-
-            if (cardPrefix.startsWith("op") || cardPrefix.startsWith("prb") || cardPrefix.startsWith("eb")) {
-                fetchCardPricesA(card.getUrl(), holder);
+        // Prices now come from the repository (offline-first Room cache + remote source) —
+        // no scraping in the adapter.
+        holder.cardAvgPrice.setText("Fetching...");
+        holder.cardMovement.setText("");
+        priceRepository.getQuote(card.getUrl(), result -> {
+            if (result.data != null) {
+                bindQuote(holder, result.data);
+            } else if (result.status == Resource.Status.ERROR) {
+                holder.cardAvgPrice.setText("Error fetching prices.");
             }
-            else {
-                // Fetch the prices for this card asynchronously
-                fetchCardPricesB(card.getUrl(), holder);
-            }
-        }
+        });
 
         if (mode == Mode.WISHLIST) {
             ViewGroup.LayoutParams params = holder.cardImage.getLayoutParams();
@@ -126,173 +114,15 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder
         }
     }
 
-    private void fetchCardPricesA(String url, CardViewHolder holder) {
-        new Thread(() -> {
-            try {
-                // Fetch and parse the HTML document
-                Document doc = Jsoup.connect(url).get();
-
-                // Extract average price
-                String avgPrice = doc.select("table.table_info tbody tr td").first().text();
-
-                // Extract soaring and crash prices
-                Element soaringElement = doc.selectFirst(".movement_price_box .soaring");
-                Element crashElement = doc.selectFirst(".movement_price_box .crash");
-
-                String soaringText = soaringElement != null ? soaringElement.text().replace("月間高騰差額", "").replace("+", "").trim() : "0円";
-                String crashText = crashElement != null ? crashElement.text().replace("月間暴落差額", "").replace("-", "").trim() : "0円";
-
-                // Update UI
-                String soaringInRM = formatAsRM(parsePriceToInt(soaringText) * 0.03);
-                String crashInRM = formatAsRM(parsePriceToInt(crashText) * 0.03);
-                int diff = (parsePriceToInt(soaringText) - parsePriceToInt(crashText));
-                String diffInRM = formatAsRM(diff * 0.03);
-                String avgPriceInRM = formatAsRM(parsePriceToInt(avgPrice) * 0.03);
-
-                CardData cardData = new CardData(avgPrice, soaringText, crashText);
-                cardDataCache.put(url, cardData);
-
-                String movementText;
-                String symbol;
-                int symbolColor;
-
-//                if (!soaringText.equals("0円")) {
-//                    symbol = "▲";
-//                    symbolColor = Color.GREEN;
-//                    movementText = soaringInRM + " (" + soaringText + ")";
-//                } else if (!crashText.equals("0円")) {
-//                    symbol = "▼";
-//                    symbolColor = Color.RED;
-//                    movementText = crashInRM + " (" + crashText + ")";
-//                } else {
-//                    symbol = "●";
-//                    symbolColor = Color.parseColor("#FFD700");
-//                    movementText = "RM0.00 (0円)";
-//                }
-
-                if (diff > 0) {
-                    symbol = "▲";
-                    symbolColor = Color.GREEN;
-                    movementText = diffInRM + " (" + diff + "円)";
-                } else if (diff < 0) {
-                    symbol = "▼";
-                    symbolColor = Color.RED;
-                    movementText = diffInRM + " (" + Math.abs(diff) + "円)";
-                } else {
-                    symbol = "●";
-                    symbolColor = Color.parseColor("#FFD700");
-                    movementText = "RM0.00 (0円)";
-                }
-
-                String finalAvgPrice = "Avg: " + avgPriceInRM + " (" + avgPrice + ")";
-                String finalMovementText = movementText;
-                int finalSymbolColor = symbolColor;
-                String finalSymbol = symbol;
-
-                // Update the UI on the main thread
-                new Handler(Looper.getMainLooper()).post(() -> {
-                    holder.cardAvgPrice.setText(finalAvgPrice);
-
-                    // Use SpannableString for the symbol and text
-                    SpannableString spannableMovement = new SpannableString(finalSymbol + " " + finalMovementText);
-
-                    // Apply color only to the symbol
-                    spannableMovement.setSpan(new ForegroundColorSpan(finalSymbolColor), 0, finalSymbol.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-                    // Set the styled text
-                    holder.cardMovement.setText(spannableMovement);
-                });
-            } catch (Exception e) {
-                new Handler(Looper.getMainLooper()).post(() -> holder.cardAvgPrice.setText("Error fetching prices."));
-            }
-        }).start();
-    }
-
-    private void fetchCardPricesB(String url, CardViewHolder holder) {
-        new Thread(() -> {
-            try {
-                // Fetch and parse the HTML document
-                Document doc = Jsoup.connect(url).get();
-
-                // Extract the price from the item-price span
-                Element priceElement = doc.selectFirst(".item-price-wrap .item-price span[data-id^='makeshop-item-price']");
-                String avgPrice = priceElement != null ? priceElement.text().replaceAll("[^\\d]", "") : "0"; // Extract numeric value (removing non-numeric characters)
-
-                // Process and convert average price into RM format
-                String avgPriceInRM = formatAsRM(parsePriceToInt(avgPrice) * 0.03);
-
-                // Create CardData object for caching (so we can use it later if needed)
-                CardData cardData = new CardData(avgPrice, "0円", "0円");
-                cardDataCache.put(url, cardData);
-
-                // Set a placeholder for no movement (since soaring and crashing are not being used)
-                String movementText = "RM0.00 (0円)";
-                String symbol = "●";  // No movement symbol
-                int symbolColor = Color.parseColor("#FFD700");  // Gold color for no movement
-
-                // Final formatted average price and movement text
-                String finalAvgPrice = "Avg: " + avgPriceInRM + " (" + avgPrice + "円)";
-                String finalMovementText = movementText;
-
-                // Update the UI on the main thread
-                new Handler(Looper.getMainLooper()).post(() -> {
-                    // Update the average price
-                    holder.cardAvgPrice.setText(finalAvgPrice);
-
-                    // Use SpannableString for the symbol and text
-                    SpannableString spannableMovement = new SpannableString(symbol + " " + finalMovementText);
-
-                    // Apply color only to the symbol
-                    spannableMovement.setSpan(new ForegroundColorSpan(symbolColor), 0, symbol.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-                    // Set the styled text for movement
-                    holder.cardMovement.setText(spannableMovement);
-                });
-
-            } catch (Exception e) {
-                // If there is an error fetching or parsing, display an error message
-                new Handler(Looper.getMainLooper()).post(() -> holder.cardAvgPrice.setText("Error fetching prices."));
-            }
-        }).start();
-    }
-
-    private int parsePriceToInt(String priceText) {
-        try {
-            return Integer.parseInt(priceText.replace(",", "").replace("円", "").trim());
-        } catch (NumberFormatException e) {
-            return 0;
-        }
-    }
-
-    private String formatAsRM(double value) {
-        return String.format("RM%.2f", Math.abs(value));
-    }
-
-    private void updateCardView(CardViewHolder holder, CardData cardData) {
-        // Update the view using the cached card data
-        String avgPriceInRM = formatAsRM(parsePriceToInt(cardData.getAvgPrice()) * 0.03);
-        String soaringInRM = formatAsRM(parsePriceToInt(cardData.getSoaringPrice()) * 0.03);
-        int diff = (parsePriceToInt(cardData.getSoaringPrice()) - parsePriceToInt(cardData.getCrashPrice()));
-        String diffInRM = formatAsRM(diff * 0.03);
-        String crashInRM = formatAsRM(parsePriceToInt(cardData.getCrashPrice()) * 0.03);
+    /** Renders a quote using the original display formatting (movement from soaring−crash diff). */
+    private void bindQuote(CardViewHolder holder, PriceQuote quote) {
+        String avgPriceInRM = CurrencyConverter.formatRm(Math.abs(CurrencyConverter.yenToRmDisplay(quote.avgYen)));
+        int diff = quote.soaringYen - quote.crashYen;
+        String diffInRM = CurrencyConverter.formatRm(Math.abs(CurrencyConverter.yenToRmDisplay(diff)));
 
         String movementText;
         String symbol;
         int symbolColor;
-
-//        if (!cardData.getSoaringPrice().equals("0円")) {
-//            symbol = "▲";
-//            symbolColor = Color.GREEN;
-//            movementText = soaringInRM + " (" + cardData.getSoaringPrice() + ")";
-//        } else if (!cardData.getCrashPrice().equals("0円")) {
-//            symbol = "▼";
-//            symbolColor = Color.RED;
-//            movementText = crashInRM + " (" + cardData.getCrashPrice() + ")";
-//        } else {
-//            symbol = "●";
-//            symbolColor = Color.parseColor("#FFD700");
-//            movementText = "RM0.00 (0円)";
-//        }
 
         if (diff > 0) {
             symbol = "▲";
@@ -308,22 +138,11 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.CardViewHolder
             movementText = "RM0.00 (0円)";
         }
 
-        String finalAvgPrice = "Avg: " + avgPriceInRM + " (" + cardData.getAvgPrice() + ")";
-        String finalMovementText = movementText;
+        holder.cardAvgPrice.setText("Avg: " + avgPriceInRM + " (" + quote.avgDisplayText + ")");
 
-        // Update the UI
-        new Handler(Looper.getMainLooper()).post(() -> {
-            holder.cardAvgPrice.setText(finalAvgPrice);
-
-            // Use SpannableString for the symbol and text
-            SpannableString spannableMovement = new SpannableString(symbol + " " + finalMovementText);
-
-            // Apply color only to the symbol
-            spannableMovement.setSpan(new ForegroundColorSpan(symbolColor), 0, symbol.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-            // Set the styled text
-            holder.cardMovement.setText(spannableMovement);
-        });
+        SpannableString spannableMovement = new SpannableString(symbol + " " + movementText);
+        spannableMovement.setSpan(new ForegroundColorSpan(symbolColor), 0, symbol.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        holder.cardMovement.setText(spannableMovement);
     }
 
     private int dpToPx(int dp) {

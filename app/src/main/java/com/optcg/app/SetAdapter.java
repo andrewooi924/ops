@@ -1,13 +1,8 @@
 package com.optcg.app;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
-import android.util.Log;
-import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,25 +14,27 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
+import com.optcg.app.data.repository.CollectionRepository;
+import com.optcg.app.di.ServiceLocator;
+import com.optcg.app.ui.image.CardImageLoader;
+
 import java.util.List;
 
 public class SetAdapter extends RecyclerView.Adapter<SetAdapter.ViewHolder> {
 
     private Context context;
     private List<Integer> menuImages;
-    private LruCache<String, Bitmap> imageCache;
     private boolean isFirstLoad = true;
     private final CardViewModel cardViewModel;
+    private final CollectionRepository collectionRepository;
+    private final CardImageLoader cardImageLoader;
 
     public SetAdapter(Context context, List<Integer> menuImages) {
         this.context = context;
         this.menuImages = menuImages;
         this.cardViewModel = new ViewModelProvider((FragmentActivity) context).get(CardViewModel.class);
-        final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
-        final int cacheSize = maxMemory / 8;
-
-        imageCache = new LruCache<>(cacheSize);
+        this.collectionRepository = ServiceLocator.get(context).collectionRepository();
+        this.cardImageLoader = ServiceLocator.get(context).cardImageLoader();
     }
 
     @NonNull
@@ -50,16 +47,9 @@ public class SetAdapter extends RecyclerView.Adapter<SetAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         int drawableId = menuImages.get(position);
-        Bitmap bitmap = getBitmapFromCache(String.valueOf(drawableId));
-
-        if (bitmap != null) {
-            holder.menuImage.setImageBitmap(bitmap);
-        } else {
-            bitmap = BitmapFactory.decodeResource(holder.itemView.getResources(), drawableId);
-            addBitmapToCache(String.valueOf(drawableId), bitmap);
-            holder.menuImage.setImageBitmap(bitmap);
-        }
         String upCardId = context.getResources().getResourceEntryName(drawableId);
+        // Remote image + Glide disk cache, bundled fallback by card id.
+        cardImageLoader.loadById(upCardId, holder.menuImage);
         boolean isCollected = isCardCollected(upCardId);
         int count = getCardCount(upCardId);
         if (isCollected) {
@@ -133,23 +123,11 @@ public class SetAdapter extends RecyclerView.Adapter<SetAdapter.ViewHolder> {
         }
     }
 
-    private void addBitmapToCache(String key, Bitmap bitmap) {
-        if (getBitmapFromCache(key) == null) {
-            imageCache.put(key, bitmap);
-        }
-    }
-
-    private Bitmap getBitmapFromCache(String key) {
-        return imageCache.get(key);
-    }
-
     private boolean isCardCollected(String cardId) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences("COLLECTION_PREFS", Context.MODE_PRIVATE);
-        return sharedPreferences.getBoolean(cardId + "_isCollected", false);
+        return collectionRepository.isCollected(cardId);
     }
 
     private int getCardCount(String cardId) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences("COLLECTION_PREFS", Context.MODE_PRIVATE);
-        return sharedPreferences.getInt(cardId + "_count", 0);
+        return collectionRepository.getCount(cardId);
     }
 }

@@ -10,6 +10,9 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.optcg.app.di.ServiceLocator;
+import com.optcg.app.ui.image.CardImageLoader;
+
 import java.util.List;
 
 public class HorizontalDeckAdapter extends RecyclerView.Adapter<HorizontalDeckAdapter.HorizontalDeckViewHolder> {
@@ -18,12 +21,14 @@ public class HorizontalDeckAdapter extends RecyclerView.Adapter<HorizontalDeckAd
     private final List<Integer> drawableIds;
     private final String color;
     private OnImageClickListener onImageClickListener;
+    private final CardImageLoader cardImageLoader;
 
     public HorizontalDeckAdapter(Context context, List<Integer> drawableIds, String color, OnImageClickListener onImageClickListener) {
         this.context = context;
         this.drawableIds = drawableIds; // List of drawable resource IDs
         this.color = color;
         this.onImageClickListener = onImageClickListener;
+        this.cardImageLoader = ServiceLocator.get(context).cardImageLoader();
     }
 
     @NonNull
@@ -36,7 +41,7 @@ public class HorizontalDeckAdapter extends RecyclerView.Adapter<HorizontalDeckAd
     @Override
     public void onBindViewHolder(@NonNull HorizontalDeckViewHolder holder, int position) {
         int drawableId = drawableIds.get(position);
-        holder.imageView.setImageResource(drawableId);
+        cardImageLoader.loadById(context.getResources().getResourceEntryName(drawableId), holder.imageView);
 
         String transitionName = "image_" + color + position;
         holder.imageView.setTransitionName(transitionName);

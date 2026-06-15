@@ -1,5 +1,12 @@
 <resources>
     <string name="app_name">PieceLab</string>
+    <!-- Firebase OAuth web client id (a public identifier, not a secret) for Google Sign-In. -->
+    <string name="web_client_id" translatable="false">159247162295-r21n13o45ft6qb6hptucucp3cdi8mfe7.apps.googleusercontent.com</string>
+    <string name="sign_in">Sign in</string>
+    <string name="sign_out">Sign out</string>
+    <!-- Base URL for card images. Firebase Storage public download form today; swap to a CDN
+         base here (one line) when one is available. The app appends the URL-encoded img path. -->
+    <string name="card_image_base_url" translatable="false">https://firebasestorage.googleapis.com/v0/b/piecelab-157cb.firebasestorage.app/o/</string>
     <string name="op01">OP01</string>
     <string name="search">Search</string>
     <string name="filter">Filter</string>

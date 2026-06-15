@@ -34,9 +34,12 @@ import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 
 import org.json.JSONObject;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
+
+import com.optcg.app.data.repository.PortfolioRepository;
+import com.optcg.app.data.repository.PriceRepository;
+import com.optcg.app.di.ServiceLocator;
+import com.optcg.app.domain.result.Resource;
+import com.optcg.app.util.CurrencyConverter;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -69,13 +72,13 @@ public class PortfolioFragment extends Fragment {
     private List<PersonalCard> personalCardList;
     private LineChart lineChart;
     private List<Entry> priceEntries;
-    private SharedPreferences sharedPreferences;
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
     private TextView portfolioTotalValue;
     private TextView portfolioSubtitle;
     private LineDataSet lineDataSet;
     private LineDataSet lastPointDataSet;
-    private static final String CARD_COUNT_KEY = "last_card_count";
+    private PriceRepository priceRepository;
+    private PortfolioRepository portfolioRepository;
 
 
     @Nullable
@@ -335,42 +338,48 @@ public class PortfolioFragment extends Fragment {
         positivePlaceholder.setText("Loading...");
         negativePlaceholder.setText("Loading...");
 
+        priceRepository = ServiceLocator.get(requireContext()).priceRepository();
+
         AtomicInteger remainingFetches = new AtomicInteger(combinedList.size());
 
         for (CardPrice card : combinedList) {
-            fetchMovement(card.getUrl(), (soaringPrice, crashPrice) -> {
+            priceRepository.getQuote(card.getUrl(), result -> {
+                // Wait for the terminal result so each card is counted exactly once
+                // (offline-first may emit a cached LOADING value first).
+                if (result.status == Resource.Status.LOADING) {
+                    return;
+                }
 
-                int diff = soaringPrice - crashPrice;
+                int diff = result.data != null ? (result.data.soaringYen - result.data.crashYen) : 0;
                 card.setPrice(Math.abs(diff));
 
-                requireActivity().runOnUiThread(() -> {
-                    if (diff > 0) {
-                        positiveList.add(card);
-                    } else if (diff < 0) {
-                        negativeList.add(card);
-                    }
+                // Repository callbacks are delivered on the main thread.
+                if (diff > 0) {
+                    positiveList.add(card);
+                } else if (diff < 0) {
+                    negativeList.add(card);
+                }
 
-                    if (remainingFetches.decrementAndGet() == 0) {
-                        // Sort lists by price descending
-                        Collections.sort(positiveList, (c1, c2) -> Double.compare(c2.getPrice(), c1.getPrice()));
-                        Collections.sort(negativeList, (c1, c2) -> Double.compare(c2.getPrice(), c1.getPrice()));
+                if (remainingFetches.decrementAndGet() == 0) {
+                    // Sort lists by price descending
+                    Collections.sort(positiveList, (c1, c2) -> Double.compare(c2.getPrice(), c1.getPrice()));
+                    Collections.sort(negativeList, (c1, c2) -> Double.compare(c2.getPrice(), c1.getPrice()));
 
-                        // Hide placeholders
-                        positivePlaceholder.setVisibility(View.GONE);
-                        negativePlaceholder.setVisibility(View.GONE);
+                    // Hide placeholders
+                    positivePlaceholder.setVisibility(View.GONE);
+                    negativePlaceholder.setVisibility(View.GONE);
 
-                        rvPositive.setVisibility(View.VISIBLE);
-                        rvNegative.setVisibility(View.VISIBLE);
+                    rvPositive.setVisibility(View.VISIBLE);
+                    rvNegative.setVisibility(View.VISIBLE);
 
-                        // Notify adapters
-                        positiveAdapter.notifyDataSetChanged();
-                        negativeAdapter.notifyDataSetChanged();
-                    }
-                });
+                    // Notify adapters
+                    positiveAdapter.notifyDataSetChanged();
+                    negativeAdapter.notifyDataSetChanged();
+                }
             });
         }
 
-        sharedPreferences = requireContext().getSharedPreferences("PortfolioData", Context.MODE_PRIVATE);
+        portfolioRepository = ServiceLocator.get(requireContext()).portfolioRepository();
 
         personalCardList = new ArrayList<>();
         personalCardList.add(new PersonalCard(R.drawable.op01_002_p1, "https://onepiece-card-atari.jp/expansion/romance-dawn/card/op01-002/l-p", 0.0f));
@@ -556,9 +565,9 @@ public class PortfolioFragment extends Fragment {
         for (PersonalCard card : personalCardList) {
             total += card.getInitialPrice();
         }
-        if (!sharedPreferences.contains(initialDate)) {
+        if (!portfolioRepository.hasValueForDate(initialDate)) {
             // Store initial price for 28th December 2024
-            sharedPreferences.edit().putFloat(initialDate, total).apply();
+            portfolioRepository.putValueForDate(initialDate, total);
         }
 
 //        sharedPreferences.contains("2025-06-15")) {
@@ -622,25 +631,14 @@ public class PortfolioFragment extends Fragment {
     }
 
     private void loadAndUpdateData() {
-        SharedPreferences prefs = requireContext().getSharedPreferences("PortfolioData", Context.MODE_PRIVATE);
-        int lastCount = prefs.getInt(CARD_COUNT_KEY, -1);
+        int lastCount = portfolioRepository.getLastCardCount();
         int currentCount = personalCardList.size();
         boolean forceUpdate = lastCount != currentCount;
 
         priceEntries = new ArrayList<>();
 
-        // Load stored data
-        Map<String, ?> storedData = sharedPreferences.getAll();
-
-        // Convert the stored data into a list and sort it
-        List<Map.Entry<String, Float>> sortedEntries = new ArrayList<>();
-        for (Map.Entry<String, ?> entry : storedData.entrySet()) {
-            try {
-                sortedEntries.add(Map.entry(entry.getKey(), Float.parseFloat(entry.getValue().toString())));
-            } catch (Exception e) {
-                e.printStackTrace(); // Log parsing errors
-            }
-        }
+        // Load stored history via the repository (same parse semantics as the old getAll()).
+        List<Map.Entry<String, Float>> sortedEntries = new ArrayList<>(portfolioRepository.getHistory().entrySet());
         sortedEntries.sort(Comparator.comparing(Map.Entry::getKey)); // Sort by date
 
         // Use a final or effectively final index
@@ -655,13 +653,13 @@ public class PortfolioFragment extends Fragment {
 
         // Check if today's price is already calculated
         String today = dateFormat.format(new Date());
-        float todayValue = sharedPreferences.getFloat(today, -1f);
+        float todayValue = portfolioRepository.getValueForDate(today, -1f);
 
         if (true) {
             // Fetch today's total value asynchronously
             new Thread(() -> {
                 float totalValue = calculateTotalValue();
-                sharedPreferences.edit().putFloat(today, totalValue).apply();
+                portfolioRepository.putValueForDate(today, totalValue);
 
                 // Add today's data to the graph on UI thread
                 new Handler(Looper.getMainLooper()).post(() -> {
@@ -684,7 +682,7 @@ public class PortfolioFragment extends Fragment {
                     updateGraph();
                     calculatePriceDifference();
 
-                    sharedPreferences.edit().putInt(CARD_COUNT_KEY, personalCardList.size()).apply();
+                    portfolioRepository.setLastCardCount(personalCardList.size());
                 });
             }).start();
         } else {
@@ -830,43 +828,17 @@ public class PortfolioFragment extends Fragment {
 
 
     private float calculateTotalValue() {
+        // Called from a background thread in loadAndUpdateData(); a synchronous repository
+        // call is fine here. Source selection (atari vs tier-one) lives in the repository now.
         float total = 0;
         for (PersonalCard card : personalCardList) {
-            if (card.getUrl().contains("card-atari")) {
-                float realTimePrice = fetchCardPriceA(card.getUrl());
-                total += realTimePrice;
-            }
-            else if (card.getUrl().contains("tier-one")) {
-                float realTimePrice = fetchCardPriceB(card.getUrl());
-                total += realTimePrice;
+            com.optcg.app.domain.model.PriceQuote quote = priceRepository.getQuoteSync(card.getUrl());
+            if (quote != null) {
+                total += (float) CurrencyConverter.yenToRmDisplay(quote.avgYen);
             }
             Log.d("AVGPRICE", "" + total);
         }
         return total;
-    }
-
-    private float fetchCardPriceA(String url) {
-        try {
-            // Fetch and parse the HTML document (this should ideally be done asynchronously)
-            Document doc = Jsoup.connect(url).get();
-            String avgPriceText = doc.select("table.table_info tbody tr td").first().text();
-            return Float.parseFloat(avgPriceText.replaceAll("[^\\d.]", "")) * 0.03f;
-        } catch (Exception e) {
-            e.printStackTrace(); // Log the error
-            return -1f; // Return -1 if there's an error
-        }
-    }
-
-    private float fetchCardPriceB(String url) {
-        try {
-            // Fetch and parse the HTML document (this should ideally be done asynchronously)
-            Document doc = Jsoup.connect(url).get();
-            Element priceElement = doc.selectFirst(".item-price-wrap .item-price span[data-id^='makeshop-item-price']");
-            return Float.parseFloat(priceElement.text().replaceAll("[^\\d.]", "")) * 0.03f;
-        } catch (Exception e) {
-            e.printStackTrace(); // Log the error
-            return -1f; // Return -1 if there's an error
-        }
     }
 
     private void calculatePriceDifference() {
@@ -878,8 +850,8 @@ public class PortfolioFragment extends Fragment {
         DecimalFormat decimalFormat = new DecimalFormat("#.00");
 
         // Retrieve the prices for the current day and yesterday
-        float currentPrice = sharedPreferences.getFloat(currentDate, -1f);  // -1f means no value found
-        float yesterdayPrice = sharedPreferences.getFloat(yesterdayDate, -1f);
+        float currentPrice = portfolioRepository.getValueForDate(currentDate, -1f);  // -1f means no value found
+        float yesterdayPrice = portfolioRepository.getValueForDate(yesterdayDate, -1f);
 
         // 1. Total price for current day
         String totalPrice = decimalFormat.format(currentPrice);
@@ -934,41 +906,6 @@ public class PortfolioFragment extends Fragment {
         portfolioTotalValue.setText("MYR " + totalPrice);
         portfolioSubtitle.setText(symbol + " MYR " + priceDifferenceFormatted + " (" + percentageChangeFormatted + "%)");
         portfolioSubtitle.setTextColor(symbolColor);
-    }
-
-    private void fetchMovement(String url, OnMovementFetchedListener listener) {
-        new Thread(() -> {
-            try {
-                Document doc = Jsoup.connect(url).get();
-
-                // Extract soaring and crashing prices
-                Element soaringElement = doc.selectFirst(".movement_price_box .soaring");
-                Element crashElement = doc.selectFirst(".movement_price_box .crash");
-
-                String soaringText = soaringElement != null ? soaringElement.text().replace("月間高騰差額", "").replace("+", "").trim() : "0円";
-                String crashText = crashElement != null ? crashElement.text().replace("月間暴落差額", "").replace("-", "").trim() : "0円";
-
-                int soaringPrice = parsePriceToInt(soaringText);
-                int crashPrice = parsePriceToInt(crashText);
-
-                new Handler(Looper.getMainLooper()).post(() -> listener.onMovementFetched(soaringPrice, crashPrice));
-
-            } catch (Exception e) {
-                Log.e("FetchMovementError", "Error fetching movement prices", e);
-            }
-        }).start();
-    }
-
-    public interface OnMovementFetchedListener {
-        void onMovementFetched(int soaringPrice, int crashPrice);
-    }
-
-    private int parsePriceToInt(String priceText) {
-        try {
-            return Integer.parseInt(priceText.replace(",", "").replace("円", "").trim());
-        } catch (NumberFormatException e) {
-            return 0;
-        }
     }
 
     private void backupPortfolioData() {
