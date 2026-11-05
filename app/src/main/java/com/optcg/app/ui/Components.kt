@@ -17,6 +17,9 @@ import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.MaterialTheme
@@ -46,8 +49,10 @@ import com.optcg.app.images.HasImage
 /** Width / height of a card. */
 const val CARD_RATIO = 63f / 88f
 
+private val GREYSCALE = ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) })
+
 @Composable
-fun CardImage(card: HasImage, label: String, modifier: Modifier = Modifier, detail: Boolean = false) {
+fun CardImage(card: HasImage, label: String, modifier: Modifier = Modifier, detail: Boolean = false, dim: Boolean = false) {
     val images = LocalContext.current.container.images
     val saved by images.saved.collectAsStateWithLifecycle()
     // Re-picks the model when the card's offline image appears or is deleted.
@@ -73,6 +78,9 @@ fun CardImage(card: HasImage, label: String, modifier: Modifier = Modifier, deta
                 model = model,
                 contentDescription = label,
                 contentScale = ContentScale.Crop,
+                // Cards not yet collected are shown greyed out.
+                colorFilter = if (dim) GREYSCALE else null,
+                alpha = if (dim) 0.45f else 1f,
                 modifier = Modifier.fillMaxSize(),
             )
         }
@@ -108,10 +116,15 @@ fun Badge(text: String, modifier: Modifier = Modifier, color: Color = MaterialTh
 }
 
 @Composable
-fun CardTile(card: CardRow, onClick: () -> Unit, modifier: Modifier = Modifier) {
+fun CardTile(card: CardRow, onClick: () -> Unit, modifier: Modifier = Modifier, dimUnowned: Boolean = false) {
     Column(modifier.clickable(onClick = onClick).padding(4.dp)) {
         Box {
-            CardImage(card, label = "${card.code}\n${card.displayName}", modifier = Modifier.fillMaxWidth())
+            CardImage(
+                card,
+                label = "${card.code}\n${card.displayName}",
+                dim = dimUnowned && card.owned == 0,
+                modifier = Modifier.fillMaxWidth(),
+            )
             Row(
                 Modifier.align(Alignment.TopEnd).padding(4.dp),
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -120,7 +133,7 @@ fun CardTile(card: CardRow, onClick: () -> Unit, modifier: Modifier = Modifier) 
                 if (card.wished) {
                     Icon(Icons.Filled.Favorite, "Wishlisted", tint = MaterialTheme.colorScheme.tertiary, modifier = Modifier.size(16.dp))
                 }
-                if (card.owned > 0) Badge("×${card.owned}")
+                if (card.owned > 0) CountBadge(card.owned)
             }
             if (card.status == "announced") {
                 Badge("Announced", Modifier.align(Alignment.BottomStart).padding(4.dp), MaterialTheme.colorScheme.secondary)
@@ -136,6 +149,17 @@ fun CardTile(card: CardRow, onClick: () -> Unit, modifier: Modifier = Modifier) 
             RarityLabel(card.rarity, card.variant != null)
         }
         Text(card.displayName, style = MaterialTheme.typography.bodySmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
+    }
+}
+
+/** The original app's count marker: a black circle with the number of copies. */
+@Composable
+fun CountBadge(count: Int, modifier: Modifier = Modifier) {
+    Box(
+        modifier.size(24.dp).background(Color.Black.copy(alpha = 0.85f), CircleShape),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text("$count", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
     }
 }
 

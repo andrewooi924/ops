@@ -82,6 +82,18 @@ class PullSimulatorTest {
     }
 
     @Test
+    fun pityGuaranteesABigHitAndKeepsPackSize() {
+        repeat(200) {
+            val pack = simulator.openPack()
+            val forced = simulator.forceHit(pack)
+            assertEquals(pack.cards.size, forced.cards.size)
+            assertTrue(forced.cards.any { it.slot.isBigHit })
+            assertEquals(forced.best?.slot, forced.cards.last().slot)
+            if (pack.cards.any { it.slot.isBigHit }) assertEquals(pack, forced)
+        }
+    }
+
+    @Test
     fun setWithoutCommonsStillFillsPacks() {
         val pool = listOf(SimCard("A", "R", false), SimCard("B", "SR", false), SimCard("C", "L", false))
         val box = PullSimulator(profile, pool, Random(1)).openBox()

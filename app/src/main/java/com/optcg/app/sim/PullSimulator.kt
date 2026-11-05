@@ -6,7 +6,12 @@ import kotlin.random.Random
 /** A card that can be pulled from a set. */
 data class SimCard(val id: String, val rarity: String, val isParallel: Boolean)
 
-enum class Slot { FILLER, L, R, SR, SEC, PARALLEL, SPECIAL }
+enum class Slot {
+    FILLER, L, R, SR, SEC, PARALLEL, SPECIAL;
+
+    /** The hits pity guarantees and the reveal celebrates. */
+    val isBigHit: Boolean get() = this == SEC || this == PARALLEL || this == SPECIAL
+}
 
 data class Pull(val card: SimCard, val slot: Slot)
 
@@ -82,6 +87,25 @@ class PullSimulator(
             Pack(cards)
         }
         return Box(packs)
+    }
+
+    /**
+     * Pity, as in the original app: guarantees this pack a parallel (or, one time in ten, a
+     * SEC) by replacing a common, unless it already has a big hit.
+     */
+    fun forceHit(pack: Pack): Pack {
+        if (pack.cards.any { it.slot.isBigHit }) return pack
+        val hasSec = !base["SEC"].isNullOrEmpty()
+        val slot = when {
+            parallels.isNotEmpty() && hasSec -> if (random.nextDouble() < 0.1) Slot.SEC else Slot.PARALLEL
+            parallels.isNotEmpty() -> Slot.PARALLEL
+            hasSec -> Slot.SEC
+            else -> return pack
+        }
+        val card = if (slot == Slot.SEC) base.getValue("SEC").random(random) else parallels.random(random)
+        val index = pack.cards.indexOfFirst { it.slot == Slot.FILLER }.takeIf { it >= 0 } ?: pack.cards.lastIndex
+        val cards = pack.cards.toMutableList().apply { removeAt(index) } + Pull(card, slot)
+        return Pack(cards.filter { it.slot == Slot.FILLER } + cards.filter { it.slot != Slot.FILLER }.sortedBy { it.slot.ordinal })
     }
 
     private fun spread(pulls: List<Pull>, packs: List<MutableList<Pull>>) {
