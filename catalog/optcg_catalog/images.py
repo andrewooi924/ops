@@ -49,17 +49,24 @@ def make_variants(source: bytes, out_dir: Path) -> dict:
 
 
 class AssetIndex:
-    """Maps a source key (image URL with its version query, or PDF hash) to variants."""
+    """Maps a source key (image URL with its version query, or PDF hash) to variants.
 
-    def __init__(self, path: Path) -> None:
+    By default an entry only counts when its files are in the output folder. With
+    ``published=True`` the files are trusted to be on the image host already (the
+    workflow uploads each run's new files and then the index), so only new images
+    are made.
+    """
+
+    def __init__(self, path: Path, published: bool = False) -> None:
         self.path = Path(path)
+        self.published = published
         self.entries: Dict[str, dict] = {}
         if self.path.exists():
             self.entries = json.loads(self.path.read_text("utf-8"))
 
     def get(self, key: str, out_dir: Path) -> Optional[dict]:
         entry = self.entries.get(key)
-        if entry and all((out_dir / entry[name]).exists() for name in VARIANTS):
+        if entry and (self.published or all((out_dir / entry[name]).exists() for name in VARIANTS)):
             return entry
         return None
 

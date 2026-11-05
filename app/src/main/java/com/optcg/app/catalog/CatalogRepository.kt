@@ -45,6 +45,9 @@ class CatalogRepository(
 
     @Volatile private var profiles: PullProfiles? = null
 
+    /** Base URL of hosted card images from the installed catalog, or "" when there is none. */
+    val imageBase: String get() = prefs.getString(KEY_IMAGE_BASE, null).orEmpty()
+
     /** Installs the bundled snapshot on first launch, or after an app update ships a newer one. */
     suspend fun ensureInstalled() = mutex.withLock {
         withContext(Dispatchers.IO) {
@@ -101,6 +104,7 @@ class CatalogRepository(
             .putString(KEY_VERSION, catalog.version)
             .putString(KEY_GENERATED, catalog.generatedAt)
             .putString(KEY_SOURCE, source)
+            .putString(KEY_IMAGE_BASE, catalog.imageBase)
             .apply()
         _info.value = readInfo()
     }
@@ -134,6 +138,7 @@ class CatalogRepository(
         const val KEY_VERSION = "catalog_version"
         const val KEY_GENERATED = "catalog_generated_at"
         const val KEY_SOURCE = "catalog_source"
+        const val KEY_IMAGE_BASE = "catalog_image_base"
         const val KEY_CHECKED = "catalog_checked_at"
         const val KEY_BUNDLE_CHECKED = "bundle_checked_for_app_version"
     }

@@ -28,7 +28,7 @@ class AppContainer(context: Context) {
     val prefs = context.getSharedPreferences("piecelab", Context.MODE_PRIVATE)
     val db = AppDatabase.create(context)
     val catalog = CatalogRepository(context, db, http, prefs)
-    val images = ImageStore(context, http)
+    val images = ImageStore(context, http) { catalog.imageBase }
     val jobs = Jobs(context)
     val collection = CollectionRepository(db, prefs, jobs)
 }

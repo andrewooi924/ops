@@ -14,6 +14,8 @@ data class Catalog(
     val version: String,
     @SerialName("generated_at") val generatedAt: String,
     @SerialName("schema_version") val schemaVersion: Int,
+    /** Where image.thumb / image.detail files are served from; null until images are hosted. */
+    @SerialName("image_base") val imageBase: String? = null,
     val sets: List<CatalogSet>,
     val printings: List<CatalogPrinting>,
     @SerialName("pull_profiles") val pullProfiles: PullProfiles,

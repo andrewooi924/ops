@@ -1,7 +1,6 @@
 package com.optcg.app.images
 
 import android.content.Context
-import com.optcg.app.BuildConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,14 +16,14 @@ import java.io.IOException
  * Card images kept for offline use (owned and wishlisted cards, and sets the user downloads).
  * Everything else is loaded on demand and kept only in Coil's size-limited cache.
  */
-class ImageStore(context: Context, private val http: OkHttpClient) {
+class ImageStore(context: Context, private val http: OkHttpClient, private val imageBase: () -> String) {
     private val dir = File(context.filesDir, "images").apply { mkdirs() }
     private val _saved = MutableStateFlow(scan())
 
     /** Ids of printings with an offline image. */
     val saved: StateFlow<Set<String>> = _saved.asStateFlow()
 
-    private val base get() = BuildConfig.IMAGE_BASE_URL
+    private val base get() = imageBase()
 
     /** What to give Coil for a grid tile: the offline file when there is one. */
     fun thumbModel(card: HasImage): Any? = offline(card) ?: ImageUrls.thumb(base, card)
