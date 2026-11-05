@@ -74,7 +74,9 @@ jobs:
         if: env.R2_READY == 'true'
         run: |
           mkdir -p out
-          aws s3api head-bucket --bucket "$R2_BUCKET" --endpoint-url "$R2_ENDPOINT"
+          # Fails the run early if the token or bucket is wrong. (A listing, not HeadBucket,
+          # because a token scoped to "Object Read & Write" may not allow bucket operations.)
+          aws s3api list-objects-v2 --bucket "$R2_BUCKET" --max-keys 1 --endpoint-url "$R2_ENDPOINT" > /dev/null
           if aws s3api head-object --bucket "$R2_BUCKET" --key asset-index.json --endpoint-url "$R2_ENDPOINT" > /dev/null 2>&1; then
             aws s3 cp "s3://$R2_BUCKET/asset-index.json" out/asset-index.json --endpoint-url "$R2_ENDPOINT"
           else
