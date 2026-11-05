@@ -48,10 +48,12 @@ def fetch_site(fetcher: Fetcher, site: str, wanted_codes: Optional[set], max_age
 
 
 def build_sets(jp_series, en_series) -> List[dict]:
+    # Only a series' own code names it: "[OP15-EB04]" is OP-15's product, and the
+    # English site has no product of its own for EB-04, so EB-04 gets no English name.
     en_by_code = {}
     for series in en_series:
-        for code in series.codes:
-            en_by_code.setdefault(code, series)
+        if series.set_code:
+            en_by_code.setdefault(series.set_code, series)
     en_by_kind = {series.kind: series for series in en_series if not series.set_code}
     sets = []
     for series in jp_series:

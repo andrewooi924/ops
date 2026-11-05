@@ -51,6 +51,15 @@ class CardListTests(unittest.TestCase):
         self.assertEqual(cardlist.set_codes("ブースターパック 蒼海の七傑【OP14】"), ["OP-14"])
         self.assertEqual(cardlist.set_codes("プロモーションカード"), [])
 
+    def test_combined_english_series_names_only_its_own_set(self):
+        from optcg_catalog.build import build_sets
+
+        jp = [cardlist.Series("550115", "神の島の冒険【OP-15】", "OP-15", "booster"),
+              cardlist.Series("550204", "EGGHEAD CRISIS【EB-04】", "EB-04", "extra")]
+        en = [cardlist.Series("569115", "ADVENTURE ON KAMI’S ISLAND- [OP15-EB04]", "OP-15", "booster", ["EB-04"])]
+        names = {s["code"]: s["name_en"] for s in build_sets(jp, en)}
+        self.assertEqual(names, {"OP-15": "ADVENTURE ON KAMI’S ISLAND- [OP15-EB04]", "EB-04": None})
+
     def test_parse_japanese_cards(self):
         cards = {c.id: c for c in cardlist.parse_cards(fixture("jp_cardlist.html"), "jp")}
         zoro = cards["OP01-001"]

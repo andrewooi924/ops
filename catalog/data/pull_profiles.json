@@ -17,9 +17,14 @@
     {"weight": 42, "parallel": 1, "SEC": 0},
     {"weight": 33, "parallel": 0, "SEC": 1}
    ],
+   "filler": {
+    "note": "Assumed C:UC mix for the cards that aren't hits; not measured.",
+    "weights": {"C": 2, "UC": 1}
+   },
    "special_rares": {
-    "note": "SP and manga-style parallels are reported at roughly one per case or rarer; estimates vary widely.",
-    "per_case": null
+    "note": "SP and treasure rares are reported at roughly one per case or rarer; estimates vary widely.",
+    "rarities": ["SP", "TR"],
+    "per_case": 1
    },
    "sources": [
     "https://toreca-begin.jp/box-enclosed-pattern/",
