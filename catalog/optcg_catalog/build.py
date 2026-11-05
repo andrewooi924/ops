@@ -10,6 +10,7 @@ import argparse
 import datetime as dt
 import hashlib
 import json
+import os
 import sys
 from collections import Counter, OrderedDict
 from pathlib import Path
@@ -190,6 +191,10 @@ def main(argv: Optional[List[str]] = None) -> int:
     parser.add_argument("--series", help="comma-separated set codes or series ids, e.g. OP-01,550901")
     parser.add_argument("--images", choices=["none", "all"], default="all")
     parser.add_argument("--image-limit", type=int, help="create at most this many new image sets")
+    parser.add_argument("--published-index", action="store_true",
+                        help="asset-index.json lists images already on the image host; don't require local files")
+    parser.add_argument("--image-base", default=os.environ.get("IMAGE_BASE_URL") or None,
+                        help="public URL the thumb/detail files are served from (default: $IMAGE_BASE_URL)")
     parser.add_argument("--no-dons", action="store_true")
     parser.add_argument("--no-announcements", action="store_true")
     parser.add_argument("--delay", type=float, default=1.0, help="seconds between requests to one host")
@@ -231,7 +236,7 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     out_dir = args.out
     out_dir.mkdir(parents=True, exist_ok=True)
-    asset_index = images.AssetIndex(out_dir / "asset-index.json")
+    asset_index = images.AssetIndex(out_dir / "asset-index.json", published=args.published_index)
     attach_images(fetcher, printings, asset_index, out_dir / "images", args.images, args.image_limit, report)
     asset_index.save()
     registry.save()
@@ -240,6 +245,8 @@ def main(argv: Optional[List[str]] = None) -> int:
     pull_profiles = json.loads((args.data / "pull_profiles.json").read_text("utf-8"))
     body = {
         "schema_version": SCHEMA_VERSION,
+        # Where printings' image.thumb / image.detail files are served from; null until images are hosted.
+        "image_base": args.image_base.rstrip("/") if args.image_base else None,
         "sets": build_sets(jp_all, en_all),
         "printings": [public(printing) for printing in printings],
         "pull_profiles": pull_profiles,

@@ -25,9 +25,8 @@ android {
 
         buildConfigField("String", "CATALOG_URL", "\"$catalogBase/catalog.json.gz\"")
         buildConfigField("String", "CATALOG_VERSION_URL", "\"$catalogBase/version.txt\"")
-        // Base URL of the hosted thumb/detail images; empty until image hosting is set up,
-        // in which case the app loads Bandai's original images instead.
-        buildConfigField("String", "IMAGE_BASE_URL", "\"\"")
+        // Hosted image URLs come from the catalog's image_base, so changing image hosts
+        // needs no app update. Without it the app loads Bandai's original images.
     }
 
     buildTypes {

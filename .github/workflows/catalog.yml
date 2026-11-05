@@ -5,11 +5,9 @@ on:
     - cron: "30 21 * * *" # 05:30 in Malaysia, after Japan's overnight updates
   workflow_dispatch:
     inputs:
-      images:
-        description: "Image mode: none (until image hosting is set up) or all"
-        default: none
-        type: choice
-        options: [none, all]
+      image_limit:
+        description: "Most new images to make this run (each takes a download and two encodes)"
+        default: "2500"
   pull_request:
     paths: ["catalog/**", ".github/workflows/catalog.yml"]
 
@@ -44,6 +42,17 @@ jobs:
     defaults:
       run:
         working-directory: catalog
+    env:
+      # Images are made and uploaded only once R2 is configured (see catalog/README.md).
+      R2_READY: ${{ vars.R2_BUCKET != '' && vars.R2_ENDPOINT != '' && vars.IMAGE_BASE_URL != '' }}
+      R2_BUCKET: ${{ vars.R2_BUCKET }}
+      R2_ENDPOINT: ${{ vars.R2_ENDPOINT }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: auto
+      # Recent AWS CLI versions add checksums R2 doesn't need; send them only when required.
+      AWS_REQUEST_CHECKSUM_CALCULATION: when_required
+      AWS_RESPONSE_CHECKSUM_VALIDATION: when_required
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -60,8 +69,43 @@ jobs:
           key: catalog-http-${{ github.run_id }}
           restore-keys: catalog-http-
 
+      # The index in R2 lists every image already uploaded, so only new ones are made.
+      - name: Fetch image index from R2
+        if: env.R2_READY == 'true'
+        run: |
+          mkdir -p out
+          # Fails the run early if the token or bucket is wrong. (A listing, not HeadBucket,
+          # because a token scoped to "Object Read & Write" may not allow bucket operations.)
+          aws s3api list-objects-v2 --bucket "$R2_BUCKET" --max-keys 1 --endpoint-url "$R2_ENDPOINT" > /dev/null
+          if aws s3api head-object --bucket "$R2_BUCKET" --key asset-index.json --endpoint-url "$R2_ENDPOINT" > /dev/null 2>&1; then
+            aws s3 cp "s3://$R2_BUCKET/asset-index.json" out/asset-index.json --endpoint-url "$R2_ENDPOINT"
+          else
+            echo "No image index in R2 yet; starting a new one."
+          fi
+
       - name: Build catalog
-        run: python -m optcg_catalog.build --out out --cache .cache --images "${{ inputs.images || 'none' }}"
+        env:
+          IMAGE_BASE_URL: ${{ env.R2_READY == 'true' && vars.IMAGE_BASE_URL || '' }}
+        run: |
+          if [ "$R2_READY" = "true" ]; then
+            python -m optcg_catalog.build --out out --cache .cache --images all --published-index \
+              --image-limit "${{ inputs.image_limit || '2500' }}"
+          else
+            python -m optcg_catalog.build --out out --cache .cache --images none
+          fi
+
+      # Images go up before the index that lists them, and both before the catalog
+      # that points at them, so the app never sees a file name that isn't there yet.
+      - name: Upload new images and the index to R2
+        if: env.R2_READY == 'true' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+        run: |
+          if [ -d out/images ] && [ -n "$(ls -A out/images)" ]; then
+            echo "Uploading $(ls out/images | wc -l) files"
+            aws s3 cp out/images "s3://$R2_BUCKET/img/" --recursive --only-show-errors --endpoint-url "$R2_ENDPOINT" \
+              --content-type image/webp --cache-control "public, max-age=31536000, immutable"
+          fi
+          aws s3 cp out/asset-index.json "s3://$R2_BUCKET/asset-index.json" --endpoint-url "$R2_ENDPOINT" \
+            --content-type application/json
 
       - name: Summary
         run: |

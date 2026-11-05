@@ -1,5 +1,6 @@
 package com.optcg.app
 
+import com.optcg.app.catalog.CatalogJson
 import com.optcg.app.catalog.CatalogMapper
 import com.optcg.app.catalog.SUPPORTED_SCHEMA_VERSION
 import com.optcg.app.data.VIRTUAL_ANNOUNCED
@@ -61,6 +62,16 @@ class CatalogMapperTest {
         assertNull(ImageUrls.thumb("", printings.getValue("DON-0001")))
         // Announced dons have their announcement image.
         assertNotNull(ImageUrls.detail("", printings.getValue("DON-0288")))
+    }
+
+    @Test
+    fun catalogCarriesTheImageBase() {
+        val json = """{"version":"v","generated_at":"g","schema_version":1,"image_base":"https://img.example/img",
+            "sets":[],"printings":[],"pull_profiles":{}}"""
+        assertEquals("https://img.example/img", CatalogJson.decode(json.byteInputStream()).imageBase)
+        // Catalogs from before the field existed still load.
+        val old = json.replace(""""image_base":"https://img.example/img",""", "")
+        assertNull(CatalogJson.decode(old.byteInputStream()).imageBase)
     }
 
     @Test

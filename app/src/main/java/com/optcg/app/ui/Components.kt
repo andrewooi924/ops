@@ -52,7 +52,7 @@ fun CardImage(card: HasImage, label: String, modifier: Modifier = Modifier, deta
     val saved by images.saved.collectAsStateWithLifecycle()
     // Re-picks the model when the card's offline image appears or is deleted.
     val isSaved = card.id in saved
-    val model = remember(card.id, detail, isSaved) { if (detail) images.detailModel(card) else images.thumbModel(card) }
+    val model = remember(card, detail, isSaved) { if (detail) images.detailModel(card) else images.thumbModel(card) }
     Box(
         modifier
             .aspectRatio(CARD_RATIO)

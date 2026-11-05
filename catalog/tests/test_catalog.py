@@ -195,6 +195,17 @@ class ImageTests(unittest.TestCase):
             self.assertNotEqual(result["thumb"], result["detail"])
 
 
+    def test_published_index_does_not_need_local_files(self):
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "asset-index.json"
+            index = images.AssetIndex(path)
+            index.put("https://example/a.png", {"thumb": "t.webp", "detail": "d.webp", "width": 1, "height": 1})
+            index.save()
+            empty = Path(folder) / "images"
+            self.assertIsNone(images.AssetIndex(path).get("https://example/a.png", empty))
+            self.assertEqual(images.AssetIndex(path, published=True).get("https://example/a.png", empty)["thumb"], "t.webp")
+
+
 class FetchTests(unittest.TestCase):
     def test_non_ascii_paths_are_encoded(self):
         uri = to_uri("https://www.onepiece-cardgame.com/a/mv_交流会_11月.webp?v=1")

@@ -20,6 +20,8 @@ Useful options:
 - `--series OP-01,550901`: only these sets (set codes or series ids).
 - `--images none`: skip images.
 - `--image-limit 50`: create at most 50 new image sets this run.
+- `--published-index`: trust `asset-index.json` for images already uploaded to the image host.
+- `--image-base URL`: public URL of the uploaded images, written to the catalog (default `$IMAGE_BASE_URL`).
 - `--offline`: rebuild from the cache without any requests.
 
 ## Sources
@@ -60,6 +62,23 @@ are new parallel artwork that the card list hasn't added yet.
 these are community estimates from Japanese box openings, recorded with their sources. `defaults`
 picks a profile per set kind; to override one set, add its set id or code under `sets` with a
 profile name, or `null` for no simulator.
+
+## Image hosting (Cloudflare R2)
+
+When the repo has these Actions settings, the daily run makes images and uploads them to R2:
+
+| Name | Kind | Value |
+|---|---|---|
+| `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY` | secrets | An R2 API token with Object Read & Write on the bucket |
+| `R2_ENDPOINT` | variable | `https://<account-id>.r2.cloudflarestorage.com` |
+| `R2_BUCKET` | variable | The bucket name |
+| `IMAGE_BASE_URL` | variable | The bucket's public URL followed by `/img`, e.g. `https://pub-….r2.dev/img` |
+
+Each run downloads `asset-index.json` from the bucket, makes only images it doesn't list
+(`--published-index`, at most 2,500 a run, so the first backlog takes two runs), uploads them to
+`img/`, then uploads the updated index. Only after that is the catalog published, with
+`image_base` set, so the app never sees an image name that isn't uploaded yet. Without these
+settings the run skips images and the app uses Bandai's originals.
 
 ## Publishing
 
