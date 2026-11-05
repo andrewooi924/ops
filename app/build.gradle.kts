@@ -1,52 +1,84 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.ksp)
 }
+
+// Where the app looks for catalog updates. The Catalog workflow publishes both
+// files to the "catalog" release on GitHub. For testing, a debug build can point
+// elsewhere: ./gradlew installDebug -PcatalogBase=http://10.0.2.2:8765
+val catalogBase = (findProperty("catalogBase") as String?)
+    ?: "https://github.com/andrewooi924/ops/releases/download/catalog"
 
 android {
     namespace = "com.optcg.app"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.optcg.app"
-        minSdk = 34
-        targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        minSdk = 26
+        targetSdk = 35
+        versionCode = 2
+        versionName = "2.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "CATALOG_URL", "\"$catalogBase/catalog.json.gz\"")
+        buildConfigField("String", "CATALOG_VERSION_URL", "\"$catalogBase/version.txt\"")
+        // Base URL of the hosted thumb/detail images; empty until image hosting is set up,
+        // in which case the app loads Bandai's original images instead.
+        buildConfigField("String", "IMAGE_BASE_URL", "\"\"")
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+    buildFeatures {
+        compose = true
+        buildConfig = true
+    }
+    androidResources {
+        // The bundled catalog is already gzipped. (It isn't named .gz because the
+        // packager would unzip it and drop the extension.)
+        noCompress += "gzip"
     }
 }
 
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+}
+
 dependencies {
-    implementation(libs.appcompat)
-    implementation(libs.material)
-    implementation(libs.activity)
-    implementation(libs.constraintlayout)
+    implementation(libs.core.ktx)
+    implementation(libs.activity.compose)
+    implementation(platform(libs.compose.bom))
+    implementation(libs.compose.ui)
+    implementation(libs.compose.ui.tooling.preview)
+    implementation(libs.compose.material3)
+    implementation(libs.compose.material.icons)
+    implementation(libs.lifecycle.runtime.compose)
+    implementation(libs.lifecycle.viewmodel.compose)
+    implementation(libs.navigation.compose)
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
+    implementation(libs.work.runtime)
+    implementation(libs.coil.compose)
+    implementation(libs.serialization.json)
+    implementation(libs.coroutines.android)
+    implementation(libs.okhttp)
+    debugImplementation(libs.compose.ui.tooling)
+
     testImplementation(libs.junit)
-    androidTestImplementation(libs.ext.junit)
-    androidTestImplementation(libs.espresso.core)
-    implementation("androidx.room:room-runtime:2.6.1")
-    annotationProcessor("androidx.room:room-compiler:2.6.1")
-    implementation("com.google.code.gson:gson:2.11.0")
-    implementation("com.github.bumptech.glide:glide:4.16.0")
-    implementation("com.mikhaellopez:circularprogressbar:3.1.0")
-    implementation("me.relex:circleindicator:2.1.6")
-    implementation("org.jsoup:jsoup:1.18.3")
-    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
-    implementation("androidx.work:work-runtime:2.8.1")
 }

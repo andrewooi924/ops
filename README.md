@@ -7,61 +7,53 @@
   <br>
 </h1>
 
-<h4 align="center">A minimal mobile app for the One Piece Trading Card Game built with Android Studio.</h4>
-
-<p align="center">
-  <a href="https://saythanks.io/to/andrewooi924">
-      <img src="https://img.shields.io/badge/SayThanks.io-%E2%98%BC-1EAEDB.svg">
-  </a>
-  <a href="https://www.paypal.me/andrewooi924">
-    <img src="https://img.shields.io/badge/$-donate-ff69b4.svg?maxAge=2592000&amp;style=flat">
-  </a>
-</p>
-
-<p align="center">
-  <a href="#key-features">Key Features</a> •
-  <a href="#how-to-use">How To Use</a> •
-  <a href="#download">Download</a> •
-  <a href="#credits">Credits</a> •
-  <a href="#license">License</a>
-</p>
-
-|    Home    |    Sets    | Collection | Portfolio & Prices |
-| :---: | :---: | :---: | :---: |
-| <img src="https://github.com/user-attachments/assets/1524b362-5948-44dc-9256-102e34fb765d" width="200" height="400"> | <img src="https://github.com/user-attachments/assets/4e07fd8e-fbff-4148-8ce9-2e7d5e269110" width="200" height="400"> | <img src="https://github.com/user-attachments/assets/4c8df7ce-5de0-4e0a-826c-43d50a75ec06" width="200" height="400"> | <img src="https://github.com/user-attachments/assets/deb2572b-4cdb-4424-895b-608523447946" width="200" height="400"> |
-
-## Pull Simulation
-
-<video src="https://github.com/user-attachments/assets/d24a013c-231f-46f7-a939-d83192e73681"></video>
+<h4 align="center">A One Piece Card Game companion for Japanese cards: every printing with English text, a box simulator, and a collection tracker that works offline.</h4>
 
 ## Key Features
 
-* Booster Pack Simulator for all 10 base booster sets.
-* Card Collection Tracker for all 10 base booster sets.
-* Deck Showcases for popular or tournament-winning decks.
-* Real-time Price Fetching for popular cards and decks.
-* Portfolio Tracking for your personal collection.
-* Shop for non booster cards **WIP**
-* Dark/Light mode **WIP**
-  
-## How To Use
+* **Every Japanese card**, including parallels, promos and DON!! cards, with English names and effects where an English printing exists.
+* **New cards automatically.** The card catalog is rebuilt daily from Bandai's official sites, including cards and DON!! cards only shown on event and product pages so far. The app checks for a new catalog once a day.
+* **Box and pack simulator** based on how Japanese boxes are packed (leaders, rares and parallels per box), using community estimates because Bandai doesn't publish pull rates.
+* **Collection and wishlist** stored on your phone. Images of cards you own or wishlist are kept for offline use, and any set can be saved offline.
+* **Small download.** The app ships without card images (about 2 MB) and loads them as needed.
 
-To install the app, allow downloads from third-party sources in your Android device.
+## How it fits together
+
+| Part | What it does |
+|---|---|
+| [`catalog/`](catalog/) | Python builder that produces `catalog.json` from Bandai's Japanese and English card lists, the DON!! card PDF and announcement pages. See its [README](catalog/README.md). |
+| `.github/workflows/catalog.yml` | Runs the builder daily and publishes the catalog to the `catalog` release, where the app downloads it. |
+| [`app/`](app/) | Android app (Kotlin, Jetpack Compose, Room, WorkManager, Coil). Ships with a catalog snapshot so it works offline from the first launch. |
+
+## Building the app
+
+Needs JDK 17 and the Android SDK (platform 35).
+
+```bash
+./gradlew testDebugUnitTest assembleDebug
+```
+
+To refresh the catalog snapshot bundled in the app, build the catalog and copy it in:
+
+```bash
+cd catalog && python -m optcg_catalog.build --out out && gzip -9 -n -c out/catalog.json > ../app/src/main/assets/catalog.json.gzip
+```
+
+A debug build can be pointed at a locally served catalog to test updates on an emulator:
+
+```bash
+./gradlew installDebug -PcatalogBase=http://10.0.2.2:8765
+```
 
 ## Download
 
-You can [download](https://drive.google.com/file/d/1sGAWsGgbHtF4V2CE-S4-nkiMBlTi7uqV/view?usp=drive_link) the latest APK of the OPTCG App for Android.
+Version 1.x is still available [here](https://drive.google.com/file/d/1sGAWsGgbHtF4V2CE-S4-nkiMBlTi7uqV/view?usp=drive_link). To install, allow installs from unknown sources on your Android device.
 
 ## Credits
 
-This software uses the following open source packages:
-
-- [Android Studio](https://developer.android.com/studio)
-- [GIMP](https://www.gimp.org/)
-- Popular and tournament-winning decks were taken from [here](https://onepiece.saikyo-cardgame.online/)
-- Icons were taken from [here](https://www.flaticon.com)
-- Card images were taken from [here](https://asia-en.onepiece-cardgame.com/cardlist)
-- Card prices were taken from [here](https://onepiece-card-atari.jp/) and [here](https://tier-one-onepiece.jp/)
+- Card data and images: the official ONE PIECE CARD GAME sites in [Japanese](https://www.onepiece-cardgame.com/cardlist/) and [English](https://en.onepiece-cardgame.com/cardlist/). Not affiliated with Bandai.
+- Pull-rate estimates: community box-opening reports, listed in [`catalog/data/pull_profiles.json`](catalog/data/pull_profiles.json).
+- App icon made with [GIMP](https://www.gimp.org/).
 
 ## License
 

@@ -57,5 +57,11 @@ are new parallel artwork that the card list hasn't added yet.
 ## Pull rates
 
 `data/pull_profiles.json` holds the simulator's pull settings. Bandai doesn't publish pull rates;
-these are community estimates from Japanese box openings, recorded with their sources. Override a
-set under `sets` when better data exists.
+these are community estimates from Japanese box openings, recorded with their sources. `defaults`
+picks a profile per set kind; to override one set, add its set id or code under `sets` with a
+profile name, or `null` for no simulator.
+
+## Publishing
+
+On the default branch the workflow uploads `catalog.json.gz` and `version.txt` to the `catalog`
+GitHub release. The app checks `version.txt` once a day and downloads the catalog when it changes.
