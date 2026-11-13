@@ -10,6 +10,7 @@ import com.optcg.app.data.AppDatabase
 import com.optcg.app.data.CollectionRepository
 import com.optcg.app.images.ImageStore
 import com.optcg.app.sim.SimStats
+import com.optcg.app.sim.Sounds
 import com.optcg.app.work.Jobs
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -33,6 +34,7 @@ class AppContainer(context: Context) {
     val jobs = Jobs(context)
     val collection = CollectionRepository(db, prefs, jobs)
     val simStats = SimStats(prefs)
+    val sounds by lazy { Sounds(context) }
 }
 
 class OptcgApp : Application(), ImageLoaderFactory {

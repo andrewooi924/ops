@@ -68,8 +68,8 @@ fun hitColor(slot: Slot): Color = when (slot) {
 
 /**
  * The opened pack's cards in a neat, straight stack. Swipe the top card away (or tap it) for the
- * next one. Hold and drag to tilt the whole stack and catch the light; it also follows the phone's
- * tilt. The magnifier opens the top card full screen. Big hits glow and buzz when they reach the
+ * next one. Hold and drag to tilt the whole stack and catch the light; otherwise it stays
+ * straight. The magnifier opens the top card full screen. Big hits glow and buzz when they reach the
  * top. [onDone] runs after the last card.
  */
 @Composable
@@ -91,13 +91,12 @@ fun CardStack(
     val holdTiltX = remember { Animatable(0f) }
     val holdTiltY = remember { Animatable(0f) }
     var holding by remember { mutableStateOf(false) }
-    val sensor = rememberDeviceTilt(range = 8f)
     val glow = rememberInfiniteTransition(label = "glow")
     val pulse by glow.animateFloat(0.55f, 1f, infiniteRepeatable(tween(900), RepeatMode.Reverse), label = "pulse")
 
-    // The whole stack tilts together: finger while holding, otherwise the phone.
-    val tiltX = (holdTiltX.value + sensor.x).coerceIn(-22f, 22f)
-    val tiltY = (holdTiltY.value + sensor.y).coerceIn(-22f, 22f)
+    // The stack sits perfectly straight; it only tilts while you hold it.
+    val tiltX = holdTiltX.value
+    val tiltY = holdTiltY.value
 
     // Cards rise out of the torn pack.
     LaunchedEffect(pulls) { rise.animateTo(0f, spring(dampingRatio = 0.8f, stiffness = Spring.StiffnessLow)) }
