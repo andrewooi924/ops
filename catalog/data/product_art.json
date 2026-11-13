@@ -1,4 +1,26 @@
 {
  "note": "Photos for sets whose Bandai product page has no box or pack photo. Map a set code to the image URL of an angled box photo (\"box\") and/or a pack photo (\"pack\"). Transparent PNG/WebP works best; a plain background is removed automatically.",
- "sets": {}
+ "sets": {
+  "OP-10": {
+   "box": "https://m.media-amazon.com/images/I/61+FxpqROpL.jpg"
+  },
+  "OP-11": {
+   "box": "https://m.media-amazon.com/images/I/614UlTEMdoL.jpg"
+  },
+  "OP-12": {
+   "box": "https://cdn.shopify.com/s/files/1/2103/8087/files/Untitleddesign-2025-09-20T132405.013.webp?v=1772723244"
+  },
+  "OP-13": {
+   "box": "https://m.media-amazon.com/images/I/81tO30I8gwL.jpg"
+  },
+  "EB-01": {
+   "box": "https://m.media-amazon.com/images/I/7161HCFpLyL.jpg"
+  },
+  "EB-02": {
+   "box": "https://m.media-amazon.com/images/I/61qmIv99tiL.jpg"
+  },
+  "PRB-01": {
+   "box": "https://cdn.shopify.com/s/files/1/2103/8087/files/BOX-PRB01.webp?v=1771801521"
+  }
+ }
 }
