@@ -105,11 +105,14 @@ def make_art(source: bytes, kind: str) -> bytes:
     """Trims the product photo and centres it on the canvas for ``kind`` ("box" or "pack")."""
     image = Image.open(io.BytesIO(source))
     image = image.convert("RGBA")
-    alpha = image.getchannel("A")
-    if alpha.getextrema()[0] == 255:  # fully opaque: a photo on a plain background
-        image = _remove_plain_background(image)
-        alpha = image.getchannel("A")
-    box = alpha.point(lambda value: 255 if value > 16 else 0).getbbox()
+    box = image.getchannel("A").point(lambda value: 255 if value > 16 else 0).getbbox()
+    # A photo on a plain background: opaque, or "transparent" with a solid background that
+    # still fills the frame. Flatten it onto white and cut the background out.
+    if box is not None and (box[2] - box[0]) * (box[3] - box[1]) > 0.9 * image.width * image.height:
+        flat = Image.new("RGBA", image.size, (255, 255, 255, 255))
+        flat.alpha_composite(image)
+        image = _remove_plain_background(flat)
+        box = image.getchannel("A").point(lambda value: 255 if value > 16 else 0).getbbox()
     if box is None:
         raise ValueError("the photo is empty")
     product = image.crop(box)

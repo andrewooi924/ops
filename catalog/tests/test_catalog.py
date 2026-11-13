@@ -230,6 +230,16 @@ class ProductArtTests(unittest.TestCase):
         self.assertEqual(art.height, 300)
         self.assertEqual(art.getpixel((0, 0))[3], 0)
 
+    def test_solid_background_behind_transparency_is_removed(self):
+        # Transparent only at the very edge, with an opaque white background inside it.
+        photo = Image.new("RGBA", (400, 400), (255, 255, 255, 0))
+        ImageDraw.Draw(photo).rectangle((2, 2, 397, 397), fill=(255, 255, 255, 255))
+        ImageDraw.Draw(photo).rectangle((150, 50, 249, 349), fill=(200, 30, 30, 255))
+        buffer = io.BytesIO()
+        photo.save(buffer, "PNG")
+        art = Image.open(io.BytesIO(product_art.make_art(buffer.getvalue(), "box")))
+        self.assertEqual(art.height, 300)
+
     def test_photo_urls_from_product_page(self):
         class Pages:
             def get_text(self, url, max_age=None):
