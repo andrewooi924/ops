@@ -40,7 +40,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChanged
@@ -52,13 +51,13 @@ import com.optcg.app.data.PrintingEntity
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 
-/** Cards that get the holographic shine. */
+/** Cards that get the gloss. */
 fun isFoil(card: PrintingEntity): Boolean = card.isParallel || card.rarity in setOf("SEC", "SP", "TR")
 
 /**
  * Full-screen inspect view. Pinch to zoom (up to 4x) and drag to move around when zoomed;
  * otherwise dragging tilts the card in 3D. Tilting the phone tilts it too. Parallels,
- * SECs and SPs get a holographic shine that follows the tilt. Tap outside or press back to close.
+ * SECs and SPs get a mild gloss that follows the tilt. Tap outside or press back to close.
  */
 @Composable
 fun InspectOverlay(card: PrintingEntity, onClose: () -> Unit, onOpenPage: (() -> Unit)? = null) {
@@ -145,7 +144,7 @@ fun InspectOverlay(card: PrintingEntity, onClose: () -> Unit, onOpenPage: (() ->
                     },
             ) {
                 CardImage(card, label = card.displayName, detail = true, modifier = Modifier.fillMaxWidth())
-                if (foil) FoilShine(tiltX, tiltY, Modifier.matchParentSize().clip(RoundedCornerShape(12.dp)))
+                if (foil) Gloss(tiltX, tiltY, Modifier.matchParentSize().clip(RoundedCornerShape(12.dp)))
                 Glare(tiltX, tiltY, Modifier.matchParentSize().clip(RoundedCornerShape(12.dp)))
             }
             // Captions step aside while zoomed in, so they don't sit on top of the card.
@@ -170,41 +169,33 @@ fun InspectOverlay(card: PrintingEntity, onClose: () -> Unit, onOpenPage: (() ->
     }
 }
 
-/** Rainbow holographic layer whose bands slide with the tilt. */
+/**
+ * A mild gloss for parallels, SECs and SPs: a soft, wide band of light that slides across the
+ * card as it tilts, like light catching a foil finish.
+ */
 @Composable
-fun FoilShine(tiltX: Float, tiltY: Float, modifier: Modifier = Modifier, strength: Float = 1f) {
-    Canvas(modifier.graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }) {
-        val shift = (tiltY / 25f) * size.width + (tiltX / 25f) * size.height * 0.5f
-        val colors = listOf(
-            Color(0xFFFF4D4D), Color(0xFFFFD84D), Color(0xFF4DFF88), Color(0xFF4DD2FF), Color(0xFFB04DFF), Color(0xFFFF4D4D),
-        ).map { it.copy(alpha = 0.22f * strength) }
+fun Gloss(tiltX: Float, tiltY: Float, modifier: Modifier = Modifier, strength: Float = 1f) {
+    Canvas(modifier) {
+        // -1..1 as the card tilts from one side to the other.
+        val t = ((tiltY / 25f) + (tiltX / 50f)).coerceIn(-1f, 1f)
+        val centre = size.width * (0.5f + t * 0.9f)
+        val band = size.width * 0.55f
         drawRect(
             Brush.linearGradient(
-                colors,
-                start = Offset(-size.width + shift, 0f),
-                end = Offset(size.width * 1.2f + shift, size.height),
+                0f to Color.Transparent,
+                0.5f to Color.White.copy(alpha = 0.16f * strength),
+                1f to Color.Transparent,
+                start = Offset(centre - band, 0f),
+                end = Offset(centre + band, size.height * 0.6f),
             ),
             blendMode = BlendMode.Screen,
         )
-        // Fine diagonal sparkle lines, like the texture on real foil cards.
-        val step = 9.dp.toPx()
-        var x = -size.height + (shift % step)
-        while (x < size.width) {
-            drawLine(
-                Color.White.copy(alpha = 0.05f * strength),
-                Offset(x, 0f),
-                Offset(x + size.height, size.height),
-                strokeWidth = 1f,
-                blendMode = BlendMode.Screen,
-            )
-            x += step
-        }
     }
 }
 
 /** A soft white highlight that moves opposite to the tilt, as light reflecting off the card. */
 @Composable
-private fun Glare(tiltX: Float, tiltY: Float, modifier: Modifier = Modifier) {
+fun Glare(tiltX: Float, tiltY: Float, modifier: Modifier = Modifier) {
     Canvas(modifier) {
         val cx = size.width * (0.5f - tiltY / 50f)
         val cy = size.height * (0.5f + tiltX / 50f)

@@ -39,6 +39,9 @@ Useful options:
 - `out/report.json`: what needs a person to look at (see below).
 - `out/images/<hash>.webp`: a `thumb` (240 px wide) and a `detail` (up to 720 px) per image.
   Names are content hashes, so they can be cached forever.
+- `out/images/<hash>.webp` also holds box and pack art for each booster (`box_art` and
+  `pack_art` on the set), made from the photos on Bandai's product pages: trimmed to the
+  product and centred on a 325:500 (box) or 251:500 (pack) canvas, never upscaled.
 - `out/asset-index.json`: which source produced which images, so later runs skip them.
 - `data/don_registry.json` (committed): permanent don ids. A don keeps its id when the PDF
   is re-exported or when a watermarked announcement is later replaced by the clean image.
@@ -62,6 +65,14 @@ are new parallel artwork that the card list hasn't added yet.
 these are community estimates from Japanese box openings, recorded with their sources. `defaults`
 picks a profile per set kind; to override one set, add its set id or code under `sets` with a
 profile name, or `null` for no simulator.
+
+## Box and pack art
+
+Bandai's product pages have a pack photo for every booster, but angled box photos only from
+OP-14, EB-03 and PRB-02 on. For a set without one, put any image URL of the box or
+pack in `data/product_art.json`, e.g. `"OP-10": {"box": "https://…/op10-box.png"}`. A
+transparent image works best; a plain background is removed automatically. The app shows its
+bundled artwork, or a drawn box, for sets with no art.
 
 ## Image hosting (Cloudflare R2)
 

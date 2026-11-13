@@ -142,13 +142,15 @@ class SimViewModel(application: Application, private val setId: String) : Androi
             val box = sim.openBox()
             val pulls = box.pulls
             val (isNew, berries) = commit(pulls)
-            val newById = pulls.indices.filter { isNew[it] }.map { pulls[it] }.toSet()
+            val newIds = pulls.indices.filter { isNew[it] }.mapTo(HashSet()) { pulls[it].card.id }
             container.simStats.addPacks(setId, box.packs.size)
             packsOpened += box.packs.size
             container.simStats.setDryStreak(setId, 0)
             val hits = box.hits
             prefetch(hits)
-            stage = SimStage.BoxDone(box, hits, hits.map { it in newById }, isNew.count { it }, berries)
+            // Only the first copy of a new card is marked NEW; the rest are duplicates.
+            val hitIsNew = hits.map { newIds.remove(it.card.id) }
+            stage = SimStage.BoxDone(box, hits, hitIsNew, isNew.count { it }, berries)
         }
     }
 
@@ -221,10 +223,11 @@ fun SimScreen(setId: String, nav: Nav) {
                 when (stage) {
                     SimStage.Loading -> Box(Modifier.fillMaxSize())
                     SimStage.Unavailable -> Message("There's no simulator for this set.")
-                    is SimStage.Sealed -> SealedPack(set?.code, title, onOpened = vm::packOpened, onBox = vm::openBox, packsPerBox = vm.profile?.packsPerBox ?: 24)
+                    is SimStage.Sealed -> SealedPack(set?.code, title, set?.packArt, onOpened = vm::packOpened, onBox = vm::openBox, packsPerBox = vm.profile?.packsPerBox ?: 24)
                     is SimStage.Revealing -> CardStack(
                         stage.pack.cards, vm.cards, stage.isNew,
-                        modifier = Modifier.fillMaxSize().padding(bottom = 24.dp),
+                        modifier = Modifier.fillMaxSize().padding(bottom = 16.dp),
+                        onInspect = { inspecting = it },
                         onDone = vm::revealed,
                     )
                     is SimStage.PackDone -> PackResults(stage, vm.cards, onInspect = { inspecting = it }, onExit = nav::back, onNext = vm::nextPack)
@@ -242,11 +245,11 @@ fun SimScreen(setId: String, nav: Nav) {
 }
 
 @Composable
-private fun SealedPack(code: String?, title: String, packsPerBox: Int, onOpened: () -> Unit, onBox: () -> Unit) {
+private fun SealedPack(code: String?, title: String, packArt: String?, packsPerBox: Int, onOpened: () -> Unit, onBox: () -> Unit) {
     var started by remember { mutableStateOf(false) }
     Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
         Box(Modifier.weight(1f).fillMaxWidth().padding(vertical = 12.dp), contentAlignment = Alignment.Center) {
-            TearablePack(code, title, Modifier.fillMaxHeight(0.9f), onTearStarted = { started = true }, onOpened = onOpened)
+            TearablePack(code, title, Modifier.fillMaxHeight(0.9f), hosted = packArt, onTearStarted = { started = true }, onOpened = onOpened)
         }
         Text(
             if (started) " " else "Swipe across the top to tear it open, or tap",
@@ -324,7 +327,7 @@ private fun ResultCard(pull: Pull, printing: PrintingEntity?, isNew: Boolean, on
     Box(Modifier.padding(5.dp).clickable { onInspect(printing) }) {
         CardImage(printing, label = "${printing.code}\n${printing.displayName}", modifier = Modifier.fillMaxWidth())
         if (pull.slot.isBigHit) {
-            FoilShine(8f, 14f, Modifier.matchParentSize(), strength = 0.6f)
+            Gloss(6f, 10f, Modifier.matchParentSize(), strength = 0.8f)
         }
         if (isNew) {
             Image(painterResource(R.drawable.ic_new), "New", Modifier.align(Alignment.TopStart).size(26.dp))

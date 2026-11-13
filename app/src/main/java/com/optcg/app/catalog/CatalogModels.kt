@@ -28,6 +28,9 @@ data class CatalogSet(
     val kind: String,
     @SerialName("name_jp") val nameJp: String,
     @SerialName("name_en") val nameEn: String? = null,
+    /** Box and pack art file names on the image host (from Bandai's product photos), if any. */
+    @SerialName("box_art") val boxArt: String? = null,
+    @SerialName("pack_art") val packArt: String? = null,
 )
 
 @Serializable

@@ -16,7 +16,7 @@ from collections import Counter, OrderedDict
 from pathlib import Path
 from typing import Dict, List, Optional
 
-from . import SCHEMA_VERSION, announcements, cardlist, dons, imagehash, images, merge
+from . import SCHEMA_VERSION, announcements, cardlist, dons, imagehash, images, merge, product_art
 from .fetch import FetchError, Fetcher
 
 HERE = Path(__file__).resolve().parent
@@ -238,6 +238,10 @@ def main(argv: Optional[List[str]] = None) -> int:
     out_dir.mkdir(parents=True, exist_ok=True)
     asset_index = images.AssetIndex(out_dir / "asset-index.json", published=args.published_index)
     attach_images(fetcher, printings, asset_index, out_dir / "images", args.images, args.image_limit, report)
+    sets = build_sets(jp_all, en_all)
+    if args.images == "all":
+        overrides = product_art.load_overrides(args.data / "product_art.json")
+        product_art.attach_art(fetcher, sets, asset_index, out_dir / "images", overrides, args.max_age, report, log)
     asset_index.save()
     registry.save()
 
@@ -247,7 +251,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         "schema_version": SCHEMA_VERSION,
         # Where printings' image.thumb / image.detail files are served from; null until images are hosted.
         "image_base": args.image_base.rstrip("/") if args.image_base else None,
-        "sets": build_sets(jp_all, en_all),
+        "sets": sets,
         "printings": [public(printing) for printing in printings],
         "pull_profiles": pull_profiles,
     }

@@ -19,6 +19,9 @@ data class SetEntity(
     val nameEn: String?,
     /** Position in the catalog (newest first within each kind). */
     val position: Int,
+    /** Box and pack art file names on the image host, if any. */
+    val boxArt: String? = null,
+    val packArt: String? = null,
 )
 
 @Entity(tableName = "printings", indices = [Index("setId"), Index("code")])
@@ -105,4 +108,6 @@ data class SetProgress(
     val nameEn: String?,
     val total: Int,
     val owned: Int,
+    val boxArt: String? = null,
+    val packArt: String? = null,
 )

@@ -66,7 +66,11 @@ class AssetIndex:
 
     def get(self, key: str, out_dir: Path) -> Optional[dict]:
         entry = self.entries.get(key)
-        if entry and (self.published or all((out_dir / entry[name]).exists() for name in VARIANTS)):
+        if not entry:
+            return None
+        # Card images have thumb/detail variants; box and pack art (product_art) is one "art" file.
+        files = [entry[name] for name in (*VARIANTS, "art") if name in entry]
+        if self.published or all((out_dir / name).exists() for name in files):
             return entry
         return None
 

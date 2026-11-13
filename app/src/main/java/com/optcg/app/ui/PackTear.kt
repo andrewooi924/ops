@@ -9,7 +9,6 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -35,18 +34,22 @@ import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.res.painterResource
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.random.Random
 
-/** Where the tear runs, as a fraction of the pack's height: just under the crimped top. */
-private const val TEAR_LINE = 0.055f
+/**
+ * Where the tear runs, as a fraction of the pack's height: through the crimped seal at the top,
+ * above the set code and logos on Bandai's pack photos.
+ */
+private const val TEAR_LINE = 0.028f
+
+/** How far down the pack a swipe can start and still tear it. */
+private const val TEAR_ZONE = 0.14f
 
 /**
  * How much of the width must be torn before letting go finishes the tear. Drags only start
@@ -54,23 +57,12 @@ private const val TEAR_LINE = 0.055f
  */
 private const val TEAR_NEEDED = 0.65f
 
-/** The pack face: original art when there is some, otherwise a drawn pack. */
-@Composable
-fun PackFace(code: String?, title: String, modifier: Modifier = Modifier) {
-    val art = SetArt.pack(code)
-    if (art != null) {
-        Image(painterResource(art), title, contentScale = ContentScale.FillBounds, modifier = modifier.aspectRatio(PACK_RATIO))
-    } else {
-        DrawnPack(code, title, modifier)
-    }
-}
-
 /**
  * A sealed pack you rip open by dragging across the top, from either side. A tap tears it
  * automatically. The torn strip flies off, then [onOpened] is called.
  */
 @Composable
-fun TearablePack(code: String?, title: String, modifier: Modifier = Modifier, onTearStarted: () -> Unit = {}, onOpened: () -> Unit) {
+fun TearablePack(code: String?, title: String, modifier: Modifier = Modifier, hosted: String? = null, onTearStarted: () -> Unit = {}, onOpened: () -> Unit) {
     val scope = rememberCoroutineScope()
     val haptics = LocalHapticFeedback.current
     val density = LocalDensity.current.density
@@ -120,7 +112,7 @@ fun TearablePack(code: String?, title: String, modifier: Modifier = Modifier, on
                 // so a swipe from one edge to the other tears the whole width.
                 awaitEachGesture {
                     val down = awaitFirstDown(requireUnconsumed = false)
-                    if (opened || down.position.y > size.height * TEAR_LINE * 3.5f) return@awaitEachGesture
+                    if (opened || down.position.y > size.height * TEAR_ZONE) return@awaitEachGesture
                     val startX = (down.position.x / size.width).coerceIn(0f, 1f)
                     var moved = false
                     while (true) {
@@ -162,7 +154,7 @@ fun TearablePack(code: String?, title: String, modifier: Modifier = Modifier, on
                     translationY = fly.value * 40f * density
                     alpha = 1f - fly.value * 0.15f
                 },
-        ) { PackFace(code, title, Modifier.fillMaxSize()) }
+        ) { PackFace(code, title, Modifier.fillMaxSize(), hosted) }
 
         // Strip: above the tear line. It lifts from the torn side and flies off.
         Box(
@@ -177,7 +169,7 @@ fun TearablePack(code: String?, title: String, modifier: Modifier = Modifier, on
                     translationX = (if (from > 0.5f) -1f else 1f) * fly.value * 120f * density
                     alpha = 1f - fly.value
                 },
-        ) { PackFace(code, title, Modifier.fillMaxSize()) }
+        ) { PackFace(code, title, Modifier.fillMaxSize(), hosted) }
 
         // The tear: a jagged white edge over the torn span, and a perforation hint before it starts.
         Canvas(Modifier.fillMaxSize()) {
