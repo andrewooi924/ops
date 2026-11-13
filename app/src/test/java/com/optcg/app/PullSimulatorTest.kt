@@ -74,11 +74,28 @@ class PullSimulatorTest {
     }
 
     @Test
-    fun bestCardIsRevealedLast() {
-        repeat(100) {
-            val pack = simulator.openPack()
-            assertEquals(pack.best?.slot, pack.cards.last().slot)
+    fun leaderIsLastOtherwiseTheBestCard() {
+        repeat(300) {
+            simulator.openBox().packs.forEach(::assertRevealOrder)
         }
+    }
+
+    @Test
+    fun packsNeverHoldTheSameCardTwice() {
+        repeat(300) {
+            simulator.openBox().packs.forEach { pack ->
+                val ids = pack.cards.map { it.card.id }
+                assertEquals(ids.toString(), ids.size, ids.toSet().size)
+            }
+        }
+    }
+
+    private fun assertRevealOrder(pack: com.optcg.app.sim.Pack) {
+        val expected = if (pack.cards.any { it.slot == Slot.L }) Slot.L else pack.best?.slot
+        assertEquals(expected, pack.cards.last().slot)
+        // Commons come before every hit.
+        val firstHit = pack.cards.indexOfFirst { it.slot != Slot.FILLER }
+        if (firstHit >= 0) assertTrue(pack.cards.drop(firstHit).none { it.slot == Slot.FILLER })
     }
 
     @Test
@@ -88,7 +105,8 @@ class PullSimulatorTest {
             val forced = simulator.forceHit(pack)
             assertEquals(pack.cards.size, forced.cards.size)
             assertTrue(forced.cards.any { it.slot.isBigHit })
-            assertEquals(forced.best?.slot, forced.cards.last().slot)
+            assertRevealOrder(forced)
+            assertEquals(forced.cards.size, forced.cards.map { it.card.id }.toSet().size)
             if (pack.cards.any { it.slot.isBigHit }) assertEquals(pack, forced)
         }
     }

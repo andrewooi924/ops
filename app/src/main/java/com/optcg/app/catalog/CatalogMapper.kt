@@ -9,7 +9,7 @@ import com.optcg.app.data.VIRTUAL_DONS
 object CatalogMapper {
     fun sets(catalog: Catalog): List<SetEntity> {
         val sets = catalog.sets.mapIndexed { index, set ->
-            SetEntity(set.id, set.code, set.kind, set.nameJp, set.nameEn, index)
+            SetEntity(set.id, set.code, set.kind, set.nameJp, set.nameEn, index, set.boxArt, set.packArt)
         }.toMutableList()
         val known = sets.mapTo(HashSet()) { it.id }
         if (catalog.printings.any { it.kind == "don" }) {

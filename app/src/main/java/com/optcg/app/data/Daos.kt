@@ -21,7 +21,7 @@ private const val CARD_ROW = """
 interface CatalogDao {
     @Query(
         """
-        SELECT s.id, s.code, s.kind, s.nameJp, s.nameEn, COUNT(p.id) AS total,
+        SELECT s.id, s.code, s.kind, s.nameJp, s.nameEn, s.boxArt, s.packArt, COUNT(p.id) AS total,
                COALESCE(SUM(CASE WHEN o.count > 0 THEN 1 ELSE 0 END), 0) AS owned
         FROM sets s
         LEFT JOIN printings p ON p.setId = s.id

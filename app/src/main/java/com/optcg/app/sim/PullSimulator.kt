@@ -16,7 +16,7 @@ enum class Slot {
 data class Pull(val card: SimCard, val slot: Slot)
 
 data class Pack(val cards: List<Pull>) {
-    /** The best card in the pack, shown last when revealing. */
+    /** The highest-rarity card in the pack. */
     val best: Pull? get() = cards.maxByOrNull { it.slot.ordinal }
 }
 
@@ -78,13 +78,16 @@ class PullSimulator(
 
         // Leaders and other hits each go to different packs, as in a real box.
         val packHits = List(packCount) { mutableListOf<Pull>() }
-        spread(leaders, packHits)
-        spread(hits, packHits)
+        val order = packHits.indices.shuffled(random)
+        leaders.shuffled(random).forEachIndexed { i, pull -> packHits[order[i % packCount]] += pull }
+        val hitOrder = order.drop(leaders.size) + order.take(leaders.size)
+        hits.shuffled(random).forEachIndexed { i, pull -> packHits[hitOrder[i % packCount]] += pull }
 
         val packs = packHits.map { inPack ->
             val fillerCount = (profile.cardsPerPack - inPack.size).coerceAtLeast(0)
-            val cards = List(fillerCount) { Pull(pickFiller(), Slot.FILLER) } + inPack.sortedBy { it.slot.ordinal }
-            Pack(cards)
+            val used = inPack.mapTo(mutableSetOf()) { it.card.id }
+            val fillers = List(fillerCount) { Pull(pickFiller(used).also { used += it.id }, Slot.FILLER) }
+            Pack(ordered(fillers + inPack))
         }
         return Box(packs)
     }
@@ -102,26 +105,29 @@ class PullSimulator(
             hasSec -> Slot.SEC
             else -> return pack
         }
-        val card = if (slot == Slot.SEC) base.getValue("SEC").random(random) else parallels.random(random)
+        val choices = if (slot == Slot.SEC) base.getValue("SEC") else parallels
+        val inPack = pack.cards.mapTo(mutableSetOf()) { it.card.id }
+        val card = choices.filter { it.id !in inPack }.ifEmpty { choices }.random(random)
         val index = pack.cards.indexOfFirst { it.slot == Slot.FILLER }.takeIf { it >= 0 } ?: pack.cards.lastIndex
         val cards = pack.cards.toMutableList().apply { removeAt(index) } + Pull(card, slot)
-        return Pack(cards.filter { it.slot == Slot.FILLER } + cards.filter { it.slot != Slot.FILLER }.sortedBy { it.slot.ordinal })
+        return Pack(ordered(cards))
     }
 
-    private fun spread(pulls: List<Pull>, packs: List<MutableList<Pull>>) {
-        val order = packs.indices.shuffled(random)
-        pulls.shuffled(random).forEachIndexed { index, pull -> packs[order[index % order.size]] += pull }
-    }
+    /** Commons first, then hits from lowest to highest, with the leader always last. */
+    private fun ordered(cards: List<Pull>): List<Pull> =
+        cards.sortedBy { if (it.slot == Slot.L) Int.MAX_VALUE else it.slot.ordinal }
 
     private fun pickPattern() = profile.boxPatterns.takeIf { it.isNotEmpty() }?.let { patterns ->
         var roll = random.nextInt(patterns.sumOf { it.weight })
         patterns.first { pattern -> (roll < pattern.weight).also { roll -= pattern.weight } }
     }
 
-    private fun pickFiller(): SimCard {
+    /** A common or uncommon that isn't already in the pack, so a pack never holds duplicates. */
+    private fun pickFiller(exclude: Set<String>): SimCard {
         var roll = random.nextInt(filler.sumOf { it.second })
         val cards = filler.first { (_, weight) -> (roll < weight).also { roll -= weight } }.first
-        return cards.random(random)
+        return cards.filter { it.id !in exclude }.ifEmpty { filler.flatMap { it.first }.filter { it.id !in exclude } }
+            .ifEmpty { cards }.random(random)
     }
 
     private fun slotFor(rarity: String) = when (rarity) {

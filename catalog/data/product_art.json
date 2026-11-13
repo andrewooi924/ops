@@ -1,0 +1,4 @@
+{
+ "note": "Photos for sets whose Bandai product page has no box or pack photo. Map a set code to the image URL of an angled box photo (\"box\") and/or a pack photo (\"pack\"). Transparent PNG/WebP works best; a plain background is removed automatically.",
+ "sets": {}
+}

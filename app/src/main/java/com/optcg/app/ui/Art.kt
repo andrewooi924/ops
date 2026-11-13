@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -30,6 +31,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.shape.RoundedCornerShape
+import coil.compose.AsyncImagePainter
+import coil.compose.rememberAsyncImagePainter
+import com.optcg.app.container
 
 /** Pack width / height, from the original OP-01 pack art (cropped to the pack). */
 const val PACK_RATIO = 251f / 500f
@@ -60,9 +64,34 @@ fun SetBanner(code: String?, title: String, modifier: Modifier = Modifier) {
     }
 }
 
+/**
+ * The set's hosted art (made from Bandai's product photos by the catalog builder) once it has
+ * loaded; until then, or without it, [fallback].
+ */
+@Composable
+private fun HostedArt(file: String?, ratio: Float, description: String, modifier: Modifier, fallback: @Composable () -> Unit) {
+    val base = LocalContext.current.container.catalog.imageBase
+    if (file.isNullOrBlank() || base.isBlank()) {
+        fallback()
+        return
+    }
+    val painter = rememberAsyncImagePainter(base.trimEnd('/') + "/" + file)
+    Box(modifier.aspectRatio(ratio)) {
+        // Only if it can't load (e.g. offline before it was ever seen); a cached image is instant.
+        if (painter.state is AsyncImagePainter.State.Error) fallback()
+        // Drawn even while loading: Coil sizes the request when it's first drawn.
+        Image(painter, description, contentScale = ContentScale.Fit, modifier = Modifier.matchParentSize())
+    }
+}
+
 /** Booster box for the Home row, like the original opNN_box images. */
 @Composable
-fun BoxArt(code: String?, title: String, modifier: Modifier = Modifier) {
+fun BoxArt(code: String?, title: String, modifier: Modifier = Modifier, hosted: String? = null) {
+    HostedArt(hosted, BOX_RATIO, title, modifier) { BundledBoxArt(code, title, if (hosted == null) modifier else Modifier.fillMaxSize()) }
+}
+
+@Composable
+private fun BundledBoxArt(code: String?, title: String, modifier: Modifier) {
     val art = SetArt.box(code)
     if (art != null) {
         Image(painterResource(art), title, contentScale = ContentScale.Fit, modifier = modifier.aspectRatio(BOX_RATIO))
@@ -96,6 +125,20 @@ fun BoxArt(code: String?, title: String, modifier: Modifier = Modifier) {
         ) {
             Text(code ?: "", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Bold, fontFamily = YdGothic)
             Box(Modifier.weight(1f), contentAlignment = Alignment.Center) { LogoBlock(title, big = 22.sp) }
+        }
+    }
+}
+
+/** The pack face: hosted art from Bandai's photo, else the original art, else a drawn pack. */
+@Composable
+fun PackFace(code: String?, title: String, modifier: Modifier = Modifier, hosted: String? = null) {
+    HostedArt(hosted, PACK_RATIO, title, modifier) {
+        val inner = if (hosted == null) modifier else Modifier.fillMaxSize()
+        val art = SetArt.pack(code)
+        if (art != null) {
+            Image(painterResource(art), title, contentScale = ContentScale.FillBounds, modifier = inner.aspectRatio(PACK_RATIO))
+        } else {
+            DrawnPack(code, title, inner)
         }
     }
 }

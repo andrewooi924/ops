@@ -5,7 +5,7 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw
 
-from optcg_catalog import announcements, cardlist, dons, imagehash, images, merge
+from optcg_catalog import announcements, cardlist, dons, imagehash, images, merge, product_art
 from optcg_catalog.fetch import to_uri
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -204,6 +204,51 @@ class ImageTests(unittest.TestCase):
             empty = Path(folder) / "images"
             self.assertIsNone(images.AssetIndex(path).get("https://example/a.png", empty))
             self.assertEqual(images.AssetIndex(path, published=True).get("https://example/a.png", empty)["thumb"], "t.webp")
+
+
+class ProductArtTests(unittest.TestCase):
+    @staticmethod
+    def product(size, product_box, background=(0, 0, 0, 0)):
+        image = Image.new("RGBA", size, background)
+        ImageDraw.Draw(image).rectangle(product_box, fill=(200, 30, 30, 255))
+        buffer = io.BytesIO()
+        image.save(buffer, "PNG")
+        return buffer.getvalue()
+
+    def test_box_fills_the_height_and_is_centred(self):
+        # A 354x587 box in a 670x670 transparent photo, like Bandai's.
+        art = Image.open(io.BytesIO(product_art.make_art(self.product((670, 670), (158, 43, 511, 629)), "box")))
+        self.assertEqual(art.height, 587)
+        self.assertAlmostEqual(art.width / art.height, 325 / 500, places=2)
+        left, top, right, bottom = art.getchannel("A").getbbox()
+        self.assertEqual((top, bottom), (0, 587))
+        self.assertLessEqual(abs(left - (art.width - right)), 1)
+
+    def test_plain_background_is_removed(self):
+        photo = self.product((400, 400), (150, 50, 249, 349), background=(255, 255, 255, 255))
+        art = Image.open(io.BytesIO(product_art.make_art(photo, "pack")))
+        self.assertEqual(art.height, 300)
+        self.assertEqual(art.getpixel((0, 0))[3], 0)
+
+    def test_photo_urls_from_product_page(self):
+        class Pages:
+            def get_text(self, url, max_age=None):
+                return '<img src="/onepiececg/x/a1/img_item01.webp"><img src="/onepiececg/x/b2/img_item02.webp">'
+
+            def get(self, url, max_age=None):
+                raise AssertionError("no fallback needed")
+
+        found = product_art.find_photos(Pages(), "OP-18", 0)
+        self.assertEqual(found["pack"], "https://www.onepiece-cardgame.com/onepiececg/x/a1/img_item01.webp")
+        self.assertEqual(found["box"], "https://www.onepiece-cardgame.com/onepiececg/x/b2/img_item02.webp")
+
+    def test_art_entries_need_their_file_unless_published(self):
+        with tempfile.TemporaryDirectory() as folder:
+            index = images.AssetIndex(Path(folder) / "asset-index.json")
+            index.put("art:box:u", {"art": "a.webp"})
+            self.assertIsNone(index.get("art:box:u", Path(folder)))
+            (Path(folder) / "a.webp").write_bytes(b"x")
+            self.assertEqual(index.get("art:box:u", Path(folder))["art"], "a.webp")
 
 
 class FetchTests(unittest.TestCase):

@@ -41,6 +41,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.imageLoader
+import coil.request.ImageRequest
 import com.optcg.app.container
 import com.optcg.app.data.PrintingEntity
 import com.optcg.app.data.SetProgress
@@ -53,11 +55,25 @@ fun HomeScreen(nav: Nav) {
     val berries by container.simStats.berries.collectAsStateWithLifecycle()
     val sets by remember { container.db.catalog().setProgress() }.collectAsStateWithLifecycle(emptyList())
     val profiles = remember(sets) { container.catalog.pullProfiles() }
-    // Sets with a simulator, newest first, as booster boxes.
-    val kindOrder = listOf("booster", "extra", "premium")
-    val boxes = sets.filter { profiles.profileFor(it.id, it.code, it.kind) != null && it.total > 0 }
-        .sortedBy { kindOrder.indexOf(it.kind).let { i -> if (i < 0) kindOrder.size else i } }
+    // Sets with a simulator, grouped by kind (boosters, then extras, then premiums), newest first.
+    val sections = remember(sets, profiles) {
+        val simulated = sets.filter { profiles.profileFor(it.id, it.code, it.kind) != null && it.total > 0 }
+        SET_SECTIONS.mapNotNull { (kind, title) ->
+            simulated.filter { it.kind == kind }.sortedByDescending(::setNumber).takeIf { it.isNotEmpty() }?.let { title to it }
+        }
+    }
+    val boxes = sections.flatMap { it.second }
     var featured by remember { mutableStateOf<List<PrintingEntity>>(emptyList()) }
+    val context = LocalContext.current
+
+    // Fetch pack art ahead, so the sealed pack is ready the moment a simulator opens.
+    LaunchedEffect(boxes.mapNotNull { it.packArt }) {
+        val base = container.catalog.imageBase.trimEnd('/')
+        if (base.isBlank()) return@LaunchedEffect
+        boxes.mapNotNull { it.packArt }.forEach { file ->
+            context.imageLoader.enqueue(ImageRequest.Builder(context).data("$base/$file").build())
+        }
+    }
 
     LaunchedEffect(boxes.take(2).map { it.id }) {
         if (boxes.isEmpty()) return@LaunchedEffect
@@ -98,20 +114,8 @@ fun HomeScreen(nav: Nav) {
         } else {
             Spacer(Modifier.height(276.dp))
         }
-        LazyRow(
-            contentPadding = PaddingValues(horizontal = 4.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier.fillMaxWidth().height(330.dp).padding(top = 12.dp),
-        ) {
-            items(boxes, key = { it.id }) { set ->
-                Column(
-                    Modifier.width(190.dp).fillMaxHeight().clickable { nav.sim(set.id) },
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    BoxArt(set.code, setDisplayName(set), Modifier.weight(1f))
-                    Text(set.code ?: "", color = Palette.SubText, fontSize = 13.sp, modifier = Modifier.padding(top = 6.dp))
-                }
-            }
+        sections.forEach { (title, sectionBoxes) ->
+            BoxRow(title, sectionBoxes, nav)
         }
         Spacer(Modifier.height(16.dp))
     }
@@ -141,5 +145,39 @@ private fun FeaturedCard(card: PrintingEntity, sets: List<SetProgress>, onClick:
         }
     }
 }
+
+/** One kind of box (e.g. booster packs), newest first, scrolling sideways. */
+@Composable
+private fun BoxRow(title: String, boxes: List<SetProgress>, nav: Nav) {
+    Row(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 18.dp, bottom = 8.dp), verticalAlignment = Alignment.Bottom) {
+        Text(title, fontSize = 20.sp, color = Palette.Text, modifier = Modifier.weight(1f))
+        Text("${boxes.size}", fontSize = 13.sp, color = Palette.SubText)
+    }
+    LazyRow(
+        contentPadding = PaddingValues(horizontal = 12.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier.fillMaxWidth().height(250.dp),
+    ) {
+        items(boxes, key = { it.id }) { set ->
+            Column(
+                Modifier.width(140.dp).fillMaxHeight().clickable { nav.sim(set.id) },
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                BoxArt(set.code, setDisplayName(set), Modifier.weight(1f), hosted = set.boxArt)
+                Text(set.code ?: "", color = Palette.Text, fontSize = 13.sp, modifier = Modifier.padding(top = 6.dp))
+                Text(
+                    setDisplayName(set),
+                    color = Palette.SubText,
+                    fontSize = 11.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+        }
+    }
+}
+
+/** The number in a set code (OP-12 → 12), for newest-first ordering; sets without one go last. */
+private fun setNumber(set: SetProgress): Int = set.code?.filter(Char::isDigit)?.toIntOrNull() ?: -1
 
 fun setDisplayName(set: SetProgress): String = set.nameEn?.let(::shortEnglishSetName) ?: shortJapaneseSetName(set.nameJp)
