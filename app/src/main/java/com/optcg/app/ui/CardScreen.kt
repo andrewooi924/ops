@@ -1,6 +1,9 @@
 package com.optcg.app.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -128,7 +131,11 @@ private fun CardDetails(card: PrintingEntity) {
     if (otherName != null && otherName != name) {
         Text(otherName, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
-    Spacer(Modifier.height(8.dp))
+    // The original details dialog had a divider in the card's colour(s).
+    val colors = card.colors.split(',').filter { it.isNotBlank() }.map(::cardColor).ifEmpty { listOf(Palette.Unselected) }
+    Row(Modifier.fillMaxWidth().padding(vertical = 8.dp).height(2.dp)) {
+        colors.forEach { Box(Modifier.weight(1f).fillMaxHeight().background(it)) }
+    }
     Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
         RarityLabel(card.rarity, card.isParallel)
         card.category?.let { Text(it.lowercase().replaceFirstChar(Char::uppercase), style = MaterialTheme.typography.labelLarge) }
@@ -200,4 +207,14 @@ private fun OtherPrintings(card: PrintingEntity, nav: Nav) {
             CardTile(other, onClick = { nav.card(other.id) }, modifier = Modifier.width(112.dp))
         }
     }
+}
+
+private fun cardColor(name: String) = when (name) {
+    "red" -> Palette.CardRed
+    "green" -> Palette.CardGreen
+    "blue" -> Palette.CardBlue
+    "purple" -> Palette.CardPurple
+    "black" -> Palette.CardBlack
+    "yellow" -> Palette.CardYellow
+    else -> Palette.Unselected
 }

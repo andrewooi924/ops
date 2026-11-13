@@ -10,7 +10,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -37,7 +41,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @Composable
-fun SettingsScreen() {
+fun SettingsScreen(nav: Nav) {
     val context = LocalContext.current
     val container = context.container
     val info by container.catalog.info.collectAsStateWithLifecycle()
@@ -55,7 +59,10 @@ fun SettingsScreen() {
             .verticalScroll(rememberScrollState())
             .padding(16.dp),
     ) {
-        Text("Settings", style = MaterialTheme.typography.headlineSmall)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            IconButton(onClick = nav::back) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back") }
+            Text("Settings", style = MaterialTheme.typography.headlineSmall)
+        }
 
         Heading("Card catalog")
         info?.let {

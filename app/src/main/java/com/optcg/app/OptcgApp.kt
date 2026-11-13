@@ -9,6 +9,7 @@ import com.optcg.app.catalog.CatalogRepository
 import com.optcg.app.data.AppDatabase
 import com.optcg.app.data.CollectionRepository
 import com.optcg.app.images.ImageStore
+import com.optcg.app.sim.SimStats
 import com.optcg.app.work.Jobs
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -31,6 +32,7 @@ class AppContainer(context: Context) {
     val images = ImageStore(context, http) { catalog.imageBase }
     val jobs = Jobs(context)
     val collection = CollectionRepository(db, prefs, jobs)
+    val simStats = SimStats(prefs)
 }
 
 class OptcgApp : Application(), ImageLoaderFactory {
